@@ -1,16 +1,11 @@
-import express from 'express'
-import graphqlHTTP from 'express-graphql'
-import bodyParser from 'body-parser'
-import mysql from 'mysql'
+var express =  require('express')
+var {graphqlHTTP} = require('express-graphql')
+var bodyParser = require('body-parser')
+var mysql = require('mysql')
 let schema = require('./schema.js')
 
 
-let conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'api',
-    password: 'apipassword',
-    database: 'discord_bot'
-})
+
 
 /*conn.connect()
 
@@ -19,14 +14,13 @@ conn.query('SELECT * from post', (err, rows, fields) => {
     console.log(rows)
 })*/
 
-var root = { hello: () => 'hello world'};
+
 
 var app = express()
 app.use(bodyParser.json())
 
-app.use('/graphql', graphqlHTTP(req => ({
+app.use('/graphql', graphqlHTTP({
     schema: schema,
-    rootValue: root,
-    qraphiql: true,
-})))
+    graphiql: true
+}))
 app.listen(4000, () => console.log("Server listing on port 4000"))

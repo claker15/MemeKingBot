@@ -5,6 +5,7 @@
   "main": "bot.js",
   "author": "",
   "license": "ISC",
+  "type": "module",
   "dependencies": {
     "discord.js": "^12.5.3",
     "mysql": "^2.18.1",
