@@ -152,7 +152,27 @@ const schema = new GraphQLObjectType({
                 conn.end()
                 return returnarr
             }
-        }
+        },
+        getPostByHash: {
+            type: PostType,
+            args: {
+                hash: {type: GraphQLString}
+            },
+            async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: '192.168.1.86',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'discord_bot'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getPostByHash(args.hash)
+                conn.end()
+                return returnarr
+                
+            },     
+        },
         
     }
 })
@@ -171,6 +191,14 @@ let getPosts =  function(num) {
 let getPost =  function(id) {
     return new Promise((resolve, reject) => {    
         conn.query(`SELECT * from post where id=${id}`, (err, rows) => {
+            if (err) reject(err)
+             resolve(rows[0])
+        })
+    }) 
+}
+let getPostByHash =  function(hash) {
+    return new Promise((resolve, reject) => {    
+        conn.query(`SELECT * from post where hash=${hash}`, (err, rows) => {
             if (err) reject(err)
              resolve(rows[0])
         })

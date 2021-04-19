@@ -5,10 +5,11 @@
   "main": "bot.js",
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "discord.js": "^12.5.3",
+    "image-diff": "^2.0.0",
     "mysql": "^2.18.1",
-    "node-schedule": "^2.0.0"
+    "node-schedule": "^2.0.0",
+    "request": "^2.88.2"
   }
 }
