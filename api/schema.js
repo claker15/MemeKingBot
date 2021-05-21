@@ -4,7 +4,7 @@ const mysql = require('mysql');
 
 
 let conn = mysql.createConnection({
-    host: '192.168.1.86',
+    host: 'localhost',
     user: 'api',
     password: 'apipassword',
     database: 'discord_bot'
@@ -58,7 +58,7 @@ const mutations = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -77,7 +77,7 @@ const mutations = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -101,7 +101,7 @@ const schema = new GraphQLObjectType({
             },
             async resolve (parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -121,7 +121,7 @@ const schema = new GraphQLObjectType({
             },
             async resolve (parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -141,7 +141,7 @@ const schema = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -160,7 +160,7 @@ const schema = new GraphQLObjectType({
             },
             async resolve (parent, args) {
                 let conn = mysql.createConnection({
-                    host: '192.168.1.86',
+                    host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
                     database: 'discord_bot'
@@ -198,9 +198,9 @@ let getPost =  function(id) {
 }
 let getPostByHash =  function(hash) {
     return new Promise((resolve, reject) => {    
-        conn.query(`SELECT * from post where hash=${hash}`, (err, rows) => {
-            if (err) reject(err)
-             resolve(rows[0])
+        conn.query(`SELECT * from post where hash='${hash}'`, (err, rows) => {
+            if (err || rows === undefined) reject(err)
+            else resolve(rows[0])
         })
     }) 
 }

@@ -6,9 +6,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "discord.js": "^12.5.3",
     "image-diff": "^2.0.0",
     "mysql": "^2.18.1",
+    "node-image-hash": "^1.1.0",
     "node-schedule": "^2.0.0",
     "request": "^2.88.2"
   }

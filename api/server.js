@@ -3,6 +3,7 @@ var {graphqlHTTP} = require('express-graphql')
 var bodyParser = require('body-parser')
 var mysql = require('mysql')
 let schema = require('./schema.js')
+var cors = require('cors')
 
 
 
@@ -17,6 +18,20 @@ conn.query('SELECT * from post', (err, rows, fields) => {
 
 
 var app = express()
+let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000']
+app.use(cors({
+    origin: function(origin, callback){
+      // allow requests with no origin 
+      if(!origin) return callback(null, true);
+      console.log(origin)
+      if(whitelist.indexOf(origin) === -1){
+        var message = `The CORS policy for this origin doesn't
+                  allow access from the particular origin.`;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    }
+  }));
 app.use(bodyParser.json())
 
 app.use('/graphql', graphqlHTTP({
