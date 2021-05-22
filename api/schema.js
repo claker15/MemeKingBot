@@ -1,3 +1,4 @@
+const { User } = require('discord.js');
 const graphql = require('graphql')
 var { graphqlHTTP, GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList, GraphQLInt, GraphQLD, GraphQLInputObjectType} = graphql;
 const mysql = require('mysql');
@@ -173,7 +174,26 @@ const schema = new GraphQLObjectType({
                 
             },     
         },
-        
+        getKing: {
+            type: UserType,
+            args: {
+                guild_id: {type: GraphQLString}
+            },
+            async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'discord_bot'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getKing(args.guild_id)
+                conn.end()
+                return returnarr
+                
+            },     
+        },
     }
 })
 module.exports = new GraphQLSchema({
@@ -227,6 +247,14 @@ let addPost = function(post) {
         console.log(post)
         conn.query(`INSERT INTO post(hash, path, user_id, guild_id, created) 
         VALUES (${post.hash}, ${post.path}, ${post.user_id}, ${post.guild_id}, "${post.created}")`, (err, rows) => {
+            if (err) reject(err)
+            resolve(true)
+        })
+    })
+}
+let getKing = function(guild_id) {
+    return new Promise((resolve, reject) => {
+        conn.query(`select COUNT(user_id) from post where guild_id='${guild_id}' GROUP BY user_id`, (err, rows) => {
             if (err) reject(err)
             resolve(true)
         })

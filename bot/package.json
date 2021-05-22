@@ -8,6 +8,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "discord.js": "^12.5.3",
+    "download": "^8.0.0",
     "image-diff": "^2.0.0",
     "mysql": "^2.18.1",
     "node-image-hash": "^1.1.0",

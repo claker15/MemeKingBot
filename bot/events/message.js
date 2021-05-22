@@ -3,7 +3,7 @@ const config = require('../config.json')
 const axios = require('axios')
 const fs = require('fs');
 const hash = require('node-image-hash');
-const { resolve } = require('path');
+const fetch = require('node-fetch')
 
 module.exports = {
     name: 'message',
@@ -14,9 +14,12 @@ module.exports = {
             client.commands.get(command).execute(message)
         }
         if ((message.attachments.array().length > 0) || message.embeds.length > 0) {
-            let res = await axios.get(message.attachments.first().url, { responceType: 'arraybuffer'})
-            let buffer = Buffer.from(res.data, "utf-8")
-            let newHash = await hash.hash(buffer)
+            console.log(message)
+            let url = message.attachments.first().url
+            let res = await fetch(url)
+            let arrayBuffer = await res.arrayBuffer()
+            let buffer = Buffer.from(arrayBuffer)
+            let newHash = await hash.hash(buffer, 64, 'base64')
             let test = await axios.post('http://192.168.1.86:4000/graphql', {
                 query: `query getPostByHash($hash: String){
                             getPostByHash(hash: $hash) {
@@ -30,21 +33,25 @@ module.exports = {
 
             }, {headers:{'Content-Type': 'application/json'}})
             if (test.data.data.getPostByHash == null) {
+                let path = '/' + message.attachments.first().name
+                fs.createWriteStream(config.file_path + path).write(buffer)
                 //enter data into database
-                let test2 = axios.post('http://192.168.1.86:4000/graphql', {
-                    query: `mutation createPost()`
+                let input = {
+                    hash: newHash.hash,
+                    path: config.file_path + path,
+                    user_id: message.author.id,
+                    guild_id: message.guild.id,
+                    created: new Date().toISOString().split('T')[0]
+                }
+                let test2 = await axios.post('http://192.168.1.86:4000/graphql', {
+                    query: `mutation createPost($input: postInput) {
+                                createPost(input: $input)
+                    }`,
+                    variables: {
+                        input: input
+                    }
                 })
             }
-            
-            
-            
-            /*request.head(url, (err, res, body) => {
-                request(message.attachments.first().url).pipe(fs.createWriteStream(config.file_path)).on('close', (obj) => {
-                    console.log(obj)
-                    console.log("done")
-                })
-            })*/
-
         }
         
     }

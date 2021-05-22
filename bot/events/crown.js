@@ -1,26 +1,24 @@
-const { GuildManager } = require("discord.js")
+const { GuildManager, DiscordAPIError } = require("discord.js")
 const config = require("../config.json")
 
 module.exports = {
     name: 'crown',
-    execute(client, tally) {
+    async execute(client) {
         var guilds = config.servers
         guilds.forEach((e) => {
-            var temp = filterGuild(tally, e)
-            var temp2 = temp.sort((first, second) => {
-                first.value - second.value
+            let king = await axios.post('http://192.168.1.86:4000/graphql', {
+                    query: `query getKing($guild_id: String) {
+                                getKing(guild_id: $guild_id){
+                                    user_id
+                                }
+                    }`,
+                    variables: {
+                        guild_id: e.id
+                    }
             })
-            var king = temp2[0].id
-            client.guilds.fetch(e).then((guildmanager) => {
-                guildmanager.members.fetch(king).then((user) => {
-                    user.setNickname("Meme King of the Week")
-                }).catch(console.error)
-            }).catch(console.error)
-
+            let user = await e.members.fetch(king.data.data.getKing.user_id)
+            let message = new Discord.Message().content(`${user.nickname} is the meme king of the week`).pin
+            e.channels.cache.find(i => i.name.toLowerCase() === 'announcements').send(message)
         })
     }
-}
-
-function filterGuild(arr, id) {
-    return arr.filter((e) => e.guild === id)
 }
