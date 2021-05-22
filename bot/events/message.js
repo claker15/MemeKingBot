@@ -17,10 +17,9 @@ module.exports = {
             let res = await axios.get(message.attachments.first().url, { responceType: 'arraybuffer'})
             let buffer = Buffer.from(res.data, "utf-8")
             let newHash = await hash.hash(buffer)
-            console.log(newHash)
             let test = await axios.post('http://192.168.1.86:4000/graphql', {
-                query: `query{
-                            getPostByHash($hash: String!) {
+                query: `query getPostByHash($hash: String){
+                            getPostByHash(hash: $hash) {
                                 hash
                                 path
                             }
@@ -29,11 +28,13 @@ module.exports = {
                     hash: newHash.hash
                 },
 
-            }, {headers:{'Content-Type': 'application/json'}}).then(res => {
-                resolve(res)
-            }).catch(err => {
-                reject(err)
-            })
+            }, {headers:{'Content-Type': 'application/json'}})
+            if (test.data.data.getPostByHash == null) {
+                //enter data into database
+                let test2 = axios.post('http://192.168.1.86:4000/graphql', {
+                    query: `mutation createPost()`
+                })
+            }
             
             
             
