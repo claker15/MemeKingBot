@@ -19,7 +19,7 @@ conn.query('SELECT * from post', (err, rows, fields) => {
 
 var app = express()
 let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000']
-app.use(cors({
+/*app.use(cors({
     origin: function(origin, callback){
       // allow requests with no origin 
       if(!origin) return callback(null, true);
@@ -30,7 +30,7 @@ app.use(cors({
       }
       return callback(null, true);
     }
-  }));
+  }));*/
 app.use(bodyParser.json())
 
 app.use('/graphql', graphqlHTTP({
