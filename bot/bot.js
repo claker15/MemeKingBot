@@ -19,13 +19,13 @@ for (const file of eventFiles) {
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args, client));
 	} else {
-		client.on(event.name, (...args) => event.execute(...args, client, tally));
+		client.on(event.name, (...args) => event.execute(...args, client));
 	}
 }
 
-const coronation = schedule.scheduleJob("0 * * * * *", () => {
+/*const coronation = schedule.scheduleJob("0 * * * * *", () => {
     client.emit("crown")
-})
+})*/
 
 botSecretToken = config.token
 
