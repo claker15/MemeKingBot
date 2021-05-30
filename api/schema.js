@@ -1,4 +1,4 @@
-const { User } = require('discord.js');
+
 const graphql = require('graphql')
 var { graphqlHTTP, GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList, GraphQLInt, GraphQLD, GraphQLInputObjectType} = graphql;
 const mysql = require('mysql');
@@ -157,7 +157,8 @@ const schema = new GraphQLObjectType({
         getPostByHash: {
             type: PostType,
             args: {
-                hash: {type: GraphQLString}
+                hash: {type: GraphQLString},
+                guild_id: {type: GraphQLString}
             },
             async resolve (parent, args) {
                 let conn = mysql.createConnection({
@@ -168,7 +169,7 @@ const schema = new GraphQLObjectType({
                 })
                 conn.connect()
                 let returnarr = {}
-                returnarr = await getPostByHash(args.hash)
+                returnarr = await getPostByHash(args.hash, args.guild_id)
                 conn.end()
                 return returnarr
                 
@@ -216,11 +217,12 @@ let getPost =  function(id) {
         })
     }) 
 }
-let getPostByHash =  function(hash) {
+let getPostByHash =  function(hash, guild_id) {
     return new Promise((resolve, reject) => {    
-        conn.query(`SELECT * from post where hash='${hash}'`, (err, rows) => {
+        console.log(`getting post by hash using ${hash} and ${guild_id}`)
+        conn.query(`SELECT * from post where hash='${hash}' and guild_id='${guild_id}'`, (err, rows) => {
             if (err || rows === undefined) reject(err)
-            else resolve(rows[0])
+            resolve(rows[0])
         })
     }) 
 }
@@ -252,11 +254,10 @@ let addPost = function(post) {
 }
 let getKing = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`select user.* from user INNER JOIN post on user.user_id = post.user_id where post.guild_id='${guild_id}' GROUP BY user_id ORDER BY COUNT(post.id) DESC limit 1`, (err, rows) => {
+        conn.query(`select user_id, COUNT(id) from post where guild_id='${guild_id}' GROUP BY user_id ORDER BY COUNT(id) DESC limit 1`, (err, rows) => {
             console.log(rows)
             if (err) reject(err)
             resolve(rows[0])
         })
     })
 }
-

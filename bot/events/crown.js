@@ -1,24 +1,33 @@
-const { GuildManager, DiscordAPIError } = require("discord.js")
-const config = require("../config.json")
+const config = require("../config.json");
+const axios = require('axios');
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'crown',
-    async execute(client) {
-        /*var guilds = config.servers
-        guilds.forEach((e) => {
-            let king = await axios.post('http://192.168.1.86:4000/graphql', {
+    execute(client) {
+        var guilds = config.servers;
+        var currGuild;
+        var king;
+        guilds.forEach((e, index) => {
+            client.guilds.fetch(e).then((guild) => {
+                currGuild = guild;
+                axios.post(config.api_server_url, {
                     query: `query getKing($guild_id: String) {
                                 getKing(guild_id: $guild_id){
                                     user_id
                                 }
                     }`,
                     variables: {
-                        guild_id: e.id
+                        guild_id: currGuild.id
                     }
-            })
-            let user = await e.members.fetch(king.data.data.getKing.user_id)
-            let message = new Discord.Message().content(`${user.nickname} is the meme king of the week`).pin
-            e.channels.cache.find(i => i.name.toLowerCase() === 'announcements').send(message)
-        })*/
+            }).then((res) => {
+                king = res.data.data.getKing.user_id
+                currGuild.members.fetch(king).then((user) => {
+                    let general = currGuild.channels.cache.find(channel => channel.name == config.channel_name[index]);
+                    general.send(`${user.displayName} is the meme king of the week`);
+                }); 
+            });
+            }).catch((err) => console.log(err));
+        });
     }
 }
