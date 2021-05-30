@@ -1,9 +1,9 @@
-var express =  require('express')
-var {graphqlHTTP} = require('express-graphql')
-var bodyParser = require('body-parser')
-var mysql = require('mysql')
-let schema = require('./schema.js')
-var cors = require('cors')
+var express =  require('express');
+var {graphqlHTTP} = require('express-graphql');
+var bodyParser = require('body-parser');
+var mysql = require('mysql');
+let schema = require('./schema.js');
+var cors = require('cors');
 
 
 
@@ -17,9 +17,9 @@ conn.query('SELECT * from post', (err, rows, fields) => {
 
 
 
-var app = express()
-let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000']
-/*app.use(cors({
+var app = express();
+let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000'];
+app.use(cors({
     origin: function(origin, callback){
       // allow requests with no origin 
       if(!origin) return callback(null, true);
@@ -30,11 +30,11 @@ let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000']
       }
       return callback(null, true);
     }
-  }));*/
-app.use(bodyParser.json())
+  }));
+app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: true
-}))
-app.listen(4000, () => console.log("Server listing on port 4000"))
+}));
+app.listen(4000, () => console.log("Server listing on port 4000"));

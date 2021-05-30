@@ -23,10 +23,8 @@ for (const file of eventFiles) {
 	}
 }
 
-/*const coronation = schedule.scheduleJob("0 * * * * *", () => {
+const coronation = schedule.scheduleJob("0 0 0 * * 0", () => {
     client.emit("crown")
-})*/
+})
 
-botSecretToken = config.token
-
-client.login(botSecretToken);
+client.login(config.token);
