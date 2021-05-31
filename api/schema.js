@@ -254,8 +254,9 @@ let addPost = function(post) {
 }
 let getKing = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`select user_id, COUNT(id) from post where guild_id='${guild_id}' GROUP BY user_id ORDER BY COUNT(id) DESC limit 1`, (err, rows) => {
-            console.log(rows)
+        conn.query(`select user_id, COUNT(id) from post where guild_id='${guild_id}' 
+                    AND created between DATE_ADD(created, INTERVAL -7 DAY)  AND NOW() 
+                    GROUP BY user_id ORDER BY COUNT(id) DESC limit 1;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
         })
