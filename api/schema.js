@@ -49,6 +49,14 @@ const UserType = new GraphQLObjectType({
         created: {type: GraphQLString}
     })
 })
+
+const RankType = new GraphQLObjectType({
+    name: 'RankType',
+    fields: () => ({
+        user_id: {type: GraphQLString},
+        count: {type: GraphQLInt}
+    })
+})
 const mutations = new GraphQLObjectType({
     name: 'rootMutationType',
     fields: {
@@ -195,6 +203,25 @@ const schema = new GraphQLObjectType({
                 
             },     
         },
+        getRanking : {
+            type: GraphQLList(RankType),
+            args: {
+                guild_id :{type: GraphQLString}
+            },
+            async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'discord_bot'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getRanking(args.guild_id)
+                conn.end()
+                return returnarr
+            }
+        }
     }
 })
 module.exports = new GraphQLSchema({
@@ -259,6 +286,16 @@ let getKing = function(guild_id) {
                     GROUP BY user_id ORDER BY COUNT(id) DESC limit 1;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
+        })
+    })
+}
+let getRanking = function(guild_id) {
+    return new Promise((resolve, reject) => {
+        conn.query(`select user_id, COUNT(id) as count from post where guild_id='${guild_id}' 
+                    AND created between SUBDATE(NOW(), DAYOFWEEK(NOW()))  AND NOW() 
+                    GROUP BY user_id ORDER BY COUNT(id) DESC limit 5;`, (err, rows) => {
+            if (err) reject(err)
+            resolve(rows)
         })
     })
 }

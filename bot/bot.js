@@ -3,8 +3,6 @@ const fs = require('fs')
 const schedule = require('node-schedule');
 const config = require('./config.json');
 
-let tally = []
-
 const client = new discord.Client();
 client.commands = new discord.Collection();
 
