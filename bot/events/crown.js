@@ -23,7 +23,7 @@ module.exports = {
             }).then((res) => {
                 king = res.data.data.getKing.user_id
                 currGuild.members.fetch(king).then((user) => {
-                    let general = currGuild.channels.cache.find(channel => channel.name == config.channel_name[index]);
+                    let general = currGuild.channels.cache.find(channel => channel.name === config.channel_name[index]);
                     general.send(`${user.displayName} is the meme king of the week`);
                 }); 
             });

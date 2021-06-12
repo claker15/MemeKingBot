@@ -8,8 +8,8 @@ let tally = []
 const client = new discord.Client();
 client.commands = new discord.Collection();
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'))
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(config.run_path + '/commands').filter(file => file.endsWith('.js'))
+const eventFiles = fs.readdirSync(config.run_path + '/events').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
@@ -23,7 +23,14 @@ for (const file of eventFiles) {
 	}
 }
 
-const coronation = schedule.scheduleJob("0 0 0 * * 0", () => {
+const rule = new schedule.RecurrenceRule();
+rule.dayOfWeek = 0;
+rule.hour = 0;
+rule.minute = 0;
+rule.second = 0;
+rule.tz = "America/Indiana/Indianapolis";
+
+const coronation = schedule.scheduleJob(rule, () => {
     client.emit("crown")
 })
 
