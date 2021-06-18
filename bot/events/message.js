@@ -3,7 +3,8 @@ const config = require('../config.json')
 const axios = require('axios')
 const fs = require('fs');
 const hash = require('node-image-hash');
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const { create } = require('domain');
 
 module.exports = {
     name: 'message',
@@ -51,7 +52,6 @@ module.exports = {
                     path: config.file_path + path,
                     user_id: message.author.id,
                     guild_id: message.guild.id,
-                    created: new Date().toISOString().split('T')[0]
                 };
                 let test2 = await axios.post(config.api_server_url, {
                     query: `mutation createPost($input: postInput) {
