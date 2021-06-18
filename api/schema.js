@@ -66,12 +66,6 @@ const mutations = new GraphQLObjectType({
                 input: {type: postInput}
             },
             async resolve(parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = false
                 returnarr = await addPost(args.input)
@@ -85,12 +79,6 @@ const mutations = new GraphQLObjectType({
                 input: {type: userInput}
             },
             async resolve(parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = false
                 returnarr = await addUser(args.input)
@@ -109,12 +97,6 @@ const schema = new GraphQLObjectType({
                 num: {type: GraphQLInt}
             },
             async resolve (parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = []
                 returnarr = await getPosts(args.num)
@@ -129,12 +111,6 @@ const schema = new GraphQLObjectType({
                 id: {type: GraphQLInt}
             },
             async resolve (parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getPost(args.id)
@@ -149,12 +125,6 @@ const schema = new GraphQLObjectType({
                 id: {type: GraphQLInt}
             },
             async resolve(parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getUser(args.id)
@@ -169,12 +139,6 @@ const schema = new GraphQLObjectType({
                 guild_id: {type: GraphQLString}
             },
             async resolve (parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getPostByHash(args.hash, args.guild_id)
@@ -189,12 +153,6 @@ const schema = new GraphQLObjectType({
                 guild_id: {type: GraphQLString}
             },
             async resolve (parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getKing(args.guild_id)
@@ -209,12 +167,6 @@ const schema = new GraphQLObjectType({
                 guild_id :{type: GraphQLString}
             },
             async resolve (parent, args) {
-                let conn = mysql.createConnection({
-                    host: 'localhost',
-                    user: 'api',
-                    password: 'apipassword',
-                    database: 'discord_bot'
-                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getRanking(args.guild_id)
