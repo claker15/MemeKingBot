@@ -66,6 +66,41 @@ module.exports = {
                 message.channel.send(`${message.author} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png`);
             }
         }
+        if (message.embeds.length > 0) {
+            if (message.embeds[0].type == 'video' && message.embeds[0].url != "") {
+                let res = await axios.post(config.api_server_url, {
+                    query: `query getPostByPath($path: String, $guild_id: String){
+                                getPostByPath(path: $path, guild_id: $guild_id) {
+                                    path
+                                }
+                            }`,
+                    variables: {
+                        path: message.embeds[0].url,
+                        guild_id: message.guild.id
+                    },
+    
+                }, {headers:{'Content-Type': 'application/json'}});
+                if (res.data.data.getPostByPath == null) {
+                    let input = {
+                        hash: "",
+                        path: message.embeds[0].url,
+                        user_id: message.author.id,
+                        guild_id: message.guild.id
+                    }
+                    await axios.post(config.api_server_url, {
+                        query: `mutation createPost($input: postInput) {
+                                    createPost(input: $input)
+                        }`,
+                        variables: {
+                            input: input
+                        }
+                    });
+                }
+                else {
+                    message.channel.send(`${message.author} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png`);
+                }
+            }
+        }
         
     }
 }
