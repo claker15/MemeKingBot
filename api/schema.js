@@ -4,6 +4,7 @@ var { graphqlHTTP, GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLList,
 const mysql = require('mysql');
 
 
+
 let conn = mysql.createConnection({
     host: 'localhost',
     user: 'api',
@@ -85,7 +86,21 @@ const mutations = new GraphQLObjectType({
                 conn.end()
                 return returnarr
             }
+        },
+        changeKingCount: {
+            type: graphql.GraphQLBoolean,
+            args: {
+                input: {type: userInput},
+            },
+            async resolve(parent, args) {
+                conn.connect()
+                let returnarr = false
+                returnarr = await changeKingCount(args.input)
+                conn.end()
+                return returnarr
+            }
         }
+
     }
 })
 const schema = new GraphQLObjectType({
@@ -236,9 +251,11 @@ let addUser = function(post) {
     })
 }
 let addPost = function(post) {
+    console.log(post)
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO post(hash, path, user_id, guild_id, created) 
-        VALUES ('${post.hash}', '${post.path}', '${post.user_id}','${post.guild_id}', '${post.created}')`, (err, rows) => {
+        VALUES ('${post.hash}', '${post.path}', '${post.user_id}','${post.guild_id}', NOW())`, (err, rows) => {
+            console.log(rows)
             if (err) reject(err)
             resolve(true)
         })
@@ -265,12 +282,24 @@ let getRanking = function(guild_id) {
     })
 }
 
+
 let getCrowns = function(guild_id) {
     return new Promise((resolve, reject) => {
         conn.query(`select user_id, crowns as count from user where guild_id='${guild_id}'  
                     GROUP BY user_id ORDER BY count DESC limit 5;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows)
+        })
+    })
+}
+
+let changeKingCount = function(input) {
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO user(user_id, guild_id, created, crowns) VALUES (${input.user_id},${input.guild_id},NOW(),1)
+        ON DUPLICATE KEY UPDATE crowns = crowns+1;`, (err, rows) => {
+            if (err) reject(err)
+            resolve(true)
+
         })
     })
 }

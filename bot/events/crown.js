@@ -9,8 +9,9 @@ module.exports = {
         var currGuild;
         var king;
         guilds.forEach((e, index) => {
-            client.guilds.fetch(e).then((guild) => {
+            client.guilds.fetch(e.id).then((guild) => {
                 currGuild = guild;
+                let general = currGuild.channels.cache.find(channel => channel.name === e.channel);
                 axios.post(config.api_server_url, {
                     query: `query getKing($guild_id: String) {
                                 getKing(guild_id: $guild_id){
@@ -24,24 +25,16 @@ module.exports = {
                 king = res.data.data.getKing.user_id
                 currGuild.members.fetch(king).then((user) => {
                     let general = currGuild.channels.cache.find(channel => channel.name === config.channel_name[index]);
-                    general.send(`${user.displayName} is the meme king of the week`);
-                });
-
-                axios.post(config.api_server_url, {
-                    query: `query addUser($guild_id: String) {
-                                getKing(guild_id: $guild_id){
-                                    user_id
-                                }
+                    axios.post(config.api_server_url, {
+                        query: `query changeKingCount($input: userInput) {
+                            changeKingCount(input: $input)
                     }`,
                     variables: {
-                        user_id: user_id,
-                        guild_id: currGuild.id,
-                        created: new Date,
-                        crowns: 0
+                        input: {user_id: user.id,guild_id: currGuild.id,}
                     }
-                })
-
-            });
+                    })          
+                    general.send(`${user.displayName} is the meme king of the week`);                
+                }); 
             }).catch((err) => console.log(err));
         });
     }
