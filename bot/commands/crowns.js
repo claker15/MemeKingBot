@@ -33,7 +33,8 @@ module.exports = {
                     .addFields(
                         { name: user.displayName, value: result.count}
                     )
-        })}
+            })
+        }
         message.channel.send(messageEmbed);
     }
 }

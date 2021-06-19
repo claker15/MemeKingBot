@@ -21,10 +21,11 @@ module.exports = {
         }, {headers:{'Content-Type': 'application/json'}});
         let usersids = test.data.data.getRanking;
         let rankMessage = new Discord.MessageEmbed().setTitle("Current Meme King Rankings");
-        for await (result of usersids) {
+        for await (let result of usersids) {
             message.guild.members.fetch(result.user_id).then((user) => {
                 rankMessage.addField(user.displayName, result.count);
-        })};
+            })
+        }
         message.channel.send(rankMessage);
     }
 }
