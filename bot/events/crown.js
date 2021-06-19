@@ -25,7 +25,22 @@ module.exports = {
                 currGuild.members.fetch(king).then((user) => {
                     let general = currGuild.channels.cache.find(channel => channel.name === config.channel_name[index]);
                     general.send(`${user.displayName} is the meme king of the week`);
-                }); 
+                });
+
+                axios.post(config.api_server_url, {
+                    query: `query addUser($guild_id: String) {
+                                getKing(guild_id: $guild_id){
+                                    user_id
+                                }
+                    }`,
+                    variables: {
+                        user_id: user_id,
+                        guild_id: currGuild.id,
+                        created: new Date,
+                        crowns: 0
+                    }
+                })
+
             });
             }).catch((err) => console.log(err));
         });

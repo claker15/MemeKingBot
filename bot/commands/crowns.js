@@ -11,7 +11,7 @@ module.exports = {
             query: `query getCrowns($guild_id: String){
                         getCrowns(guild_id: $guild_id) {
                             user_id,
-                            crowns
+                            count
                         }
                     }`,
             variables: {
@@ -31,7 +31,7 @@ module.exports = {
                     .setColor('#0099ff')
                     .setTitle('Coronation Leaderboard 👑')
                     .addFields(
-                        { name: user.displayName, value: result.crowns}
+                        { name: user.displayName, value: result.count}
                     )
         })}
         message.channel.send(rankMessage);
