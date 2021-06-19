@@ -9,7 +9,7 @@ let conn = mysql.createConnection({
     host: 'localhost',
     user: 'api',
     password: 'apipassword',
-    database: 'discord_bot'
+    database: 'MEMEKING'
 })
 const postInput = new GraphQLInputObjectType({
     name: 'postInput',
@@ -70,7 +70,7 @@ const mutations = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = false
@@ -89,7 +89,7 @@ const mutations = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = false
@@ -108,7 +108,7 @@ const mutations = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = false
@@ -133,7 +133,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = []
@@ -153,7 +153,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -173,7 +173,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -193,7 +193,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -213,7 +213,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -233,7 +233,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -252,7 +252,7 @@ const schema = new GraphQLObjectType({
                     host: 'localhost',
                     user: 'api',
                     password: 'apipassword',
-                    database: 'discord_bot'
+                    database: 'MEMEKING'
                 })
                 conn.connect()
                 let returnarr = {}
@@ -303,7 +303,7 @@ let getUser =  function(id) {
 let addUser = function(post) {
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO user(user_id, guild_id, created, crowns) 
-        VALUES ('${post.user_id}', '${post.guild_id}', '${post.created}', 0)`, (err, rows) => {
+        VALUES ('${post.user_id}', '${post.guild_id}', NOW(), 0)`, (err, rows) => {
             if (err) reject(err)
             resolve(true)
         })
