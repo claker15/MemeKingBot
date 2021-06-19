@@ -34,6 +34,6 @@ module.exports = {
                         { name: user.displayName, value: result.count}
                     )
         })}
-        message.channel.send(rankMessage);
+        message.channel.send(messageEmbed);
     }
 }
