@@ -22,14 +22,12 @@ module.exports = {
 
         let usersids = res.data.data.getCrowns;
 
-        const messageEmbed = new Discord.MessageEmbed();
+        const messageEmbed = new Discord.MessageEmbed().setColor('#0099ff').setTitle('Coronation Leaderboard 👑');
 
 
         for await (let result of usersids) {
             message.guild.members.fetch(result.user_id).then((user) => {
                 messageEmbed
-                    .setColor('#0099ff')
-                    .setTitle('Coronation Leaderboard 👑')
                     .addFields(
                         { name: user.displayName, value: result.count}
                     )

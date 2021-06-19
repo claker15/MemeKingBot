@@ -9,7 +9,7 @@ let conn = mysql.createConnection({
     host: 'localhost',
     user: 'api',
     password: 'apipassword',
-    database: 'discord_bot'
+    database: 'MEMEKING'
 })
 const postInput = new GraphQLInputObjectType({
     name: 'postInput',
@@ -40,7 +40,6 @@ const PostType = new GraphQLObjectType({
         created: {type: GraphQLString}
     })
 })
-
 const UserType = new GraphQLObjectType({
     name: 'UserType',
     fields: () => ({
@@ -67,6 +66,12 @@ const mutations = new GraphQLObjectType({
                 input: {type: postInput}
             },
             async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = false
                 returnarr = await addPost(args.input)
@@ -80,6 +85,12 @@ const mutations = new GraphQLObjectType({
                 input: {type: userInput}
             },
             async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = false
                 returnarr = await addUser(args.input)
@@ -93,6 +104,12 @@ const mutations = new GraphQLObjectType({
                 input: {type: userInput},
             },
             async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = false
                 returnarr = await changeKingCount(args.input)
@@ -112,6 +129,12 @@ const schema = new GraphQLObjectType({
                 num: {type: GraphQLInt}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = []
                 returnarr = await getPosts(args.num)
@@ -126,6 +149,12 @@ const schema = new GraphQLObjectType({
                 id: {type: GraphQLInt}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getPost(args.id)
@@ -140,6 +169,12 @@ const schema = new GraphQLObjectType({
                 id: {type: GraphQLInt}
             },
             async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getUser(args.id)
@@ -154,12 +189,38 @@ const schema = new GraphQLObjectType({
                 guild_id: {type: GraphQLString}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getPostByHash(args.hash, args.guild_id)
                 conn.end()
                 return returnarr
                 
+            },
+        },
+        getPostByPath: {
+            type: PostType,
+            args: {
+                path: {type: GraphQLString},
+                guild_id: {type: GraphQLString}
+            },
+            async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getPostByPath(args.path, args.guild_id)
+                conn.end()
+                return returnarr 
             },     
         },
         getKing: {
@@ -168,6 +229,12 @@ const schema = new GraphQLObjectType({
                 guild_id: {type: GraphQLString}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getKing(args.guild_id)
@@ -182,6 +249,12 @@ const schema = new GraphQLObjectType({
                 guild_id :{type: GraphQLString}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getRanking(args.guild_id)
@@ -195,6 +268,12 @@ const schema = new GraphQLObjectType({
                 guild_id :{type: GraphQLString}
             },
             async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
                 conn.connect()
                 let returnarr = {}
                 returnarr = await getCrowns(args.guild_id)
@@ -226,8 +305,15 @@ let getPost =  function(id) {
 }
 let getPostByHash =  function(hash, guild_id) {
     return new Promise((resolve, reject) => {    
-        console.log(`getting post by hash using ${hash} and ${guild_id}`)
         conn.query(`SELECT * from post where hash='${hash}' and guild_id='${guild_id}'`, (err, rows) => {
+            if (err || rows === undefined) reject(err)
+            resolve(rows[0])
+        })
+    }) 
+}
+let getPostByPath =  function(path, guild_id) {
+    return new Promise((resolve, reject) => {    
+        conn.query(`SELECT * from post where path='${path}' and guild_id='${guild_id}'`, (err, rows) => {
             if (err || rows === undefined) reject(err)
             resolve(rows[0])
         })
@@ -244,14 +330,13 @@ let getUser =  function(id) {
 let addUser = function(post) {
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO user(user_id, guild_id, created, crowns) 
-        VALUES ('${post.user_id}', '${post.guild_id}', '${post.created}', 0)`, (err, rows) => {
+        VALUES ('${post.user_id}', '${post.guild_id}', NOW(), 0)`, (err, rows) => {
             if (err) reject(err)
             resolve(true)
         })
     })
 }
 let addPost = function(post) {
-    console.log(post)
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO post(hash, path, user_id, guild_id, created) 
         VALUES ('${post.hash}', '${post.path}', '${post.user_id}','${post.guild_id}', NOW())`, (err, rows) => {
@@ -281,8 +366,6 @@ let getRanking = function(guild_id) {
         })
     })
 }
-
-
 let getCrowns = function(guild_id) {
     return new Promise((resolve, reject) => {
         conn.query(`select user_id, crowns as count from user where guild_id='${guild_id}'  

@@ -5,21 +5,9 @@ var mysql = require('mysql');
 let schema = require('./schema.js');
 var cors = require('cors');
 
-
-
-
-/*conn.connect()
-
-conn.query('SELECT * from post', (err, rows, fields) => {
-    if (err) throw err
-    console.log(rows)
-})*/
-
-
-
 var app = express();
-let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000'];
-app.use(cors({
+let whitelist = ['http://localhost:4000', 'http://192.168.1.86:4000', 'https://76.245.71.164:4000', 'http://8.9.113.62:4000'];
+/*app.use(cors({
     origin: function(origin, callback){
       // allow requests with no origin 
       if(!origin) return callback(null, true);
@@ -30,7 +18,7 @@ app.use(cors({
       }
       return callback(null, true);
     }
-  }));
+  }));*/
 app.use(bodyParser.json());
 
 app.use('/graphql', graphqlHTTP({
