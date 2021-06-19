@@ -24,7 +24,7 @@ module.exports = {
             }).then((res) => {
                 king = res.data.data.getKing.user_id
                 currGuild.members.fetch(king).then((user) => {
-                    let general = currGuild.channels.cache.find(channel => channel.name === config.channel_name[index]);
+                    
                     axios.post(config.api_server_url, {
                         query: `query changeKingCount($input: userInput) {
                             changeKingCount(input: $input)
@@ -34,6 +34,7 @@ module.exports = {
                     }
                     })          
                     general.send(`${user.displayName} is the meme king of the week`);                
+                });
                 }); 
             }).catch((err) => console.log(err));
         });
