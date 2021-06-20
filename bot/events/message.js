@@ -4,7 +4,8 @@ const axios = require('axios')
 const fs = require('fs');
 const hash = require('node-image-hash');
 const fetch = require('node-fetch');
-const { create } = require('domain');
+const youtubeUrl = require('youtube-url');
+const getUrls = require('get-urls');
 
 module.exports = {
     name: 'message',
@@ -13,6 +14,47 @@ module.exports = {
             var args = message.content.slice(config.prefix.length).trim().split(/ +/);
 	        var command = args.shift().toLowerCase();
             client.commands.get(command).execute(message);
+        }
+        if (message.content != "") {
+            let urls = getUrls(message.content);
+            urls.forEach(async (url) => {
+                if (youtubeUrl.valid(url)) {
+                    let id = youtubeUrl.extractId(url);
+                    let res = await axios.post(config.api_server_url, {
+                        query: `query getPostByHash($hash: String, $guild_id: String){
+                                    getPostByHash(hash: $hash, guild_id: $guild_id) {
+                                        hash
+                                        path
+                                    }
+                                }`,
+                            variables: {
+                                hash: id,
+                                guild_id: message.guild.id
+                            },
+            
+                        }, {headers:{'Content-Type': 'application/json'}});
+                        //to-do create post using id as hash and path being url
+                    if (res.data.data.getPostByHash == null) {
+                        let input = {
+                            hash: id,
+                            path: url,
+                            user_id: message.author.id,
+                            guild_id: message.guild.id
+                        };
+                        await axios.post(config.api_server_url, {
+                            query: `mutation createPost($input: postInput) {
+                                        createPost(input: $input)
+                            }`,
+                            variables: {
+                                input: input
+                            }
+                        });
+                    }
+                    else {
+                        message.channel.send(`${message.author} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png`);
+                    }     
+                }
+            });
         }
         if ((message.attachments.array().length > 0)) {
             console.log(message.guild.id)
@@ -64,41 +106,6 @@ module.exports = {
             }
             else {
                 message.channel.send(`${message.author} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png`);
-            }
-        }
-        if (message.embeds.length > 0) {
-            if (message.embeds[0].type == 'video' && message.embeds[0].url != "") {
-                let res = await axios.post(config.api_server_url, {
-                    query: `query getPostByPath($path: String, $guild_id: String){
-                                getPostByPath(path: $path, guild_id: $guild_id) {
-                                    path
-                                }
-                            }`,
-                    variables: {
-                        path: message.embeds[0].url,
-                        guild_id: message.guild.id
-                    },
-    
-                }, {headers:{'Content-Type': 'application/json'}});
-                if (res.data.data.getPostByPath == null) {
-                    let input = {
-                        hash: "",
-                        path: message.embeds[0].url,
-                        user_id: message.author.id,
-                        guild_id: message.guild.id
-                    }
-                    await axios.post(config.api_server_url, {
-                        query: `mutation createPost($input: postInput) {
-                                    createPost(input: $input)
-                        }`,
-                        variables: {
-                            input: input
-                        }
-                    });
-                }
-                else {
-                    message.channel.send(`${message.author} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png`);
-                }
             }
         }
         
