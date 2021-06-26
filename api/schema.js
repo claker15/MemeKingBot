@@ -223,6 +223,26 @@ const schema = new GraphQLObjectType({
                 return returnarr 
             },     
         },
+        getPreviousPost: {
+            type: PostType,
+            args: {
+                user_id: {type: GraphQLString},
+                guild_id: {type: GraphQLString}
+            },
+            async resolve (parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getPreviousPost(args.user_id, args.guild_id)
+                conn.end()
+                return returnarr 
+            },     
+        },
         getKing: {
             type: UserType,
             args: {
@@ -314,6 +334,14 @@ let getPostByHash =  function(hash, guild_id) {
 let getPostByPath =  function(path, guild_id) {
     return new Promise((resolve, reject) => {    
         conn.query(`SELECT * from post where path='${path}' and guild_id='${guild_id}'`, (err, rows) => {
+            if (err || rows === undefined) reject(err)
+            resolve(rows[0])
+        })
+    }) 
+}
+let getPreviousPost =  function(user_id, guild_id) {
+    return new Promise((resolve, reject) => {    
+        conn.query(`select * from post where user_id='${user_id}' AND guild_id='${guild_id}' ORDER BY created DESC LIMIT 1`, (err, rows) => {
             if (err || rows === undefined) reject(err)
             resolve(rows[0])
         })

@@ -57,9 +57,30 @@ module.exports = {
             });
         }
         if ((message.attachments.array().length > 0)) {
-            console.log(message.guild.id)
+            let res = await axios.post(config.api_server_url, {
+                query: `query getPreviousPost($user_id: String, $guild_id: String){
+                            getPreviousPost(user_id: $user_id, guild_id: $guild_id) {
+                                created
+                            }
+                        }`,
+                    variables: {
+                        user_id: message.author.id,
+                        guild_id: message.guild.id
+                    },
+    
+                }, {headers:{'Content-Type': 'application/json'}});
+            if (res.data.data.getPreviousPost != null) {
+                let prevTime = res.data.data.getPreviousPost.created;
+                let nowTime = new Date().getTime();
+                console.log(`prevTime: ${prevTime}, nowTime: ${nowTime}`)
+                console.log((nowTime - prevTime) / (1000 * 60));
+                if ((nowTime - prevTime) / (1000 * 60) < config.cooldown_timer) {
+                    message.channel.send(`${message.author} 'https://cdn.discordapp.com/attachments/759174594933817365/857718366491639828/Relax.png'`);
+                    return;
+                }
+            }
             let url = message.attachments.first().url;
-            let res = await fetch(url);
+            res = await fetch(url);
             let arrayBuffer = await res.arrayBuffer();
             let buffer = Buffer.from(arrayBuffer);
             let newHash = await hash.hash(buffer, 64, 'base64');
