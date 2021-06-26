@@ -75,7 +75,7 @@ module.exports = {
                 console.log(`prevTime: ${prevTime}, nowTime: ${nowTime}`)
                 console.log((nowTime - prevTime) / (1000 * 60));
                 if ((nowTime - prevTime) / (1000 * 60) < config.cooldown_timer) {
-                    message.channel.send(`${message.author} Relax pussy`);
+                    message.channel.send(`${message.author} 'https://cdn.discordapp.com/attachments/759174594933817365/857718366491639828/Relax.png'`);
                     return;
                 }
             }
