@@ -348,9 +348,9 @@ let addPost = function(post) {
 }
 let getKing = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`select user_id, COUNT(id) from post where guild_id='${guild_id}' 
-                    AND created between DATE_ADD(created, INTERVAL -7 DAY)  AND NOW() 
-                    GROUP BY user_id ORDER BY COUNT(id) DESC limit 1;`, (err, rows) => {
+        conn.query(`select user_id, COUNT(id) as count from post where guild_id='${guild_id}' 
+                    AND  YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK)
+                    GROUP BY user_id ORDER BY COUNT(id) DESC LIMIT 1 ;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
         })
@@ -358,9 +358,8 @@ let getKing = function(guild_id) {
 }
 let getRanking = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`select user_id, COUNT(id) as count from post where guild_id='${guild_id}' 
-                    AND created between SUBDATE(NOW(), DAYOFWEEK(NOW()))  AND NOW() 
-                    GROUP BY user_id ORDER BY COUNT(id) DESC limit 5;`, (err, rows) => {
+        conn.query(`SELECT user_id, COUNT(id) as count FROM post WHERE guild_id = '${guild_id}' AND YEARWEEK(created) = YEARWEEK(NOW())
+                    GROUP BY user_id ORDER BY COUNT(id) DESC LIMIT 5 ;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows)
         })

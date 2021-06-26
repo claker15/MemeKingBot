@@ -23,17 +23,22 @@ module.exports = {
                     }
             }).then((res) => {
                 king = res.data.data.getKing.user_id
+                console.log(king);
                 currGuild.members.fetch(king).then((user) => {
                     
                     axios.post(config.api_server_url, {
                         query: `query changeKingCount($input: userInput) {
                             changeKingCount(input: $input)
-                    }`,
+                        }`,
                     variables: {
-                        input: {user_id: user.id,guild_id: currGuild.id,}
+                        input: {
+                            user_id: user.id,
+                            guild_id: currGuild.id
+                        }
                     }
-                    })          
-                    general.send(`${user.displayName} is the meme king of the week`);                
+                    }).then((res) => {
+                        general.send(`${user.displayName} is the meme king of the week`);
+                    });                     
                 });
                 }); 
             }).catch((err) => console.log(err));
