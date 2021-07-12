@@ -40,7 +40,7 @@ load_dotenv()
 bot = commands.Bot(command_prefix="!")
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
-schedule.every(1).minute.do(emit_crown, bot)
+schedule.every().Sunday.do(emit_crown, bot)
 stop_run_continuously = run_continuously()
 
 
