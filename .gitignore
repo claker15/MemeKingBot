@@ -6,3 +6,4 @@ package-lock.json
 .env
 __pycache__/
 /bot/__pycache__/
+/bot/bot.log
