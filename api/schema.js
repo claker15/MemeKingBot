@@ -365,7 +365,6 @@ let addUser = function(post) {
     })
 }
 let addPost = function(post) {
-    console.log(post)
     return new Promise((resolve, reject) => {
         conn.query(`INSERT INTO post(hash, path, user_id, guild_id, created) 
         VALUES ('${post.hash}', '${post.path}', '${post.user_id}','${post.guild_id}', NOW())`, (err, rows) => {
