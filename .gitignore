@@ -3,3 +3,7 @@ config.json
 package-lock.json
 .vscode/
 /bot/node_modules
+.env
+__pycache__/
+/bot/__pycache__/
+/bot/bot.log
