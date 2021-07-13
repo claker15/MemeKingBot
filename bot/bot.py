@@ -1,5 +1,6 @@
 import discord
 import os
+import logging
 import threading
 import time
 import schedule
@@ -9,7 +10,7 @@ import crown as king_crown
 from dotenv import load_dotenv
 
 def emit_crown(bot):
-    print("starting crowning")
+    logger.debug("starting crowning")
     bot.dispatch('crown', ctx=bot)
 
 def run_continuously(interval=1):
@@ -35,17 +36,19 @@ def run_continuously(interval=1):
     continuous_thread = ScheduleThread()
     continuous_thread.start()
     return cease_continuous_run
-
+logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger("bot")
 load_dotenv()
 bot = commands.Bot(command_prefix="!")
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
-schedule.every().Sunday.do(emit_crown, bot)
+schedule.every().sunday.do(emit_crown, bot)
 stop_run_continuously = run_continuously()
 
 
 @bot.event
 async def on_crown(ctx):
+    logger.debug("On_crown event called")
     await king_crown.crown(ctx)
 
 async def on_ready(self):
@@ -53,10 +56,12 @@ async def on_ready(self):
 
 @bot.event
 async def on_message(message):
-    print("got message")
+    logger.debug("Received message")
     if message.author == bot.user:
         return
+    logger.debug("Parsing commands from message")
     await bot.process_commands(message)
+    logger.debug("Parsing other contents of message")
     await king_message.parse_message(message)
 
 bot.run(os.getenv("DISCORD_SECRET"))
