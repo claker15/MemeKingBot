@@ -113,13 +113,15 @@ def get_urls(string):
     url = re.findall("(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", string)
     return [x[0] for x in url]
 
-def strip_youtube_url(url):
+def strip_url(url):
 
         if url.startswith('http://'):
             url = url[7:]
         elif url.startswith('https://'):
             url = url[8:]
 
+        if url.startswith('v.redd.it'):
+            return url[10:]
         if url.startswith('www.'):
             url = url[4:]
 
@@ -135,7 +137,7 @@ async def process_urls(message):
     urls = get_urls(message.content)
     for url in urls:
         logger.debug("start parsing url: {0}".format(url))
-        video_id = strip_youtube_url(url)
+        video_id = strip_url(url)
         res = query.get_post_by_hash(video_id, message.guild.id)
         cooldown = cool_down(message.author.id, message.guild.id)
         #save image if not there

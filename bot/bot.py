@@ -1,50 +1,27 @@
 import discord
 import os
 import logging
-import threading
-import time
-import schedule
-from discord.ext import commands
 import message as king_message
 import crown as king_crown
 from dotenv import load_dotenv
+from apscheduler.scheduler import Scheduler
+from discord.ext import commands
 
+sched = Scheduler()
+sched.start
+
+@sched.cron_schedule(day_of_week='sun', minute='1')
 def emit_crown(bot):
     logger.debug("starting crowning")
     bot.dispatch('crown', ctx=bot)
 
-def run_continuously(interval=1):
-    """Continuously run, while executing pending jobs at each
-    elapsed time interval.
-    @return cease_continuous_run: threading. Event which can
-    be set to cease continuous run. Please note that it is
-    *intended behavior that run_continuously() does not run
-    missed jobs*. For example, if you've registered a job that
-    should run every minute and you set a continuous run
-    interval of one hour then your job won't be run 60 times
-    at each interval but only once.
-    """
-    cease_continuous_run = threading.Event()
-
-    class ScheduleThread(threading.Thread):
-        @classmethod
-        def run(cls):
-            while not cease_continuous_run.is_set():
-                schedule.run_pending()
-                time.sleep(interval)
-
-    continuous_thread = ScheduleThread()
-    continuous_thread.start()
-    return cease_continuous_run
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 logger = logging.getLogger("bot")
 load_dotenv()
 bot = commands.Bot(command_prefix="!")
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
-schedule.every().sunday.do(emit_crown, bot)
-stop_run_continuously = run_continuously()
-
 
 @bot.event
 async def on_crown(ctx):
