@@ -36,7 +36,8 @@ const pointInput = new GraphQLInputObjectType({
         guild_id: {type: GraphQLString},
         user_id_from: {type: GraphQLString},
         value: {type: GraphQLInt},
-        type: {type: GraphQLString}
+        type: {type: GraphQLString},
+        message_id: {type: GraphQLString}
     })
 })
 const PostType = new GraphQLObjectType({
@@ -68,6 +69,7 @@ const pointType = new GraphQLObjectType({
         user_id_from: {type: GraphQLString},
         value: {type: GraphQLInt},
         type: {type: GraphQLString},
+        message_id: {type: GraphQLString},
         date: {type: GraphQLString}
     })
 })

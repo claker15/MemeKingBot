@@ -1,6 +1,5 @@
 import logging
 
-from numpy.lib.function_base import extract
 import discord
 import os
 import logging
@@ -23,6 +22,8 @@ file_save_path = os.getenv("FILE_SAVE_PATH")
 logger = logging.getLogger("message")
 
 async def parse_message(message):
+    if '-play' in message.content:
+        return
     urls = extract_urls(message.content)
     if len(urls) > 0:
         logger.debug("urls found in message")
@@ -89,14 +90,14 @@ async def process_attachments(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
-            points.relax_points(message.guild.id, message.author.id)
+            points.relax_points(message.guild.id, message.author.id, message.id)
             await send_relax_message(message.author, message.channel)
             return
         if post != None:
-            points.cringe_points(post["user_id"], message.guild.id, message.author.id)
+            points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
             await send_cringe_message(message.author, message.channel)
             return
-        points.reg_points(message.author.id, message.guild.id)
+        points.reg_points(message.author.id, message.guild.id, message.id)
 
 def get_urls(string):
     extractor = URLExtract()
@@ -134,12 +135,12 @@ async def process_urls(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
-            points.relax_points(message.guild.id, message.author.id)
+            points.relax_points(message.guild.id, message.author.id, message.id)
             await send_relax_message(message.author, message.channel)
             return
         if res != None:
-            points.cringe_points(res["user_id"], message.guild.id, message.author.id)
+            points.cringe_points(res["user_id"], message.guild.id, message.author.id, message.id)
             await send_cringe_message(message.author, message.channel)
             return
-        points.reg_points(message.author.id, message.guild.id)
+        points.reg_points(message.author.id, message.guild.id, message.id)
 
