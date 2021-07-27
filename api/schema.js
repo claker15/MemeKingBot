@@ -34,6 +34,7 @@ const pointInput = new GraphQLInputObjectType({
     fields: () => ({
         user_id: {type: GraphQLString},
         guild_id: {type: GraphQLString},
+        user_id_from: {type: GraphQLString},
         value: {type: GraphQLInt},
         type: {type: GraphQLString}
     })
@@ -64,6 +65,7 @@ const pointType = new GraphQLObjectType({
         id: {type: GraphQLString},
         user_id: {type: GraphQLString},
         guild_id:{type: GraphQLString},
+        user_id_from: {type: GraphQLString},
         value: {type: GraphQLInt},
         type: {type: GraphQLString},
         date: {type: GraphQLString}
@@ -339,7 +341,7 @@ const schema = new GraphQLObjectType({
             }
         },
         getRandomUserId: {
-            type: GraphQLString,
+            type: PostType,
             args: {
                 guild_id: {type: GraphQLString}
             },
@@ -433,9 +435,9 @@ let addPost = function(post) {
 }
 let getKing = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`select user_id, COUNT(id) as count from post where guild_id='${guild_id}' 
-                    AND  YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK)
-                    GROUP BY user_id ORDER BY COUNT(id) DESC LIMIT 1 ;`, (err, rows) => {
+        conn.query(`select user_id, SUM(value) as count from points where guild_id='${guild_id}' 
+                    AND  YEARWEEK(date) = YEARWEEK(NOW() - INTERVAL 1 WEEK)
+                    GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 1 ;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
         })
@@ -443,8 +445,8 @@ let getKing = function(guild_id) {
 }
 let getRanking = function(guild_id) {
     return new Promise((resolve, reject) => {
-        conn.query(`SELECT user_id, COUNT(id) as count FROM post WHERE guild_id = '${guild_id}' AND YEARWEEK(created) = YEARWEEK(NOW())
-                    GROUP BY user_id ORDER BY COUNT(id) DESC LIMIT 5 ;`, (err, rows) => {
+        conn.query(`SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '${guild_id}' AND YEARWEEK(date) = YEARWEEK(NOW())
+        GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5 ;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows)
         })
@@ -472,8 +474,8 @@ let changeKingCount = function(input) {
 let addPoints = function(point) {
     console.log(point)
     return new Promise((resolve, reject) => {
-        conn.query(`INSERT INTO points(user_id, guild_id, value, type) 
-        VALUES ('${point.user_id}', '${point.guild_id}', '${point.value}','${point.type}'`, (err, rows) => {
+        conn.query(`INSERT INTO points(user_id, guild_id, user_id_from, value, type) 
+        VALUES ('${point.user_id}', '${point.guild_id}', '${point.user_id_from}', ${point.value},'${point.type}')`, (err, rows) => {
             if (err) reject(err)
             resolve(true)
         })
@@ -481,7 +483,7 @@ let addPoints = function(point) {
 }
 let getRandomUserId =  function(guild_id) {
     return new Promise((resolve, reject) => {    
-        conn.query(`select user_id from post where guild_id = '${guild_id}' ORDER BY RAND() LIMIT 1;`, (err, rows) => {
+        conn.query(`select * from post where guild_id = '${guild_id}' ORDER BY RAND() LIMIT 1;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
         })

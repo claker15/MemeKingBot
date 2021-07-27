@@ -1,32 +1,21 @@
 import logging
+
+from numpy.lib.function_base import extract
 import discord
 import os
 import logging
 from dotenv import load_dotenv
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 import re
 import requests
 import datetime
+from io import BytesIO
+import imagehash
+from PIL import Image
 from urlextract import URLExtract
 from hashlib import sha256
 import query as query
 import points as points
-
-coolDownQuery = """query getPreviousPost($user_id: String, $guild_id: String){
-                    getPreviousPost(user_id: $user_id, guild_id: $guild_id) {
-                        created
-                    }
-                }"""
-
-postByHashQuery = """query getPostByHash($hash: String, $guild_id: String){
-                    getPostByHash(hash: $hash, guild_id: $guild_id) {
-                        hash
-                        path
-                    }
-                }"""
-createPost = """mutation createPost($input: postInput) {
-                    createPost(input: $input)
-        }"""
 
 load_dotenv()
 url = os.getenv("BOT_API_URL")
@@ -37,7 +26,7 @@ async def parse_message(message):
     urls = extract_urls(message.content)
     if len(urls) > 0:
         logger.debug("urls found in message")
-        process_urls(urls)
+        await process_urls(message)
         #process youtube or other urls
         return
     if len(message.attachments) > 0:
@@ -60,15 +49,14 @@ def create_post_object(hash, path, user_id, guild_id):
 
 async def send_relax_message(author, channel):
     logger.debug("{0} has not waited for cooldown period".format(author.id))
-    file = discord.File(fp="/home/memes/Relax.png")
-    await channel.send(content="@{0}".format(author.nick), file=file)
+    await channel.send(content="@{0}".format(author.nick), file=discord.File(fp="/home/memes/Relax.png"))
 
 async def send_cringe_message(author, channel):
     logger.debug("post exists. sending cringe message")
     await channel.send("@{0} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(author.nick))
 
 def save_attachments(image, filename):
-    logger.debug("saving new image with filename: {}".format(filename))
+    logger.debug("saving new image with filename: {0}".format(filename))
     with open(file_save_path + filename, 'wb') as outfile:
                 for chunk in image:
                     outfile.write(chunk)
@@ -89,7 +77,7 @@ async def process_attachments(message):
     for attach in message.attachments:
         logger.debug("processing message attachment: {0}".format(attach.url))
         res = requests.get(attach.url)
-        new_hash = sha256(res.content).hexdigest()
+        new_hash = str(imagehash.whash(Image.open(BytesIO(res.content))))
         image = res
         logger.debug("image hashed to: {0}".format(new_hash)) 
         post = query.get_post_by_hash(new_hash, message.guild.id)
@@ -101,39 +89,39 @@ async def process_attachments(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
-            points.relax_points(message.guild.id)
-            send_relax_message(message.author, message.channel)
+            points.relax_points(message.guild.id, message.author.id)
+            await send_relax_message(message.author, message.channel)
             return
         if post != None:
-            points.cringe_points(post["user_id"], message.guild.id)
-            send_cringe_message(message.author, message.channel)
+            points.cringe_points(post["user_id"], message.guild.id, message.author.id)
+            await send_cringe_message(message.author, message.channel)
             return
+        points.reg_points(message.author.id, message.guild.id)
 
 def get_urls(string):
-    url = re.findall("(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))", string)
-    return [x[0] for x in url]
+    extractor = URLExtract()
+    urls = extractor.find_urls(string)
+    logger.debug("found urls {0}".format(urls))
+    return urls
 
 def strip_url(url):
 
-        if url.startswith('http://'):
-            url = url[7:]
-        elif url.startswith('https://'):
-            url = url[8:]
-
-        if url.startswith('v.redd.it'):
-            return url[10:]
-        if url.startswith('www.'):
-            url = url[4:]
-
-        if url.startswith('youtu.be/'):
-            return url[9:]
-        elif url.startswith('youtube.com/v/'):
-            return url[14:]
-
-        return url
+    query = urlparse(url)
+    
+    if 'youtube' in query.hostname:
+        if query.path == '/watch':
+            return parse_qs(query.query)['v'][0]
+        elif query.path.startswith(('/embed/', '/v/')):
+            return query.path.split('/')[2]
+    elif 'youtu.be' in query.hostname:
+        return query.path[1:]
+    elif 'i.redd.it' in query.hostname:
+        return query.path[1:]
+    else:
+        raise ValueError
 
 async def process_urls(message):
-    logger.debug("starting profcessing urls in message {0}".format(message.id))
+    logger.debug("starting profcessing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
     for url in urls:
         logger.debug("start parsing url: {0}".format(url))
@@ -146,12 +134,12 @@ async def process_urls(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
-            points.relax_points(message.guild.id)
-            send_relax_message(message.author, message.channel)
+            points.relax_points(message.guild.id, message.author.id)
+            await send_relax_message(message.author, message.channel)
             return
         if res != None:
-            points.cringe_points(res["user_id"], message.guild.id)
-            send_cringe_message(message.author, message.channel)
+            points.cringe_points(res["user_id"], message.guild.id, message.author.id)
+            await send_cringe_message(message.author, message.channel)
             return
-
+        points.reg_points(message.author.id, message.guild.id)
 

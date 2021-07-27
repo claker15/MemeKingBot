@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 
 logger = logging.getLogger('query')
+load_dotenv()
 url = os.getenv("BOT_API_URL")
 
 coolDownQuery = """query getPreviousPost($user_id: String, $guild_id: String){
@@ -27,7 +28,7 @@ addPoints = """mutation addPoints($input: pointInput) {
                     addPoints(input: $input)
         }"""
 getRandId = """query getRandomUserId($guild_id: String) {
-                getRandownUserId(guild_id: $guild_id) {
+                getRandomUserId(guild_id: $guild_id) {
                     user_id
                 }
         }"""
@@ -37,7 +38,7 @@ def get_user_cooldown_date(author_id, guild_id):
     res = requests.post(url, json={"query": coolDownQuery, "variables": {"user_id": str(author_id), "guild_id": str(guild_id)}})
     post = res.json()
     logger.debug("received post: {0} from database".format(post["data"]["getPreviousPost"]))
-    return post["data"]["getPreviousPost"]["created"]
+    return float(post["data"]["getPreviousPost"]["created"])
 
 def get_post_by_hash(hash, guild_id):
     res = requests.post(url, json={"query": postByHashQuery, "variables": {"hash": hash, "guild_id": str(guild_id)}})
@@ -48,17 +49,17 @@ def get_post_by_hash(hash, guild_id):
 def create_post(post):
     logger.debug("Sending new post object to database: {0}".format(post))
     res = requests.post(url, json={"query": createPost, "variables": {"input": post}})
-    logger.debug("received as response from createPost query: {}".format(res.content))
+    logger.debug("received as response from createPost query: {0}".format(res.content))
     return True
 
 def add_points(obj):
     logger.debug("Adding points entry into table: {0}".format(obj))
     res = requests.post(url, json={"query": addPoints, "variables": {"input": obj}})
-    logger.debug("received as response from createPost query: {}".format(res.content))
+    logger.debug("received as response from createPost query: {0}".format(res.content))
     return True
 
 def get_random_user(guild_id):
     logger.debug("Getting random userid from guild: {0}".format(guild_id))
-    res = requests.post(url, json={"query": getRandId, "variables": {guild_id: str(guild_id)}})
-    logger.debug("received as response from getRandomUserId query: {}".format(res.content))
+    res = requests.post(url, json={"query": getRandId, "variables": {"guild_id": str(guild_id)}})
+    logger.debug("received as response from getRandomUserId query: {0}".format(res.content))
     return res.json()["data"]["getRandomUserId"]["user_id"]
