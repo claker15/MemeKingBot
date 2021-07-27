@@ -1,17 +1,14 @@
 import discord
 import os
 import logging
-import threading
 import time
 import schedule
-from discord.ext import commands
+import threading
 import message as king_message
 import crown as king_crown
 from dotenv import load_dotenv
-
-def emit_crown(bot):
-    logger.debug("starting crowning")
-    bot.dispatch('crown', ctx=bot)
+from apscheduler.schedulers.background import BackgroundScheduler
+from discord.ext import commands
 
 def run_continuously(interval=1):
     """Continuously run, while executing pending jobs at each
@@ -36,15 +33,21 @@ def run_continuously(interval=1):
     continuous_thread = ScheduleThread()
     continuous_thread.start()
     return cease_continuous_run
+
+def emit_crown(bot):
+    logger.debug("starting crowning")
+    bot.dispatch('crown', ctx=bot)
+
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 logger = logging.getLogger("bot")
 load_dotenv()
 bot = commands.Bot(command_prefix="!")
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
-schedule.every().sunday.do(emit_crown, bot)
-stop_run_continuously = run_continuously()
 
+schedule.every().sunday.at("00:01").do(emit_crown, bot)
+stop_run_continuously = run_continuously()
 
 @bot.event
 async def on_crown(ctx):
