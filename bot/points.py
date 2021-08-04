@@ -20,12 +20,15 @@ def relax_points(guild_id, user_id_from, message_id):
     #transfered to another
     logger.debug("got relaxed. transferring points to random person")
     new_user = query.get_random_user(guild_id)
+    value = 1
+    if new_user == user_id_from:
+        value = 2
     logger.debug("got new user for points: {0}".format(new_user))
     obj = {
         "user_id": str(new_user),
         "guild_id": str(guild_id),
         "user_id_from": str(user_id_from),
-        "value": 1,
+        "value": value,
         "type": "RELAX",
         "message_id": str(message_id)
     }
@@ -33,6 +36,8 @@ def relax_points(guild_id, user_id_from, message_id):
 
 def cringe_points(user_id, guild_id, user_id_from, message_id):
     #points to whoever posted image first
+    if user_id == user_id_from:
+        return
     logger.debug("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
         "user_id": str(user_id),

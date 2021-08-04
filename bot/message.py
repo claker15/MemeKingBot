@@ -39,12 +39,13 @@ def extract_urls(content):
     urls = extractor.find_urls(content)
     return urls
 
-def create_post_object(hash, path, user_id, guild_id):
+def create_post_object(hash, path, user_id, guild_id, message_id):
     obj = {
         "hash": hash,
         "path": path,
         "user_id": str(user_id),
-        "guild_id": str(guild_id)
+        "guild_id": str(guild_id),
+        "message_id": str(message_id)
     }
     return obj
 
@@ -86,7 +87,7 @@ async def process_attachments(message):
         #save image if not there
         if post == None:
             save_attachments(image, attach.filename)
-            obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id)
+            obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id, message.id)
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
@@ -131,7 +132,7 @@ async def process_urls(message):
         cooldown = cool_down(message.author.id, message.guild.id)
         #save image if not there
         if res == None:
-            obj = create_post_object(video_id, url, message.author.id, message.guild.id)
+            obj = create_post_object(video_id, url, message.author.id, message.guild.id, message.id)
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
