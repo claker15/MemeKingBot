@@ -478,8 +478,8 @@ let changeKingCount = function(input) {
 let addPoints = function(point) {
     console.log(point)
     return new Promise((resolve, reject) => {
-        conn.query(`INSERT INTO points(user_id, guild_id, user_id_from, value, type) 
-        VALUES ('${point.user_id}', '${point.guild_id}', '${point.user_id_from}', ${point.value},'${point.type}')`, (err, rows) => {
+        conn.query(`INSERT INTO points(user_id, guild_id, user_id_from, value, type, message_id) 
+        VALUES ('${point.user_id}', '${point.guild_id}', '${point.user_id_from}', ${point.value},'${point.type}', '${point.message_id}')`, (err, rows) => {
             if (err) reject(err)
             resolve(true)
         })
