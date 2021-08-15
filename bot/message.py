@@ -49,13 +49,14 @@ def create_post_object(hash, path, user_id, guild_id, message_id):
     }
     return obj
 
-async def send_relax_message(author, channel):
+async def send_relax_message(author, channel, new_user):
     logger.debug("{0} has not waited for cooldown period".format(author.id))
-    await channel.send(content="@{0}".format(author.nick), file=discord.File(fp="/home/memes/Relax.png"))
+    member = await channel.guild.fetch_member(new_user)
+    await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention), file=discord.File(fp="/home/memes/Relax.png"))
 
 async def send_cringe_message(author, channel):
     logger.debug("post exists. sending cringe message")
-    await channel.send("@{0} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(author.nick))
+    await channel.send("{0} Cringe. Old meme,   :b:ruh https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(author.mention))
 
 def save_attachments(image, filename):
     logger.debug("saving new image with filename: {0}".format(filename))
@@ -91,8 +92,9 @@ async def process_attachments(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
-            points.relax_points(message.guild.id, message.author.id, message.id)
-            await send_relax_message(message.author, message.channel)
+            new_user = query.get_random_user(message.guild.id)
+            points.relax_points(message.guild.id, message.author.id, message.id, new_user)
+            await send_relax_message(message.author, message.channel, new_user)
             return
         if post != None:
             points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
@@ -136,8 +138,9 @@ async def process_urls(message):
             query.create_post(obj)
         #send cooldown message if 
         if cooldown:
+            new_user = query.get_random_user(message.guild.id)
             points.relax_points(message.guild.id, message.author.id, message.id)
-            await send_relax_message(message.author, message.channel)
+            await send_relax_message(message.author, message.channel, new_user)
             return
         if res != None:
             points.cringe_points(res["user_id"], message.guild.id, message.author.id, message.id)
