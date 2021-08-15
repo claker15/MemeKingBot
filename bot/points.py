@@ -21,7 +21,7 @@ def relax_points(guild_id, user_id_from, message_id, new_user):
     logger.debug("got relaxed. transferring points to random person")
     
     value = 1
-    if new_user == user_id_from:
+    if str(new_user) == str(user_id_from):
         value = 2
     logger.debug("got new user for points: {0}".format(new_user))
     obj = {
