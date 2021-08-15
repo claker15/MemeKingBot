@@ -16,10 +16,10 @@ def reg_points(user_id, guild_id, message_id):
     #maybe some mathematical functions
     query.add_points(obj)
 
-def relax_points(guild_id, user_id_from, message_id):
+def relax_points(guild_id, user_id_from, message_id, new_user):
     #transfered to another
     logger.debug("got relaxed. transferring points to random person")
-    new_user = query.get_random_user(guild_id)
+    
     value = 1
     if new_user == user_id_from:
         value = 2
