@@ -32,6 +32,30 @@ getRandId = """query getRandomUserId($guild_id: String) {
                     user_id
                 }
         }"""
+getCringeRank = """query getCringeRank($guild_id: String){
+                        getCringeRank(guild_id: $guild_id) {
+                            user_id,
+                            count
+                        }
+                    }"""
+getRelaxRank = """query getRelaxRank($guild_id: String){
+                        getRelaxRank(guild_id: $guild_id) {
+                            user_id,
+                            count
+                        }
+                    }"""
+rankQuery = """query getRanking($guild_id: String){
+                        getRanking(guild_id: $guild_id) {
+                            user_id,
+                            count
+                        }
+                    }"""
+crownsQuery = """query getCrowns($guild_id: String){
+                        getCrowns(guild_id: $guild_id) {
+                            user_id,
+                            count
+                        }
+                    }"""
 
 def get_user_cooldown_date(author_id, guild_id):
     logger.debug("Getting cooldown time for user: {0} in guild {1}".format(author_id, guild_id))
@@ -63,3 +87,27 @@ def get_random_user(guild_id):
     res = requests.post(url, json={"query": getRandId, "variables": {"guild_id": str(guild_id)}})
     logger.debug("received as response from getRandomUserId query: {0}".format(res.content))
     return res.json()["data"]["getRandomUserId"]["user_id"]
+
+def relax_rank(guild_id):
+    logger.debug("Getting relax list from guild: {0}".format(guild_id))
+    res = requests.post(url, json={"query": getRelaxRank, "variables": {"guild_id": str(guild_id)}})
+    logger.debug("received as response from getRelaxRank query: {0}".format(res.content))
+    return res.json()["data"]["getRelaxRank"]
+
+def cringe_rank(guild_id):
+    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    res = requests.post(url, json={"query": getCringeRank, "variables": {"guild_id": str(guild_id)}})
+    logger.debug("received as response from getCringeRank query: {0}".format(res.content))
+    return res.json()["data"]["getCringeRank"]
+
+def rankings(guild_id):
+    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    res = requests.post(url, json={"query": rankQuery, "variables": {"guild_id": str(guild_id)}})
+    logger.debug("received as response from getRankings query: {0}".format(res.content))
+    return res.json()["data"]["getRanking"]
+
+def crowns(guild_id):
+    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    res = requests.post(url, json={"query": crownsQuery, "variables": {"guild_id": str(guild_id)}})
+    logger.debug("received as response from getCrowns query: {0}".format(res.content))
+    return res.json()["data"]["getCrowns"]
