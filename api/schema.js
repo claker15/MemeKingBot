@@ -5,6 +5,7 @@ const mysql = require('mysql');
 
 
 
+
 let conn = mysql.createConnection({
     host: 'localhost',
     user: 'api',
@@ -362,6 +363,44 @@ const schema = new GraphQLObjectType({
                 conn.end()
                 return returnarr
             }
+        },
+        getCringeRank: {
+            type: GraphQLList(RankType),
+            args: {
+                guild_id: {type: GraphQLString}
+            },
+            async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getCringeRank(args.guild_id)
+                conn.end()
+                return returnarr
+            }
+        },
+        getRelaxRank: {
+            type: GraphQLList(RankType),
+            args: {
+                guild_id: {type: GraphQLString}
+            },
+            async resolve(parent, args) {
+                let conn = mysql.createConnection({
+                    host: 'localhost',
+                    user: 'api',
+                    password: 'apipassword',
+                    database: 'MEMEKING'
+                })
+                conn.connect()
+                let returnarr = {}
+                returnarr = await getRelaxRank(args.guild_id)
+                conn.end()
+                return returnarr
+            }
         }
     }
 })
@@ -490,6 +529,24 @@ let getRandomUserId =  function(guild_id) {
         conn.query(`select * from post where guild_id = '${guild_id}' ORDER BY RAND() LIMIT 1;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
+        })
+    }) 
+}
+let getCringeRank = function(guild_id) {
+    return new Promise((resolve, reject) => {    
+        conn.query(`SELECT user_id_from as user_id, SUM(value) as count FROM points WHERE guild_id = '${guild_id}' AND type = "CRINGE" AND YEARWEEK(date) = YEARWEEK(NOW())
+        GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5 ;`, (err, rows) => {
+            if (err) reject(err)
+            resolve(rows)
+        })
+    }) 
+}
+let getRelaxRank = function(guild_id) {
+    return new Promise((resolve, reject) => {    
+        conn.query(`SELECT user_id_from as user_id, SUM(value) as count FROM points WHERE guild_id = '${guild_id}' AND type = "RELAX" AND YEARWEEK(date) = YEARWEEK(NOW())
+        GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5 ;`, (err, rows) => {
+            if (err) reject(err)
+            resolve(rows)
         })
     }) 
 }

@@ -67,4 +67,5 @@ async def on_message(message):
     logger.debug("Parsing other contents of message")
     await king_message.parse_message(message)
 
+
 bot.run(os.getenv("DISCORD_SECRET"))
