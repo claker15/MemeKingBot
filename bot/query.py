@@ -19,6 +19,7 @@ postByHashQuery = """query getPostByHash($hash: String, $guild_id: String){
                         user_id
                         hash
                         path
+                        created
                     }
                 }"""
 createPost = """mutation createPost($input: postInput) {
