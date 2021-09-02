@@ -526,7 +526,7 @@ let addPoints = function(point) {
 }
 let getRandomUserId =  function(guild_id) {
     return new Promise((resolve, reject) => {    
-        conn.query(`select * from post where guild_id = '${guild_id}' ORDER BY RAND() LIMIT 1;`, (err, rows) => {
+        conn.query(`select DISTINCT * from post where guild_id = '${guild_id}' ORDER BY RAND() LIMIT 1;`, (err, rows) => {
             if (err) reject(err)
             resolve(rows[0])
         })
