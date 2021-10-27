@@ -87,7 +87,6 @@ async def process_attachments(message):
         cooldown = cool_down(message.author.id, message.guild.id)
         #save image if not there
         if post == None:
-            save_attachments(image, attach.filename)
             obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id, message.id)
             query.create_post(obj)
         #send cooldown message if 
