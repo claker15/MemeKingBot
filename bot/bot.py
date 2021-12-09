@@ -9,6 +9,7 @@ import crown as king_crown
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 from discord.ext import commands
+from logging.handlers import RotatingFileHandler
 
 def run_continuously(interval=1):
     """Continuously run, while executing pending jobs at each
@@ -39,6 +40,9 @@ def emit_crown(bot):
     bot.dispatch('crown', ctx=bot)
 
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
+logger = logging.getLogger()
+logger.addHandler(handler)
 
 logger = logging.getLogger("bot")
 load_dotenv()
