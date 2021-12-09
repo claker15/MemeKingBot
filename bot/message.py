@@ -55,7 +55,7 @@ async def send_relax_message(author, channel, new_user):
     await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention), file=discord.File(fp="/home/memes/Relax.png"))
 
 async def send_cringe_message(author, channel, date):
-    logger.debug("post exists. sending cringe message")
+    logger.debug("post exists. sending cringe message. date: " + date)
     await channel.send("{0} Cringe. Old meme,   :b:ruh. Last posted at {1} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(author.mention, date))
 
 def save_attachments(image, filename):
@@ -95,9 +95,9 @@ async def process_attachments(message):
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             await send_relax_message(message.author, message.channel, new_user)
             return
-        if post != None:
+        if not cooldown and post != None:
             points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
-            await send_cringe_message(message.author, message.channel, datetime.datetime.fromtimestamp(post['created']))
+            await send_cringe_message(message.author, message.channel, datetime.datetime.fromtimestamp(int(post['created'])/1000).strftime("%m/%d/%Y, %H:%M:%S"))
             return
         points.reg_points(message.author.id, message.guild.id, message.id)
 
