@@ -53,7 +53,7 @@ async def create_rank_message(self, guild, querytype):
             embed.colour = 0x0099ff
         elif querytype == "relax":
             users = query.relax_rank(guild.id)
-            embed.title = "Bigest Pussy of the Week that Needs to Relax"
+            embed.title = "Biggest Pussy of the Week that Needs to Relax"
             embed.colour = 0x0099ff
         elif querytype == "cringe":
             users = query.cringe_rank(guild.id)

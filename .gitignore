@@ -8,3 +8,4 @@ __pycache__/
 /bot/__pycache__/
 /bot/bot.log
 /bot/Cogs/__pycache__/*
+.idea/
