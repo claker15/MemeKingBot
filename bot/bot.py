@@ -68,9 +68,11 @@ async def on_message(message):
     if message.author == bot.user:
         return
     logger.debug("Parsing commands from message")
-    await bot.process_commands(message)
-    logger.debug("Parsing other contents of message")
-    await king_message.parse_message(message)
+    if message.content[0] == '!':
+        await bot.process_commands(message)
+    else:
+        logger.debug("Parsing other contents of message")
+        await king_message.parse_message(message)
 
 
 bot.run(os.getenv("DISCORD_SECRET"))
