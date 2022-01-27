@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import bot.query as query
+import query as query
 
 
 class url_track(commands.Cog):
@@ -8,17 +8,16 @@ class url_track(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def track(self, ctx: commands.Context):
-        url_to_add = ctx.args[0]
+    async def track(self, ctx: commands.Context, arg):
         #check if it exists in database
-        data = query.execute_query(url_to_add, ctx.guild.id)
+        data = query.url_check(arg, ctx.guild.id)
         #if not, add
         if data != '1':
-            query.addUrl(url_to_add, ctx.guild.id)
-            await ctx.send("url added")
+            query.add_url(arg, ctx.guild.id)
+            await ctx.send("{} is now being tracked".format(arg))
         #otherwise send message
         else:
-            await ctx.send("url already being tracked")
+            await ctx.send("{} is already being tracked".format(arg))
 
 
 

@@ -79,7 +79,7 @@ def cool_down(author_id, guild_id):
     last_post_time = query.get_user_cooldown_date(author_id, guild_id)
     if last_post_time == None:
         return False
-    prev_time = datetime.datetime.fromtimestamp(last_post_time / 1000.0)
+    prev_time = last_post_time
     now = datetime.datetime.now()
     diff_time = (now - prev_time).seconds / 60.0
     logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
@@ -94,12 +94,12 @@ async def process_attachments(message):
     attach = message.attachments[0]
     logger.debug("processing message attachment: {0}".format(attach.url))
     res = requests.get(attach.url)
-    new_hash = str(imagehash.whash(Image.open(BytesIO(res.content))))
+    new_hash = str(imagehash.dhash(Image.open(BytesIO(res.content))))
     logger.debug("image hashed to: {0}".format(new_hash))
     post = query.get_post_by_hash(new_hash, message.guild.id)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
-    if post["user_id"] == "":
+    if post is None:
         obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,
                                  message.id)
         query.create_post(obj)
@@ -109,10 +109,10 @@ async def process_attachments(message):
         points.relax_points(message.guild.id, message.author.id, message.id, new_user)
         await send_relax_message(message.author, message.channel, new_user)
         return
-    if not cooldown and post != "":
+    if not cooldown and post is not None:
         points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
-                                  datetime.datetime.fromtimestamp(int(post['created']) / 1000).strftime(
+                                  post['created'].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
     points.reg_points(message.author.id, message.guild.id, message.id)
@@ -128,25 +128,28 @@ def get_urls(string):
 async def process_urls(message):
     logger.debug("starting profcessing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
-    logger.debug("start parsing url: {0}".format(url[0]))
-    res = query.url_check(url[0], message.guild.id)
+    url = urls[0]
+    logger.debug("start parsing url: {0}".format(urls[0]))
+    res = query.url_check(urls[0], message.guild.id)
     if res != '1':
         return
+    post = query.get_post_by_hash(url, message.guild.id)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
-    if res is None:
+    if post is None:
         obj = create_post_object(url, url, message.author.id, message.guild.id, message.id)
+        #add url
         query.create_post(obj)
     # send cooldown message if
     if cooldown:
         new_user = query.get_random_user(message.guild.id)
-        points.relax_points(message.guild.id, message.author.id, message.id)
+        points.relax_points(message.guild.id, message.author.id, message.id, new_user)
         await send_relax_message(message.author, message.channel, new_user)
         return
-    if res is not None:
-        points.cringe_points(res["user_id"], message.guild.id, message.author.id, message.id)
+    if not cooldown and post is not None:
+        points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
-                                  datetime.datetime.fromtimestamp(int(res["created"]) / 1000).strftime(
+                                  post["created"].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
     points.reg_points(message.author.id, message.guild.id, message.id)

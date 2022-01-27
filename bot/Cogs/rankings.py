@@ -60,7 +60,7 @@ async def create_rank_message(self, guild, querytype):
             embed.title = "Most Cringiest of the Week"
             embed.colour = 0x0099ff
         for user in users:
-            logger.debug("Getting nickname for user {0} with count {1}".format(user["user_id"], user["count"]))
-            member = await guild.fetch_member(user["user_id"])
-            embed.add_field(name=member.nick, value=user["count"], inline=False)
+            logger.debug("Getting nickname for user {0} with count {1}".format(user[0], user[1]))
+            member = await guild.fetch_member(user[0])
+            embed.add_field(name=member.nick, value=user[1], inline=False)
         return embed
