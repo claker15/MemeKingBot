@@ -68,7 +68,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     logger.debug("Parsing commands from message")
-    if message.content[0] == '!':
+    if message.content != "" or message.content[0] == '!':
         await bot.process_commands(message)
     else:
         logger.debug("Parsing other contents of message")
