@@ -6,6 +6,7 @@ import schedule
 import threading
 import message as king_message
 import crown as king_crown
+import chussy as reaction_add
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 from discord.ext import commands
@@ -37,7 +38,7 @@ def run_continuously(interval=1):
 
 def emit_crown(bot):
     logger.debug("starting crowning")
-    bot.dispatch('crown', ctx=bot)
+    bot.dispatch("crown", ctx=bot)
 
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
@@ -60,7 +61,7 @@ async def on_crown(ctx):
     await king_crown.crown(ctx)
 
 async def on_ready(self):
-    print('Logged on as {0}!'.format(self.user))
+    print("Logged on as {0}!".format(self.user))
 
 @bot.event
 async def on_message(message):
@@ -68,13 +69,21 @@ async def on_message(message):
     if message.author == bot.user:
         return
     logger.debug("Parsing commands from message")
-    if message.content != "" and message.content[0] == '!':
-        print("command")
+    if message.content != "" and message.content[0] == "!":
         await bot.process_commands(message)
     else:
-        print("attachment")
         logger.debug("Parsing other contents of message")
         await king_message.parse_message(message)
+    geodude = await message.guild.fetch_emoji("358102351287943178")
+    await message.add_reaction(geodude)
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    logger.debug("Reaction added to message")
+    if payload.emoji.name == "geodude":
+        channel = bot.get_channel(payload.channel_id)
+        message = await channel.fetch_message(payload.message_id)
+        await reaction_add.check(message, payload.emoji)
 
 
 bot.run(os.getenv("DISCORD_SECRET"))

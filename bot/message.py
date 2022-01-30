@@ -17,13 +17,12 @@ import query as query
 import points as points
 
 load_dotenv()
-url = os.getenv("BOT_API_URL")
 file_save_path = os.getenv("FILE_SAVE_PATH")
 logger = logging.getLogger("message")
 
 
 async def parse_message(message):
-    if '-play' in message.content:
+    if "-play" in message.content:
         return
     urls = extract_urls(message.content)
     if len(urls) > 0:
@@ -112,7 +111,7 @@ async def process_attachments(message):
     if not cooldown and post is not None:
         points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
-                                  post['created'].strftime(
+                                  post["created"].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
     points.reg_points(message.author.id, message.guild.id, message.id)
