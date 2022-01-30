@@ -31,11 +31,16 @@ urlCheck = "SELECT '1' FROM url where guild_id='{}' AND LOCATE(url, '{}') > 0"
 
 addUrl = "INSERT INTO url(url, guild_id) VALUES('{}', '{}')"
 
+kingQuery = "select user_id, SUM(value) as count from points where guild_id='{}' AND  YEARWEEK(date) = YEARWEEK(NOW() - INTERVAL 1 WEEK) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 1"
+
+changeCrownQuery = "INSERT INTO user(user_id, guild_id, created, crowns) VALUES ('{}', '{}', NOW(), 1) ON DUPLICATE KEY UPDATE crowns = crowns+1"
+
+pointQuery = "SELECT * FROM points where message_id='{}'"
+
 
 def execute_query(query: str, args: list):
     try:
-        conn = mysql.connector.connect(user="api", password="apipassword", host="localhost", database="MEMEKING")
-        
+        conn = mysql.connector.connect(user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"), host=os.getenv("DATABASE_HOST"), database=os.getenv("DATABASE_DATABASE"))
     except mysql.connector.Error as err:
         print(err)
     cursor = conn.cursor()
@@ -130,3 +135,22 @@ def add_url(url, guild_id):
     data = execute_query(addUrl, [url, guild_id])
     logger.debug("received as response from add_url query: {0}".format(data))
     return data
+
+def get_king(guild_id):
+    logger.debug("Getting king for guild: {}".format(guild_id))
+    data = execute_query(kingQuery, [guild_id])
+    logger.debug("received response from kingQuery: {}".format(data))
+    return data[0][0]
+
+def change_king_points(user_id, guild_id):
+    logger.debug("changing point count for user: {} in guild: {}".format(user_id, guild_id))
+    data = execute_query(changeCrownQuery, [user_id, guild_id])
+    logger.debug("received as response when changeCrownQuery: {}".format(data))
+    return data
+
+def get_point_info(message_id):
+    logger.debug("getting point information for message_id: {}".format(message_id))
+    data = execute_query(pointQuery, [message_id])
+    logger.debug("received response from pointQuery: {}".format(data))
+    print(data[0])
+    return data[0]

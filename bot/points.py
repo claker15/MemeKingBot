@@ -50,3 +50,15 @@ def cringe_points(user_id, guild_id, user_id_from, message_id):
     #maybe some mathematical functions
     query.add_points(obj)
 
+def neg_points(user_id, guild_id, message_id):
+    logger.debug("adding negative points for user: {0} on guild: {1}".format(user_id, guild_id))
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -1,
+        "type": "VETO",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
+
