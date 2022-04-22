@@ -1,3 +1,4 @@
+from email import message
 import requests
 import logging
 import os
@@ -17,7 +18,7 @@ createPost = "INSERT INTO post(hash, path, user_id, guild_id, message_id, create
 
 addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, message_id) VALUES ('{}', '{}', '{}', {},'{}','{}')"
 
-getRandId = "select DISTINCT user_id from post where guild_id = '{}' ORDER BY RAND()"
+getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 2 WEEK) ORDER BY RAND()"
 
 getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
@@ -37,6 +38,8 @@ changeCrownQuery = "INSERT INTO user(user_id, guild_id, created, crowns) VALUES 
 
 pointQuery = "SELECT * FROM points where message_id='{}'"
 
+subQuery = "SELECT * FROM points WHERE message_id='{}' AND type='VETO'"
+
 
 def execute_query(query: str, args: list):
     try:
@@ -55,7 +58,10 @@ def get_user_cooldown_date(author_id, guild_id):
     logger.debug("Getting cooldown time for user: {0} in guild {1}".format(author_id, guild_id))
     data = execute_query(coolDownQuery, [author_id, guild_id])
     logger.debug("received post: {0} from database".format(data))
-    return data[0][0]
+    if len(data) == 0:
+        return None
+    else:
+        return data[0][0]
 
 
 def get_post_by_hash(hash, guild_id):
@@ -154,3 +160,12 @@ def get_point_info(message_id):
     logger.debug("received response from pointQuery: {}".format(data))
     print(data[0])
     return data[0]
+
+def get_sub_point(message_id):
+    logger.debug("getting information if post has been vetoed with message id: {}".format(message_id))
+    data = execute_query(subQuery, [message_id])
+    logger.debug("receive response from subQuery: {}".format(data))
+    if data != None:
+        return True
+    else:
+        return False
