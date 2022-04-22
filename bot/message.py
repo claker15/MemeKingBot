@@ -62,7 +62,7 @@ async def send_relax_message(author, channel, new_user):
 async def send_cringe_message(author, channel, date):
     logger.debug("post exists. sending cringe message. date: " + date)
     await channel.send(
-        "{0} Cringe. Old meme,   :b:ruh. Last posted at {1} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
+        "{0} Cringe. Old meme, :b:ruh. Last posted at {1} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
             author.mention, date))
 
 
@@ -78,9 +78,8 @@ def cool_down(author_id, guild_id):
     last_post_time = query.get_user_cooldown_date(author_id, guild_id)
     if last_post_time == None:
         return False
-    prev_time = last_post_time
     now = datetime.datetime.now()
-    diff_time = (now - prev_time).seconds / 60.0
+    diff_time = (now - last_post_time).seconds / 60.0
     logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
     if diff_time < 5.0:
         return True

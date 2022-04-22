@@ -52,7 +52,7 @@ bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
 bot.load_extension("Cogs.track")
 
-schedule.every().sunday.at("00:01").do(emit_crown, bot)
+schedule.every().sunday.at('00:01').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
 
 @bot.event
@@ -68,19 +68,21 @@ async def on_message(message):
     logger.debug("Received message")
     if message.author == bot.user:
         return
+    if not os.getenv("READ_CHANNELS").__contains__(message.channel.name):
+        return
     logger.debug("Parsing commands from message")
     if message.content != "" and message.content[0] == "!":
         await bot.process_commands(message)
     else:
         logger.debug("Parsing other contents of message")
         await king_message.parse_message(message)
-    geodude = await message.guild.fetch_emoji("358102351287943178")
-    await message.add_reaction(geodude)
+        geodude = await message.guild.fetch_emoji("358102351287943178")
+        await message.add_reaction(geodude)
 
 @bot.event
 async def on_raw_reaction_add(payload):
     logger.debug("Reaction added to message")
-    if payload.emoji.name == "geodude":
+    if payload.emoji.name == os.getenv("EMOJI_NAME"):
         channel = bot.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         await reaction_add.check(message, payload.emoji)
