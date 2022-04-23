@@ -18,7 +18,7 @@ createPost = "INSERT INTO post(hash, path, user_id, guild_id, message_id, create
 
 addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, message_id) VALUES ('{}', '{}', '{}', {},'{}','{}')"
 
-getRandId = "select DISTINCT user_id from post where guild_id = '{}' ORDER BY RAND()"
+getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 2 WEEK) ORDER BY RAND()"
 
 getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
