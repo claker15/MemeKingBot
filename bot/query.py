@@ -18,7 +18,7 @@ createPost = "INSERT INTO post(hash, path, user_id, guild_id, message_id, create
 
 addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, message_id) VALUES ('{}', '{}', '{}', {},'{}','{}')"
 
-getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 2 WEEK) ORDER BY RAND()"
+getRandId = "select DISTINCT user_id from post where guild_id = '{}' ORDER BY RAND()"
 
 getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
@@ -40,6 +40,15 @@ pointQuery = "SELECT * FROM points where message_id='{}'"
 
 subQuery = "SELECT * FROM points WHERE message_id='{}' AND type='VETO'"
 
+addBet = "INSERT INTO bets(message_id, user_id, target_id, guild_id, bet, valid) VALUES ('{}', '{}', '{}', '{}', {}, True)"
+
+setBetsInvalid = "UPDATE bets SET valid=0"
+
+getBets = "SELECT * FROM bets where guild_id='{}' and valid=1"
+
+betTotals = "SELECT target_id, SUM(bet) FROM bets WHERE guild_id='{}' AND valid=1 GROUP BY target_id"
+
+myBets = "SELECT target_id, SUM(bet), user_id FROM bets where guild_id='{}' AND user_id='{}' AND valid=1 GROUP BY target_id, user_id"
 
 def execute_query(query: str, args: list):
     try:
@@ -142,11 +151,13 @@ def add_url(url, guild_id):
     logger.debug("received as response from add_url query: {0}".format(data))
     return data
 
+
 def get_king(guild_id):
     logger.debug("Getting king for guild: {}".format(guild_id))
     data = execute_query(kingQuery, [guild_id])
     logger.debug("received response from kingQuery: {}".format(data))
     return data[0][0]
+
 
 def change_king_points(user_id, guild_id):
     logger.debug("changing point count for user: {} in guild: {}".format(user_id, guild_id))
@@ -154,12 +165,14 @@ def change_king_points(user_id, guild_id):
     logger.debug("received as response when changeCrownQuery: {}".format(data))
     return data
 
+
 def get_point_info(message_id):
     logger.debug("getting point information for message_id: {}".format(message_id))
     data = execute_query(pointQuery, [message_id])
     logger.debug("received response from pointQuery: {}".format(data))
     print(data[0])
     return data[0]
+
 
 def get_sub_point(message_id):
     logger.debug("getting information if post has been vetoed with message id: {}".format(message_id))
@@ -169,3 +182,30 @@ def get_sub_point(message_id):
         return True
     else:
         return False
+
+
+def add_bet(message_id, user_id, target_id, guild_id, bet):
+    data = execute_query(addBet, [message_id, user_id, target_id, guild_id, bet])
+    logger.debug("receive response from addBet: {}".format(data))
+    return data
+
+
+def set_bets_invalid():
+    data = execute_query(setBetsInvalid, [])
+    return data
+
+
+def get_bets(guild_id):
+    data = execute_query(getBets, [guild_id])
+    logger.debug("receive response from getBets: {}".format(data))
+    return data
+
+def bet_total(guild_id):
+    data = execute_query(betTotals, [guild_id])
+    logger.debug("receive response from betTotal: {}".format(data))
+    return data
+
+def my_bets(guild_id, user_id):
+    data = execute_query(myBets, [guild_id, user_id])
+    logger.debug("receive response from myBets: {}".format(data))
+    return data

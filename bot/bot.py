@@ -36,9 +36,11 @@ def run_continuously(interval=1):
     continuous_thread.start()
     return cease_continuous_run
 
+
 def emit_crown(bot):
     logger.debug("starting crowning")
     bot.dispatch("crown", ctx=bot)
+
 
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
@@ -51,6 +53,7 @@ bot = commands.Bot(command_prefix="!")
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
 bot.load_extension("Cogs.track")
+bot.load_extension("Cogs.bet")
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
@@ -75,7 +78,7 @@ async def on_message(message):
         await bot.process_commands(message)
     else:
         logger.debug("Parsing other contents of message")
-        await king_message.parse_message(message)
+        await king_message.parse_message(bot, message)
         geodude = await message.guild.fetch_emoji("358102351287943178")
         await message.add_reaction(geodude)
 
@@ -86,6 +89,12 @@ async def on_raw_reaction_add(payload):
         channel = bot.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         await reaction_add.check(message, payload.emoji)
+
+
+@bot.event
+async def on_gamble(user, guild_id):
+    bet = bot.get_cog("bet")
+    await bet.gamble(user, guild_id)
 
 
 bot.run(os.getenv("DISCORD_SECRET"))
