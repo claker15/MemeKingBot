@@ -3,6 +3,7 @@ import logging
 
 logger = logging.getLogger("points")
 
+
 def reg_points(user_id, guild_id, message_id):
     logger.debug("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
@@ -15,6 +16,7 @@ def reg_points(user_id, guild_id, message_id):
     }
     #maybe some mathematical functions
     query.add_points(obj)
+
 
 def relax_points(guild_id, user_id_from, message_id, new_user):
     #transfered to another
@@ -34,6 +36,7 @@ def relax_points(guild_id, user_id_from, message_id, new_user):
     }
     query.add_points(obj)
 
+
 def cringe_points(user_id, guild_id, user_id_from, message_id):
     #points to whoever posted image first
     if user_id == user_id_from:
@@ -50,6 +53,7 @@ def cringe_points(user_id, guild_id, user_id_from, message_id):
     #maybe some mathematical functions
     query.add_points(obj)
 
+
 def neg_points(user_id, guild_id, message_id):
     logger.debug("adding negative points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
@@ -62,3 +66,26 @@ def neg_points(user_id, guild_id, message_id):
     }
     query.add_points(obj)
 
+
+def bet_points(message_id, user_id, guild_id, bet):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -1 * int(bet),
+        "type": "BET",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
+
+
+def bet_win_points(message_id, user_id, guild_id, points):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": points,
+        "type": "BET_WIN",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)

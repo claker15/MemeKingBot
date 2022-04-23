@@ -23,24 +23,33 @@ class Ranking(commands.Cog):
     @commands.command()
     async def crowns(self, ctx: commands.Context):
         logger.debug("starting king crowns command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "crowns"))
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, "crowns", ''))
 
     @commands.command()
     async def bigrelax(self, ctx: commands.Context):
         logger.debug("starting most relax command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "relax"))
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, "relax", ''))
 
     @commands.command()
     async def bigcringe(self, ctx: commands.Context):
         logger.debug("starting most cringe command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "cringe"))
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, "cringe", ''))
 
+    @commands.command()
+    async def betboard(self, ctx: commands.Context):
+        logger.debug("starting bet board command")
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'betboard', ''))
+
+    @commands.command()
+    async def mybets(self, ctx: commands.Context):
+        logger.debug("starting mybets command")
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'mybets', ctx.message.author.id))
 
 def setup(bot):
     return bot.add_cog(Ranking(bot))
 
 
-async def create_rank_message(self, guild, querytype):
+async def create_rank_message(self, guild, querytype, user_id):
         users = []
         embed = discord.Embed()
         if querytype == "ranking":
@@ -58,6 +67,15 @@ async def create_rank_message(self, guild, querytype):
         elif querytype == "cringe":
             users = query.cringe_rank(guild.id)
             embed.title = "Most Cringiest of the Week"
+            embed.colour = 0x0099ff
+        elif querytype == "betboard":
+            users = query.bet_total(guild.id)
+            embed.title = "Current Bets on Who Will Be the Next Pussy That Needs to Relax"
+            embed.colour = 0x0099ff
+        elif querytype == 'mybets':
+            users = query.my_bets(guild.id, user_id)
+            user = await guild.fetch_member(users[0][2])
+            embed.title = "Current targets of bets for you {}".format(user.nick)
             embed.colour = 0x0099ff
         for user in users:
             logger.debug("Getting nickname for user {0} with count {1}".format(user[0], user[1]))

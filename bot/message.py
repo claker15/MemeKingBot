@@ -20,18 +20,17 @@ load_dotenv()
 file_save_path = os.getenv("FILE_SAVE_PATH")
 logger = logging.getLogger("message")
 
-
-async def parse_message(message):
+async def parse_message(bot, message):
     if "-play" in message.content:
         return
     urls = extract_urls(message.content)
     if len(urls) > 0:
         logger.debug("urls found in message")
-        await process_urls(message)
+        await process_urls(bot, message)
         return
     if len(message.attachments) > 0:
         logger.debug("attachments found in message")
-        await process_attachments(message)
+        await process_attachments(bot, message)
         return
 
 
@@ -59,11 +58,12 @@ async def send_relax_message(author, channel, new_user):
                        file=discord.File(fp="/home/memes/Relax.png"))
 
 
-async def send_cringe_message(author, channel, date):
+async def send_cringe_message(author, channel, date, original_user_id):
     logger.debug("post exists. sending cringe message. date: " + date)
+    orignal = await channel.guild.fetch_member(original_user_id)
     await channel.send(
-        "{0} Cringe. Old meme, :b:ruh. Last posted at {1} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
-            author.mention, date))
+        "{0} Cringe. Old meme, :b:ruh. Last posted at {1} by {2} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
+            author.mention, date), orignal.mention)
 
 
 def save_attachments(image, filename):
@@ -87,7 +87,7 @@ def cool_down(author_id, guild_id):
         return False
 
 
-async def process_attachments(message):
+async def process_attachments(bot, message):
     logger.debug("starting attachment processing for message {0}".format(message.id))
     attach = message.attachments[0]
     logger.debug("processing message attachment: {0}".format(attach.url))
@@ -105,13 +105,14 @@ async def process_attachments(message):
     if cooldown:
         new_user = query.get_random_user(message.guild.id)
         points.relax_points(message.guild.id, message.author.id, message.id, new_user)
+        bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
         await send_relax_message(message.author, message.channel, new_user)
         return
     if not cooldown and post is not None:
         points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
                                   post["created"].strftime(
-                                      "%m/%d/%Y, %H:%M:%S"))
+                                      "%m/%d/%Y, %H:%M:%S"), post["user_id"])
         return
     points.reg_points(message.author.id, message.guild.id, message.id)
 
@@ -123,7 +124,7 @@ def get_urls(string):
     return urls
 
 
-async def process_urls(message):
+async def process_urls(bot, message):
     logger.debug("starting profcessing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
     url = urls[0]
@@ -142,6 +143,7 @@ async def process_urls(message):
     if cooldown:
         new_user = query.get_random_user(message.guild.id)
         points.relax_points(message.guild.id, message.author.id, message.id, new_user)
+        bot.dispatch("gamble", new_user, message.guild.id)
         await send_relax_message(message.author, message.channel, new_user)
         return
     if not cooldown and post is not None:
