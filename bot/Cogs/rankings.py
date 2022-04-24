@@ -18,7 +18,7 @@ class Ranking(commands.Cog):
     @commands.command()
     async def ranking(self, ctx: commands.Context):
         logger.debug("starting weekly ranking command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "ranking"))
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, "ranking", ''))
 
     @commands.command()
     async def crowns(self, ctx: commands.Context):
