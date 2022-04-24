@@ -20,6 +20,7 @@ load_dotenv()
 file_save_path = os.getenv("FILE_SAVE_PATH")
 logger = logging.getLogger("message")
 
+
 async def parse_message(bot, message):
     if "-play" in message.content:
         return
@@ -63,7 +64,7 @@ async def send_cringe_message(author, channel, date, original_user_id):
     orignal = await channel.guild.fetch_member(original_user_id)
     await channel.send(
         "{0} Cringe. Old meme, :b:ruh. Last posted at {1} by {2} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
-            author.mention, date), orignal.mention)
+            author.mention, date, orignal.mention))
 
 
 def save_attachments(image, filename):
@@ -95,26 +96,31 @@ async def process_attachments(bot, message):
     new_hash = str(imagehash.dhash(Image.open(BytesIO(res.content))))
     logger.debug("image hashed to: {0}".format(new_hash))
     post = query.get_post_by_hash(new_hash, message.guild.id)
+    print(post)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
     if post is None:
         obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,
                                  message.id)
         query.create_post(obj)
+        if cooldown:
+            new_user = query.get_random_user(message.guild.id)
+            points.relax_points(message.guild.id, message.author.id, message.id, new_user)
+            bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
+            await send_relax_message(message.author, message.channel, new_user)
+            return
+        else:
+            points.reg_points(message.author.id, message.guild.id, message.id)
+            return
     # send cooldown message if
-    if cooldown:
-        new_user = query.get_random_user(message.guild.id)
-        points.relax_points(message.guild.id, message.author.id, message.id, new_user)
-        bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
-        await send_relax_message(message.author, message.channel, new_user)
-        return
-    if not cooldown and post is not None:
-        points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
+    elif post is not None:
+        print(post[0])
+        print(post[1])
+        points.cringe_points(post[0], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
-                                  post["created"].strftime(
-                                      "%m/%d/%Y, %H:%M:%S"), post["user_id"])
+                                  post[1].strftime(
+                                      "%m/%d/%Y, %H:%M:%S"), post[0])
         return
-    points.reg_points(message.author.id, message.guild.id, message.id)
 
 
 def get_urls(string):
@@ -137,19 +143,22 @@ async def process_urls(bot, message):
     # save image if not there
     if post is None:
         obj = create_post_object(url, url, message.author.id, message.guild.id, message.id)
-        #add url
+        # add url
         query.create_post(obj)
+        if cooldown:
+            new_user = query.get_random_user(message.guild.id)
+            points.relax_points(message.guild.id, message.author.id, message.id, new_user)
+            bot.dispatch("gamble", new_user, message.guild.id)
+            await send_relax_message(message.author, message.channel, new_user)
+            return
+        else:
+            points.reg_points(message.author.id, message.guild.id, message.id)
+            return
     # send cooldown message if
-    if cooldown:
-        new_user = query.get_random_user(message.guild.id)
-        points.relax_points(message.guild.id, message.author.id, message.id, new_user)
-        bot.dispatch("gamble", new_user, message.guild.id)
-        await send_relax_message(message.author, message.channel, new_user)
-        return
-    if not cooldown and post is not None:
+    elif post is not None:
         points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
                                   post["created"].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
-    points.reg_points(message.author.id, message.guild.id, message.id)
+

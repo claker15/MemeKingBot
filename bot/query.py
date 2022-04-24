@@ -80,11 +80,8 @@ def get_post_by_hash(hash, guild_id):
     logger.debug("post returned from getPostByHash query: {0}".format(data))
     if len(data) == 0:
         return None
-    post = {
-        "user_id": data[0][0],
-        "created": data[0][1]
-    }
-    return post
+    else:
+        return data[0]
 
 
 def create_post(post):
