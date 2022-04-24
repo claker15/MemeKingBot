@@ -20,6 +20,7 @@ load_dotenv()
 file_save_path = os.getenv("FILE_SAVE_PATH")
 logger = logging.getLogger("message")
 
+
 async def parse_message(bot, message):
     if "-play" in message.content:
         return
@@ -95,6 +96,7 @@ async def process_attachments(bot, message):
     new_hash = str(imagehash.dhash(Image.open(BytesIO(res.content))))
     logger.debug("image hashed to: {0}".format(new_hash))
     post = query.get_post_by_hash(new_hash, message.guild.id)
+    print(post)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
     if post is None:
@@ -112,6 +114,8 @@ async def process_attachments(bot, message):
             return
     # send cooldown message if
     elif post is not None:
+        print(post[0])
+        print(post[1])
         points.cringe_points(post[0], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
                                   post[1].strftime(
@@ -139,7 +143,7 @@ async def process_urls(bot, message):
     # save image if not there
     if post is None:
         obj = create_post_object(url, url, message.author.id, message.guild.id, message.id)
-        #add url
+        # add url
         query.create_post(obj)
         if cooldown:
             new_user = query.get_random_user(message.guild.id)
@@ -157,3 +161,4 @@ async def process_urls(bot, message):
                                   post["created"].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
+
