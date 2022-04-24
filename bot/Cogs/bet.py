@@ -32,6 +32,9 @@ class bet(commands.Cog):
         if str(target) == str(ctx.message.author.id):
             await ctx.message.reply("Look at this guy betting on themselves. What a clown.")
             return
+        if query.user_points(ctx.guild.id, ctx.message.authro.id) < int(arg):
+            await ctx.message.reply("Not enough points, pussy.")
+            return
         query.add_bet(ctx.message.id, ctx.message.author.id, target, ctx.guild.id, arg)
         points.bet_points(ctx.message.id, ctx.message.author.id, ctx.guild.id, arg)
         return

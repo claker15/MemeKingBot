@@ -50,6 +50,8 @@ betTotals = "SELECT target_id, SUM(bet) FROM bets WHERE guild_id='{}' AND valid=
 
 myBets = "SELECT target_id, SUM(bet), user_id FROM bets where guild_id='{}' AND user_id='{}' AND valid=1 GROUP BY target_id, user_id"
 
+userPointsQuery = "SELECT SUM(value) as count FROM points WHERE guild_id = '{}' AND user_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id"
+
 def execute_query(query: str, args: list):
     try:
         conn = mysql.connector.connect(user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"), host=os.getenv("DATABASE_HOST"), database=os.getenv("DATABASE_DATABASE"))
@@ -209,3 +211,8 @@ def my_bets(guild_id, user_id):
     data = execute_query(myBets, [guild_id, user_id])
     logger.debug("receive response from myBets: {}".format(data))
     return data
+
+def user_points(guild_id, user_id):
+    data = execute_query(userPointsQuery, [guild_id, user_id])
+    logger.debug("receive response from userPointsQuery: {}".format(data))
+    return data[0][0]
