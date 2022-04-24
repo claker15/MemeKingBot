@@ -4,6 +4,8 @@ from discord.ext import commands
 import query as query
 import points as points
 from dotenv import load_dotenv
+import logging
+logger = logging.getLogger('bet')
 
 
 class bet(commands.Cog):
@@ -19,24 +21,29 @@ class bet(commands.Cog):
 
     @commands.command()
     async def bet(self, ctx: commands.Context, arg, arg1):
+        logger.debug("starting bet command")
         if ctx.channel.id != int(os.getenv("GAMBLE_CHANNEL")):
+            logger.debug("not the right channel response")
             await ctx.message.reply("Wrong channel, dummy")
             return
         target = self.strip_char_from_target(arg1)
         if str(arg1[0]) != '<':
+            logger.debug("invalid argument response")
             await ctx.message.reply('Invalid betting target, bud.')
             return
         if int(arg) < 0:
+            logger.debug('negative number response')
             await ctx.message.reply("Bet cannot be negative, relax buddy.")
             return
-        if str(target) == str(ctx.message.author.id):
-            await ctx.message.reply("Look at this guy betting on themselves. What a clown.")
-            return
-        if query.user_points(ctx.guild.id, ctx.message.authro.id) < int(arg):
+        if query.user_points(ctx.guild.id, ctx.message.author.id) < int(arg):
+            logger.debug("No points response")
             await ctx.message.reply("Not enough points, pussy.")
             return
+        logger.debug("bet has been valided. time to add it")
         query.add_bet(ctx.message.id, ctx.message.author.id, target, ctx.guild.id, arg)
         points.bet_points(ctx.message.id, ctx.message.author.id, ctx.guild.id, arg)
+        await ctx.message.reply("Bet taken. Good luck!")
+        logger.debug("bet sucessfully added")
         return
 
 
