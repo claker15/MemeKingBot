@@ -8,6 +8,7 @@ logger = logging.getLogger("reaction")
 
 async def check(message, geodude):
     reaction = get(message.reactions, emoji=geodude)
+    print(reaction)
     if reaction.count == 4:
         data = query.get_point_info(message.id)
         sub_from_user = ""

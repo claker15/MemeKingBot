@@ -177,7 +177,7 @@ def get_sub_point(message_id):
     logger.debug("getting information if post has been vetoed with message id: {}".format(message_id))
     data = execute_query(subQuery, [message_id])
     logger.debug("receive response from subQuery: {}".format(data))
-    if data != None:
+    if len(data) > 0:
         return True
     else:
         return False

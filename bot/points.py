@@ -89,3 +89,15 @@ def bet_win_points(message_id, user_id, guild_id, points):
         "message_id": str(message_id)
     }
     query.add_points(obj)
+
+
+def trivia_correct_answer(message_id, user_id, guild_id, points):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": points,
+        "type": "TRIVIA_CORRECT",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
