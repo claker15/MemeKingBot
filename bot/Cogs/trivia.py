@@ -67,14 +67,14 @@ class Trivia(commands.Cog):
         try:
             reaction, user = await ctx.bot.wait_for('reaction_add', timeout=20.0, check=check)
         except asyncio.TimeoutError:
-            await ctx.send("Took too long to answer")
+            await ctx.reply("Took too long to answer")
 
         if self.emoji_to_index.get(reaction.emoji) and self.emoji_to_index[reaction.emoji] == question.correct_index and reaction.count == 2:
             logger.debug("got correct user and correct answer, adding points to user {}".format(user))
             points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id, self.difficulty_scale[question.difficulty])
-            await ctx.send("Correct Answer")
+            await ctx.reply("Correct Answer")
         else:
-            await ctx.send("Wrong Answer. It was {}".format(question.answers[question.correct_index]))
+            await ctx.reply("Wrong Answer. It was {}".format(question.answers[question.correct_index]))
 
 
 def setup(bot):
