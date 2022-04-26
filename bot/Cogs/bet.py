@@ -24,22 +24,22 @@ class bet(commands.Cog):
         logger.debug("starting bet command")
         if ctx.channel.id != int(os.getenv("GAMBLE_CHANNEL")):
             logger.debug("not the right channel response")
-            await ctx.message.reply("Wrong channel, dummy")
+            await ctx.message.reply("Wrong channel")
             return
         target = self.strip_char_from_target(arg1)
         if str(arg1[0]) != '<':
             logger.debug("invalid argument response")
-            await ctx.message.reply('Invalid betting target, bud.')
+            await ctx.message.reply('Invalid betting target')
             return
         if int(arg) < 0:
             logger.debug('negative number response')
-            await ctx.message.reply("Bet cannot be negative, relax buddy.")
+            await ctx.message.reply("Bet cannot be negative")
             return
         if query.user_points(ctx.guild.id, ctx.message.author.id) < int(arg):
             logger.debug("No points response")
-            await ctx.message.reply("Not enough points, pussy.")
+            await ctx.message.reply("Not enough points")
             return
-        logger.debug("bet has been valided. time to add it")
+        logger.debug("bet has been valided. time to add it for user {}".format(ctx.message.author))
         query.add_bet(ctx.message.id, ctx.message.author.id, target, ctx.guild.id, arg)
         points.bet_points(ctx.message.id, ctx.message.author.id, ctx.guild.id, arg)
         await ctx.message.reply("Bet taken. Good luck!")
@@ -48,15 +48,19 @@ class bet(commands.Cog):
 
 
     async def gamble(self, user_picked, guild_id):
+        logger.debug('starting bet payouts for guild {}'.format(guild_id))
         embed = discord.Embed()
         embed.title = "BETS WINNINGS"
         embed.colour = 0x0099ff
         embed_totals = {}
+        logger.debug('getting guild and channel objects')
         guild = self.bot.get_guild(int(guild_id))
         channel = guild.get_channel(int(os.getenv("GAMBLE_CHANNEL")))
+        logger.debug('getting outstanding bets for guild {}'.format(guild_id))
         bets = query.get_bets(guild_id)
         if len(bets) == 0:
             return
+        logger.debug('calculating payouts and listing users who won {}'.format(bets))
         for bet in bets:
             if bet[3] == user_picked:
                 points.bet_win_points(bet[1], bet[2], bet[4], 2 * bet[5])
@@ -64,10 +68,12 @@ class bet(commands.Cog):
                     embed_totals[bet[2]] = 2 * bet[5]
                 else:
                     embed_totals[bet[2]] = embed_totals[bet[2]] + (2 * bet[5])
+        logger.debug('adding totals for user who won bets {}'.format(embed_totals))
         for user in embed_totals:
             name = await guild.fetch_member(user)
             embed.add_field(name=name.nick, value=embed_totals[user], inline=False)
         await channel.send(embed=embed)
+        logger.debug('setting all bets to invalid')
         query.set_bets_invalid()
         return
 
