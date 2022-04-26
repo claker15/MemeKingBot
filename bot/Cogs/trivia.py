@@ -46,6 +46,7 @@ class Trivia(commands.Cog):
     def create_message(self, question):
         embed = discord.Embed()
         embed.title = "Trivia Question"
+        embed.add_field(name="Difficulty", value=html.unescape(question.difficulty), inline=False)
         embed.add_field(name='Category', value=html.unescape(question.category), inline=False)
         embed.add_field(name='Question', value=html.unescape(question.question), inline=False)
         for i in range(len(question.answers)):
