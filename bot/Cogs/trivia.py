@@ -74,7 +74,7 @@ class Trivia(commands.Cog):
             points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id, self.difficulty_scale[question.difficulty])
             await ctx.send("Correct Answer")
         else:
-            await ctx.send("Wrong Answer")
+            await ctx.send("Wrong Answer. It was {}".format(question.answers[question.correct_index]))
 
 
 def setup(bot):
