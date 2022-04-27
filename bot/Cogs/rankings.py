@@ -83,7 +83,10 @@ async def create_rank_message(self, guild, querytype, user_id):
             embed.title = "Current targets of bets for you {}".format(user.nick)
             embed.colour = 0x0099ff
         elif querytype == 'mypoints':
-            users = query.user_points(guild.id, user_id)
+            user = await guild.fetch_member(user_id)
+            userPoints = query.user_points(guild.id, user_id)
+            userObj = [user.nick, userPoints]
+            users = [userObj]
             embed.title = "Your current points"
             embed.colour = 0x0099ff
         for user in users:
