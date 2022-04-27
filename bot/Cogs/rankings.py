@@ -45,6 +45,11 @@ class Ranking(commands.Cog):
         logger.debug("starting mybets command")
         await ctx.send(embed=await create_rank_message(self, ctx.guild, 'mybets', ctx.message.author.id))
 
+    @commands.command()
+    async def mypoints(self, ctx: commands.Context):
+        logger.debug("starting mypoints command")
+        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'mypoints', ctx.message.author.id))
+
 def setup(bot):
     return bot.add_cog(Ranking(bot))
 
@@ -76,6 +81,10 @@ async def create_rank_message(self, guild, querytype, user_id):
             users = query.my_bets(guild.id, user_id)
             user = await guild.fetch_member(users[0][2])
             embed.title = "Current targets of bets for you {}".format(user.nick)
+            embed.colour = 0x0099ff
+        elif querytype == 'mypoints':
+            users = query.user_points(guild.id, user_id)
+            embed.title = "Your current points"
             embed.colour = 0x0099ff
         for user in users:
             logger.debug("Getting nickname for user {0} with count {1}".format(user[0], user[1]))
