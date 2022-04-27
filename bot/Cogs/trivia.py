@@ -29,7 +29,7 @@ class Trivia(commands.Cog):
                                '🇧': 1,
                                '🇨': 2,
                                '🇩': 3}
-        self.difficulty_scale = {'easy': 1, "medium": 2, "hard":3}
+        self.difficulty_scale = {'easy': 1, "medium": 2, "hard": 3}
 
     def get_question(self):
         logger.debug("getting trivia answer from api")
@@ -63,19 +63,21 @@ class Trivia(commands.Cog):
             await message.add_reaction(self.emojis[i])
 
         def check(reaction, user):
-            return user == ctx.message.author and reaction.emoji in self.emojis and reaction.count == 2
+            return user == ctx.message.author and reaction.emoji in self.emojis and reaction.count > 1
 
         try:
             reaction, user = await ctx.bot.wait_for('reaction_add', timeout=20.0, check=check)
+            if self.emoji_to_index.get(reaction.emoji) and self.emoji_to_index[
+                reaction.emoji] == question.correct_index and reaction.count > 1:
+                logger.debug("got correct user and correct answer, adding points to user {}".format(user))
+                points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id,
+                                             self.difficulty_scale[question.difficulty])
+                await ctx.reply("Correct Answer")
+            else:
+                await ctx.reply("Wrong Answer. It was {}".format(question.answers[question.correct_index]))
+
         except asyncio.TimeoutError:
             await ctx.reply("Took too long to answer")
-
-        if self.emoji_to_index.get(reaction.emoji) and self.emoji_to_index[reaction.emoji] == question.correct_index and reaction.count == 2:
-            logger.debug("got correct user and correct answer, adding points to user {}".format(user))
-            points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id, self.difficulty_scale[question.difficulty])
-            await ctx.reply("Correct Answer")
-        else:
-            await ctx.reply("Wrong Answer. It was {}".format(question.answers[question.correct_index]))
 
 
 def setup(bot):
