@@ -32,4 +32,6 @@ jobs:
           port: ${{ secrets.LINODE_PORT }}
           script: |
             memekingstop
+            git pull origin main
+            memekingstart
 
