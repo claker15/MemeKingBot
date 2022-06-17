@@ -4,6 +4,9 @@ package-lock.json
 .vscode/
 /bot/node_modules
 .env
+.bash_history
+.gitconfig
+.sudo_as_admin_successful
 __pycache__/
 /bot/__pycache__/
 /bot/bot.log*
