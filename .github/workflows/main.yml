@@ -31,6 +31,6 @@ jobs:
           password: ${{ secrets.LINODE_PASS }}
           port: ${{ secrets.LINODE_PORT }}
           script: |
-          cd /home/code/MemeKingBot
-          memekingstop
+            cd /home/code/MemeKingBot
+            memekingstop
 
