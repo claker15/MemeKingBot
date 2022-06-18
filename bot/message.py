@@ -156,9 +156,9 @@ async def process_urls(bot, message):
             return
     # send cooldown message if
     elif post is not None:
-        points.cringe_points(post["user_id"], message.guild.id, message.author.id, message.id)
+        points.cringe_points(post[0], message.guild.id, message.author.id, message.id)
         await send_cringe_message(message.author, message.channel,
-                                  post["created"].strftime(
+                                  post[1].strftime(
                                       "%m/%d/%Y, %H:%M:%S"))
         return
 
