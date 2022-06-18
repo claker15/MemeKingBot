@@ -6,8 +6,10 @@ import logging
 import random
 import points as points
 import html
+import json
 
 logger = logging.getLogger("trivia")
+
 
 class Question:
     def __init__(self, category, question, answers, correct_answer, diff):
@@ -22,7 +24,9 @@ class Question:
 class Trivia(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.trivia_url = 'https://opentdb.com/api.php?amount=1'
+        self.trivia_urls = []
+        with open("trivia_urls.json") as file:
+            self.trivia_urls = json.load(file)['urls']
         self.letters = ['A', 'B', 'C', 'D']
         self.emojis = ['🇦', '🇧', '🇨', '🇩']
         self.emoji_to_index = {'🇦': 0,
@@ -33,14 +37,24 @@ class Trivia(commands.Cog):
 
     def get_question(self):
         logger.debug("getting trivia answer from api")
-        res = requests.get(self.trivia_url)
+        trivia_url = random.choice(self.trivia_urls)
+        if trivia_url['category'] is None:
+            trivia_url['category'] = ''
+        if trivia_url['difficulty'] is None:
+            trivia_url['difficulty'] = ''
+        print(trivia_url['url'])
+        res = requests.get(trivia_url['url'])
         logger.debug('Got request from trivia api: {}'.format(res))
-        results = res.json()['results'][0]
+        print(res.json())
+        if trivia_url['results_response'] != "":
+            results = res.json()[trivia_url['results_response']][0]
+        else:
+            results = res.json()[0]
         answers = []
-        answers.append(results['correct_answer'])
-        answers = answers + results['incorrect_answers']
+        answers.append(results[trivia_url['correct_string']])
+        answers = answers + results[trivia_url['incorrect_string']]
         random.shuffle(answers)
-        trivia_obj = Question(results['category'], results['question'], answers, results['correct_answer'], results['difficulty'])
+        trivia_obj = Question(results[trivia_url['category']], results[trivia_url['question']], answers, results[trivia_url['correct_string']], results[trivia_url['difficulty']])
         return trivia_obj
 
     def create_message(self, question):
