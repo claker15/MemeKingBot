@@ -61,6 +61,7 @@ class Sounds(commands.Cog):
             return
 
         path = "./" + sounds[index_to_play][1]
+        path = path.replace('\"', '\'')
         logger.debug("playing sound from path: {}".format(path))
         self.bot.loop.create_task(play_sound(ctx, path))
 
@@ -114,9 +115,7 @@ class Sounds(commands.Cog):
     @commands.command()
     async def delsound(self, ctx: commands.Context):
         logger.debug("starting delsound command")
-        if query.sound_count(ctx.guild.id) >= 10:
-            await ctx.reply("Sound limit for server reached")
-            return
+
         logger.debug("checks passed. Listing sounds to user")
         sounds = query.all_sounds(ctx.guild.id)
         await ctx.reply(embed=build_sound_list_embed(sounds))
