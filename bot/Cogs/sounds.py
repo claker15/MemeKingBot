@@ -74,7 +74,7 @@ class Sounds(commands.Cog):
         logger.debug("checks passed. Getting video metadata")
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': '/sounds/{}/%(title)s.%(ext)s'.format(ctx.guild.id),
+            'outtmpl': './sounds/{}/%(title)s.%(ext)s'.format(ctx.guild.id),
             'postprocessors': [
                 {
                     'key': 'FFmpegExtractAudio',
@@ -90,7 +90,7 @@ class Sounds(commands.Cog):
         if 'entries' in metadata:
             metadata = metadata['entries'][0]
         logger.debug("Got video metadata: {}".format(metadata))
-        if query.get_sound_by_path('/sounds/{}/{}.mp3'.format(ctx.guild.id, metadata['title']), ctx.guild.id):
+        if query.get_sound_by_path('./sounds/{}/{}.mp3'.format(ctx.guild.id, metadata['title']), ctx.guild.id):
             await ctx.reply("Video already exists")
             return
         if metadata['duration'] > 10:
@@ -102,7 +102,7 @@ class Sounds(commands.Cog):
         if 'entries' in data:
             data = data['entries'][0]
         logger.debug("Adding sound with information: {}".format(data))
-        query.add_sound(data['title'], '/sounds/{}/{}.mp3'.format(ctx.guild.id, data['title']), ctx.guild.id)
+        query.add_sound(data['title'], './sounds/{}/{}.mp3'.format(ctx.guild.id, data['title']), ctx.guild.id)
         points.sound_add(ctx.message.id, ctx.author.id, ctx.guild.id)
         await ctx.reply("Sound added successfully")
 
