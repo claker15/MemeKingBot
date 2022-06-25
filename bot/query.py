@@ -52,6 +52,19 @@ myBets = "SELECT target_id, SUM(bet), user_id FROM bets where guild_id='{}' AND 
 
 userPointsQuery = "SELECT SUM(value) as count FROM points WHERE guild_id = '{}' AND user_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id"
 
+allSoundsQuery = "SELECT title, path from sounds where guild_id = '{}'"
+
+soundCountQuery = "SELECT COUNT(*) from sounds where guild_id = '{}'"
+
+addSoundQuery = "INSERT INTO sounds(title, path, guild_id) VALUES ('{}', '{}', '{}')"
+
+getSoundByPathQuery = "SELECT path from sounds where path = '{}' AND guild_id = '{}'"
+
+removeSoundQuery = "DELETE from sounds where title = '{}' AND guild_id = '{}'"
+
+triviaCoolDownQuery = "select date from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' ORDER BY date DESC LIMIT 1"
+
+
 def execute_query(query: str, args: list):
     try:
         conn = mysql.connector.connect(user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"), host=os.getenv("DATABASE_HOST"), database=os.getenv("DATABASE_DATABASE"))
@@ -199,17 +212,57 @@ def get_bets(guild_id):
     logger.debug("receive response from getBets: {}".format(data))
     return data
 
+
 def bet_total(guild_id):
     data = execute_query(betTotals, [guild_id])
     logger.debug("receive response from betTotal: {}".format(data))
     return data
+
 
 def my_bets(guild_id, user_id):
     data = execute_query(myBets, [guild_id, user_id])
     logger.debug("receive response from myBets: {}".format(data))
     return data
 
+
 def user_points(guild_id, user_id):
     data = execute_query(userPointsQuery, [guild_id, user_id])
     logger.debug("receive response from userPointsQuery: {}".format(data))
-    return data[0][0]
+    return data[0][0] if len(data) > 0 else 0
+
+
+def all_sounds(guild_id):
+    data = execute_query(allSoundsQuery, [guild_id])
+    logger.debug('receive response from all_sounds: {}'.format(data))
+    return data
+
+
+def sound_count(guild_id):
+    data = execute_query(soundCountQuery, [guild_id])
+    logger.debug('receive response from sound_count: {}'.format(data))
+    return int(data[0][0])
+
+
+def add_sound(title, path, guild_id):
+    data = execute_query(addSoundQuery, [title, path, guild_id])
+    logger.debug('received response from addSoundQuery: {}'.format(data))
+    return True
+
+
+def get_sound_by_path(path, guild_id):
+    data = execute_query(getSoundByPathQuery, [path, guild_id])
+    logger.debug('received response from getSoundByPathQuery: {}'.format(data))
+    return True if len(data) > 0 else False
+
+
+def delete_sound(title, guild_id):
+    data = execute_query(removeSoundQuery, [title, guild_id])
+    logger.debug('received response from removeSoundQuery: {}'.format(data))
+    return True
+
+
+def trivia_cooldown(user_id, guild_id):
+    data = execute_query(triviaCoolDownQuery, [user_id, guild_id])
+    logger.debug('received response from triviaCoolDownQuery: {}'.format(data))
+    return data[0][0] if len(data) > 0 else None
+

@@ -14,6 +14,9 @@ class king_help(commands.Cog):
         embed.add_field(name='!help', value='Shows this message',inline=False)
         embed.add_field(name='!bet', value='Bet on who will receive the next point from a relax. Use form !bet BetValue @UserChoice',inline=False)
         embed.add_field(name='!trivia', value="Answer a question right and get some memekingpoints", inline=False)
+        embed.add_field(name="!sounds", value="Play a fun sounds at the expense of some points")
+        embed.add_field(name="!addsound", value="Add a new sound to the list of available sounds")
+        embed.add_field(name="!delsound", value="Remove sound from list")
         await ctx.send(embed=embed)
 
 

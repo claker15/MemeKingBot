@@ -55,6 +55,7 @@ bot.load_extension("Cogs.help")
 bot.load_extension("Cogs.track")
 bot.load_extension("Cogs.bet")
 bot.load_extension("Cogs.trivia")
+bot.load_extension("Cogs.sounds")
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
@@ -80,8 +81,8 @@ async def on_message(message):
     else:
         logger.debug("Parsing other contents of message")
         await king_message.parse_message(bot, message)
-        geodude = await message.guild.fetch_emoji("358102351287943178")
-        await message.add_reaction(geodude)
+        #geodude = await message.guild.fetch_emoji("358102351287943178")
+        #await message.add_reaction(geodude)
 
 @bot.event
 async def on_raw_reaction_add(payload):

@@ -13,5 +13,6 @@ __pycache__/
 /bot/Cogs/__pycache__/*
 bot/Cogs/__pycache__/*
 Cogs/__pycache__/*
-
+/bot/ffmpeg.exe
+/bot/sounds
 .idea/

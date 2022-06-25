@@ -4,6 +4,8 @@ from discord.ext import commands
 import requests
 import logging
 import random
+import datetime
+import query as query
 import points as points
 import html
 import json
@@ -21,6 +23,7 @@ class Question:
                 self.correct_index = i
         self.difficulty = diff
 
+
 class Trivia(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -34,6 +37,19 @@ class Trivia(commands.Cog):
                                '🇨': 2,
                                '🇩': 3}
         self.difficulty_scale = {'easy': 1, "medium": 2, "hard": 3}
+
+    def cool_down(self, author_id, guild_id):
+        logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
+        last_post_time = query.triviaCoolDownQuery(author_id, guild_id)
+        if last_post_time is None:
+            return False
+        now = datetime.datetime.now()
+        diff_time = (now - last_post_time).seconds / 60.0
+        logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
+        if diff_time < 5.0:
+            return True
+        else:
+            return False
 
     def get_question(self):
         logger.debug("getting trivia answer from api")
@@ -82,10 +98,10 @@ class Trivia(commands.Cog):
         try:
             reaction, user = await ctx.bot.wait_for('reaction_add', timeout=20.0, check=check)
             if self.emoji_to_index.get(reaction.emoji) is not None and self.emoji_to_index[
-                reaction.emoji] == question.correct_index and reaction.count > 1:
+                 reaction.emoji] == question.correct_index and reaction.count > 1:
                 logger.debug("got correct user and correct answer, adding points to user {}".format(user))
                 points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id,
-                                             self.difficulty_scale[question.difficulty])
+                                      self.difficulty_scale[question.difficulty])
                 await ctx.reply("Correct Answer")
             else:
                 await ctx.reply("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
