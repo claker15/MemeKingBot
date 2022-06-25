@@ -86,6 +86,9 @@ class Trivia(commands.Cog):
     @commands.command()
     async def trivia(self, ctx: commands.Context):
         logger.debug("starting trivia command")
+        if self.cool_down(self, ctx.author.id. ctx.guild.id):
+            await ctx.reply("On cooldown")
+            return
         question = self.get_question()
         embed = self.create_message(question)
         message = await ctx.reply(embed=embed)

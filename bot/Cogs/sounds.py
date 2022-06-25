@@ -37,6 +37,11 @@ class Sounds(commands.Cog):
         if ctx.author.voice is None:
             await ctx.reply("Must be connected to a voice channel")
             return
+
+        if query.user_points(ctx.guild.id, ctx.author.id) < 5:
+            await ctx.reply("Not enough points. Need 5.")
+            return
+
         sounds = query.all_sounds(ctx.guild.id)
         await ctx.reply(embed=build_sound_list_embed(sounds))
 
