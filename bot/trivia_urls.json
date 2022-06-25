@@ -10,15 +10,6 @@
       "results_response": "results"
     },
     {
-      "url": "https://the-trivia-api.com/api/questions?limit=1",
-      "correct_string": "correctAnswer",
-      "incorrect_string": "incorrectAnswers",
-      "category": "category",
-      "difficulty": "difficulty",
-      "question": "question",
-      "results_response": ""
-    },
-    {
       "url": "https://beta-trivia.bongo.best/?search=&limit=1",
       "correct_string": "correct_answer",
       "incorrect_string": "incorrect_answers",
