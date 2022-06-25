@@ -1,4 +1,3 @@
-from http import client
 import query as query
 import points as points
 import logging

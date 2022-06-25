@@ -1,18 +1,13 @@
-import logging
-
 import discord
 import os
 import logging
 from dotenv import load_dotenv
-from urllib.parse import urlparse, parse_qs
-import re
 import requests
 import datetime
 from io import BytesIO
 import imagehash
 from PIL import Image
 from urlextract import URLExtract
-from hashlib import sha256
 import query as query
 import points as points
 
@@ -24,7 +19,7 @@ logger = logging.getLogger("message")
 async def parse_message(bot, message):
     if "-play" in message.content:
         return
-    urls = extract_urls(message.content)
+    urls = get_urls(message.content)
     if len(urls) > 0:
         logger.debug("urls found in message")
         await process_urls(bot, message)
@@ -33,12 +28,6 @@ async def parse_message(bot, message):
         logger.debug("attachments found in message")
         await process_attachments(bot, message)
         return
-
-
-def extract_urls(content):
-    extractor = URLExtract()
-    urls = extractor.find_urls(content)
-    return urls
 
 
 def create_post_object(hash, path, user_id, guild_id, message_id):
@@ -77,7 +66,7 @@ def save_attachments(image, filename):
 def cool_down(author_id, guild_id):
     logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
     last_post_time = query.get_user_cooldown_date(author_id, guild_id)
-    if last_post_time == None:
+    if last_post_time is None:
         return False
     now = datetime.datetime.now()
     diff_time = (now - last_post_time).seconds / 60.0

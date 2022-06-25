@@ -101,3 +101,39 @@ def trivia_correct_answer(message_id, user_id, guild_id, points):
         "message_id": str(message_id)
     }
     query.add_points(obj)
+
+
+def sound_redemption(message_id, user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -5,
+        "type": "SOUND_PLAY",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
+
+
+def sound_add(message_id, user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -10,
+        "type": "SOUND_ADD",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
+
+
+def sound_remove(message_id, user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -10,
+        "type": "SOUND_DEL",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
