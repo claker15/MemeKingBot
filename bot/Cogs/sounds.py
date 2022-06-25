@@ -115,7 +115,9 @@ class Sounds(commands.Cog):
     @commands.command()
     async def delsound(self, ctx: commands.Context):
         logger.debug("starting delsound command")
-
+        if query.user_points(ctx.guild.id, ctx.author.id) < 10:
+            await ctx.reply("Not enough points. Need 10.")
+            return
         logger.debug("checks passed. Listing sounds to user")
         sounds = query.all_sounds(ctx.guild.id)
         await ctx.reply(embed=build_sound_list_embed(sounds))
