@@ -40,7 +40,7 @@ class Trivia(commands.Cog):
 
     def cool_down(self, author_id, guild_id):
         logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
-        last_post_time = query.triviaCoolDownQuery(author_id, guild_id)
+        last_post_time = query.trivia_cooldown(author_id, guild_id)
         if last_post_time is None:
             return False
         now = datetime.datetime.now()
