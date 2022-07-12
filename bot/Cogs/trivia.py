@@ -87,11 +87,17 @@ class Trivia(commands.Cog):
     async def trivia(self, ctx: commands.Context):
         logger.debug("starting trivia command")
         if self.cool_down(self, ctx.author.id. ctx.guild.id):
+            logger.debug("trvia debug 0")
             await ctx.reply("On cooldown")
+            logger.debug("trvia debug 1")
             return
+        logger.debug("trvia debug 2")
         question = self.get_question()
+        logger.debug("trvia debug 3")
         embed = self.create_message(question)
+        logger.debug("trvia debug 4")
         message = await ctx.reply(embed=embed)
+        logger.debug("trvia debug 5")
         for i in range(len(self.emojis)):
             await message.add_reaction(self.emojis[i])
 
