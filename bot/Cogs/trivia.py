@@ -86,7 +86,7 @@ class Trivia(commands.Cog):
     @commands.command()
     async def trivia(self, ctx: commands.Context):
         logger.debug("starting trivia command")
-        if self.cool_down(self, ctx.author.id. ctx.guild.id):
+        if self.cool_down(ctx.author.id, ctx.guild.id):
             logger.debug("trvia debug 0")
             await ctx.reply("On cooldown")
             logger.debug("trvia debug 1")
