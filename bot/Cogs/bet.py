@@ -63,11 +63,11 @@ class bet(commands.Cog):
         logger.debug('calculating payouts and listing users who won {}'.format(bets))
         for bet in bets:
             if bet[3] == user_picked:
-                points.bet_win_points(bet[1], bet[2], bet[4], 2 * bet[5])
+                points.bet_win_points(bet[1], bet[2], bet[4], 3 * bet[5])
                 if bet[2] not in embed_totals:
-                    embed_totals[bet[2]] = 2 * bet[5]
+                    embed_totals[bet[2]] = 3 * bet[5]
                 else:
-                    embed_totals[bet[2]] = embed_totals[bet[2]] + (2 * bet[5])
+                    embed_totals[bet[2]] = embed_totals[bet[2]] + (3 * bet[5])
         logger.debug('adding totals for user who won bets {}'.format(embed_totals))
         for user in embed_totals:
             name = await guild.fetch_member(user)
