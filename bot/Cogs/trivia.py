@@ -113,7 +113,11 @@ class Trivia(commands.Cog):
                                       self.difficulty_scale[question.difficulty])
                 await ctx.reply("Correct Answer")
             else:
+                logger.debug("got correct user and incorrect answer, removing points from user {}".format(user))
+                points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id,
+                                      self.difficulty_scale[question.difficulty] * -1)
                 await ctx.reply("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
+
 
         except asyncio.TimeoutError:
             await ctx.reply("Took too long to answer")
