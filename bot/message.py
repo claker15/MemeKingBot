@@ -10,6 +10,11 @@ from PIL import Image
 from urlextract import URLExtract
 import query as query
 import points as points
+import pytz
+from wand.wand import Wand
+from dateutil import relativedelta
+from wand.wand_factory import *
+
 
 load_dotenv()
 file_save_path = os.getenv("FILE_SAVE_PATH")
@@ -65,13 +70,16 @@ def save_attachments(image, filename):
 
 def cool_down(author_id, guild_id):
     logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
+    timezone = pytz.timezone('America/New_York')
     last_post_time = query.get_user_cooldown_date(author_id, guild_id)
+    logger.debug("got last_post_time: {0}".format(last_post_time))
     if last_post_time is None:
         return False
-    now = datetime.datetime.now()
-    diff_time = (now - last_post_time).seconds / 60.0
+    now = datetime.datetime.now(timezone)
+    logger.debug("now: {}".format(now))
+    diff_time = now - timezone.localize(last_post_time)
     logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
-    if diff_time < 5.0:
+    if diff_time.seconds / 60 < 5.0:
         return True
     else:
         return False
@@ -94,11 +102,19 @@ async def process_attachments(bot, message):
         query.create_post(obj)
         if cooldown:
             new_user = query.get_random_user(message.guild.id)
+            wand = create_wand(query.get_user_wand(message.author.id))
+            if wand.roll():
+                logger.debug("adding wand points")
+                points.wand_points(message.id, new_user, message.guild.id, wand.get_points())
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
+            wand = create_wand(query.get_user_wand(message.author.id))
+            if wand.roll():
+                logger.debug("adding wand points")
+                points.wand_points(message.id, message.author.id, message.guild.id, wand.get_points())
             points.reg_points(message.author.id, message.guild.id, message.id)
             return
     # send cooldown message if
@@ -136,11 +152,19 @@ async def process_urls(bot, message):
         query.create_post(obj)
         if cooldown:
             new_user = query.get_random_user(message.guild.id)
+            wand = create_wand(query.get_user_wand(message.author.id))
+            if wand.roll():
+                logger.debug("adding wand points")
+                points.wand_points(message.id, new_user, message.guild.id, wand.get_points())
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", new_user, message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
+            wand = create_wand(query.get_user_wand(message.author.id))
+            if wand.roll():
+                logger.debug("adding wand points")
+                points.wand_points(message.id, message.author.id, message.guild.id, wand.get_points())
             points.reg_points(message.author.id, message.guild.id, message.id)
             return
     # send cooldown message if

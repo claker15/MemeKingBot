@@ -1,6 +1,6 @@
 import time
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import logging
 import query as query
 import points as points
@@ -10,7 +10,7 @@ logger = logging.getLogger("soundboard")
 
 
 def build_sound_list_embed(sound_list):
-    embed = discord.Embed()
+    embed = disnake.Embed()
     embed.title = "Available Sounds. Type # to play sound. Costs 5 points."
     for i in range(len(sound_list)):
         embed.add_field(name=str(i+1), value=sound_list[i][0], inline=False)
@@ -20,7 +20,7 @@ def build_sound_list_embed(sound_list):
 async def play_sound(ctx, path):
     voice_channel = ctx.author.voice.channel
     await voice_channel.connect()
-    source = discord.FFmpegPCMAudio(path)
+    source = disnake.FFmpegPCMAudio(path)
     ctx.voice_client.play(source)
     while ctx.voice_client.is_playing():
         time.sleep(1)

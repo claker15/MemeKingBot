@@ -1,62 +1,60 @@
-import discord
+import disnake
 import requests
 import logging
 import json
-from discord.ext import commands
+from disnake.ext import commands
 from discord.ext.commands.core import guild_only
 import query as query
 
-
-
-url = "http://localhost:4000/graphql"
 logger = logging.getLogger("rankings")
+
 
 class Ranking(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def ranking(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives weekly rankings")
+    async def ranking(self, inter: disnake.CommandInteraction):
         logger.debug("starting weekly ranking command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "ranking", ''))
+        await inter.send(embed=await create_rank_message(inter.guild, "ranking", ''))
 
-    @commands.command()
-    async def crowns(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives rankings of crowns")
+    async def crowns(self, inter: disnake.CommandInteraction):
         logger.debug("starting king crowns command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "crowns", ''))
+        await inter.send(embed=await create_rank_message(inter.guild, "crowns", ''))
 
-    @commands.command()
-    async def bigrelax(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives current ranking of relaxes in the week")
+    async def bigrelax(self, inter: disnake.CommandInteraction):
         logger.debug("starting most relax command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "relax", ''))
+        await inter.send(embed=await create_rank_message(inter.guild, "relax", ''))
 
-    @commands.command()
-    async def bigcringe(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives current ranking of cringes in the week")
+    async def bigcringe(self, inter: disnake.CommandInteraction):
         logger.debug("starting most cringe command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, "cringe", ''))
+        await inter.send(embed=await create_rank_message(inter.guild, "cringe", ''))
 
-    @commands.command()
-    async def betboard(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives current bets that are outstanding")
+    async def betboard(self, inter: disnake.CommandInteraction):
         logger.debug("starting bet board command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'betboard', ''))
+        await inter.send(embed=await create_rank_message(inter.guild, 'betboard', ''))
 
-    @commands.command()
-    async def mybets(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives user's bets that are outstanding")
+    async def mybets(self, inter: disnake.CommandInteraction):
         logger.debug("starting mybets command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'mybets', ctx.message.author.id))
+        await inter.send(embed=await create_rank_message(inter.guild, 'mybets', inter.author.id))
 
-    @commands.command()
-    async def mypoints(self, ctx: commands.Context):
+    @commands.slash_command(description="Gives a user's current point value")
+    async def mypoints(self, inter: disnake.CommandInteraction):
         logger.debug("starting mypoints command")
-        await ctx.send(embed=await create_rank_message(self, ctx.guild, 'mypoints', ctx.message.author.id))
+        await inter.send(embed=await create_rank_message(inter.guild, 'mypoints', inter.author.id))
 
 def setup(bot):
     return bot.add_cog(Ranking(bot))
 
 
-async def create_rank_message(self, guild, querytype, user_id):
+async def create_rank_message(guild, querytype, user_id):
         users = []
-        embed = discord.Embed()
+        embed = disnake.Embed()
         if querytype == "ranking":
             users = query.rankings(guild.id)
             embed.title = "Current Meme King Rankings"
