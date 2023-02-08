@@ -150,6 +150,18 @@ def wand_points(message_id, user_id, guild_id, points):
     }
     query.add_points(obj)
 
+
+def upgrade_points(message_id, user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -50,
+        "type": "WAND_UPGRADE",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)
+
 def starting_points(user_id, guild_id):
     obj = {
         "user_id": str(user_id),
