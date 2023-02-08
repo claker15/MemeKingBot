@@ -274,7 +274,7 @@ def trivia_cooldown(user_id, guild_id):
 def get_user_wand(user_id):
     data = execute_query(userWandQuery, [user_id])
     logger.debug('received response from userWandQuery: {}'.format(data))
-    return data[0]
+    return data[0][0]
 
 
 def change_user_wand(wand, user_id):
