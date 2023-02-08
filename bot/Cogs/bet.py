@@ -23,7 +23,7 @@ class bet(commands.Cog):
         load_dotenv()
 
     @commands.slash_command(description="Make a bet on who will receive the next relax points")
-    async def bet(self, inter: disnake.CommandInteraction, arg, arg1):
+    async def bet(self, inter: disnake.CommandInteraction, arg: int, arg1: disnake.User):
         logger.debug("starting bet command")
         if inter.channel.id != int(os.getenv("GAMBLE_CHANNEL")):
             logger.debug("not the right channel response")

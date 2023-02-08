@@ -52,12 +52,15 @@ logger = logging.getLogger("bot")
 load_dotenv()
 intents = disnake.Intents.all()
 bot = commands.InteractionBot(intents=intents)
+
 bot.load_extension("Cogs.rankings")
 bot.load_extension("Cogs.help")
 bot.load_extension("Cogs.track")
 bot.load_extension("Cogs.bet")
 bot.load_extension("Cogs.trivia")
+bot.load_extension("Cogs.equip")
 #bot.load_extension("Cogs.sounds")
+
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
