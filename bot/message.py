@@ -60,6 +60,10 @@ async def send_cringe_message(author, channel, date, original_user_id):
         "{0} Cringe. Old meme, :b:ruh. Last posted at {1} by {2} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
             author.mention, date, orignal.mention))
 
+async def send_equip_message(message, points):
+    logger.debug("Equipment rolled. Sending message")
+    await message.reply("You're lucky. Your spell had the added effect of {0} points".format(points))
+
 
 def save_attachments(image, filename):
     logger.debug("saving new image with filename: {0}".format(filename))
@@ -105,7 +109,9 @@ async def process_attachments(bot, message):
             wand = create_wand(query.get_user_wand(message.author.id))
             if wand.roll():
                 logger.debug("adding wand points")
-                points.wand_points(message.id, new_user, message.guild.id, wand.get_points())
+                rolled_points = wand.get_points()
+                await send_equip_message(message, rolled_points)
+                points.wand_points(message.id, new_user, message.guild.id, rolled_points)
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
@@ -114,7 +120,9 @@ async def process_attachments(bot, message):
             wand = create_wand(query.get_user_wand(message.author.id))
             if wand.roll():
                 logger.debug("adding wand points")
-                points.wand_points(message.id, message.author.id, message.guild.id, wand.get_points())
+                rolled_points = wand.get_points()
+                await send_equip_message(message, rolled_points)
+                points.wand_points(message.id, message.author.id, message.guild.id, rolled_points)
             points.reg_points(message.author.id, message.guild.id, message.id)
             return
     # send cooldown message if
@@ -155,7 +163,9 @@ async def process_urls(bot, message):
             wand = create_wand(query.get_user_wand(message.author.id))
             if wand.roll():
                 logger.debug("adding wand points")
-                points.wand_points(message.id, new_user, message.guild.id, wand.get_points())
+                rolled_points = wand.get_points()
+                await send_equip_message(message, rolled_points)
+                points.wand_points(message.id, new_user, message.guild.id, rolled_points)
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", new_user, message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
@@ -164,7 +174,9 @@ async def process_urls(bot, message):
             wand = create_wand(query.get_user_wand(message.author.id))
             if wand.roll():
                 logger.debug("adding wand points")
-                points.wand_points(message.id, message.author.id, message.guild.id, wand.get_points())
+                rolled_points = wand.get_points()
+                await send_equip_message(message, rolled_points)
+                points.wand_points(message.id, message.author.id, message.guild.id, rolled_points)
             points.reg_points(message.author.id, message.guild.id, message.id)
             return
     # send cooldown message if
