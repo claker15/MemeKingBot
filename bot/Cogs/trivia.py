@@ -1,6 +1,6 @@
 import asyncio
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import requests
 import logging
 import random
@@ -74,7 +74,7 @@ class Trivia(commands.Cog):
         return trivia_obj
 
     def create_message(self, question):
-        embed = discord.Embed()
+        embed = disnake.Embed()
         embed.title = "Trivia Question"
         embed.add_field(name="Difficulty", value=html.unescape(question.difficulty), inline=False)
         embed.add_field(name='Category', value=html.unescape(question.category), inline=False)
@@ -83,12 +83,12 @@ class Trivia(commands.Cog):
             embed.add_field(name=self.letters[i], value=html.unescape(question.answers[i]), inline=True)
         return embed
 
-    @commands.command()
-    async def trivia(self, ctx: commands.Context):
+    @commands.slash_command(description="Answer a trivia question for points")
+    async def trivia(self, inter: disnake.CommandInteraction):
         logger.debug("starting trivia command")
-        if self.cool_down(ctx.author.id, ctx.guild.id):
+        if self.cool_down(inter.author.id, inter.guild.id):
             logger.debug("trvia debug 0")
-            await ctx.reply("On cooldown")
+            await inter.response.reply("On cooldown")
             logger.debug("trvia debug 1")
             return
         logger.debug("trvia debug 2")
@@ -96,31 +96,31 @@ class Trivia(commands.Cog):
         logger.debug("trvia debug 3")
         embed = self.create_message(question)
         logger.debug("trvia debug 4")
-        message = await ctx.reply(embed=embed)
+        message = await inter.response.reply(embed=embed)
         logger.debug("trvia debug 5")
         for i in range(len(self.emojis)):
             await message.add_reaction(self.emojis[i])
 
         def check(reaction, user):
-            return user == ctx.message.author and reaction.emoji in self.emojis and reaction.count > 1
+            return user == inter.author and reaction.emoji in self.emojis and reaction.count > 1
 
         try:
-            reaction, user = await ctx.bot.wait_for('reaction_add', timeout=20.0, check=check)
+            reaction, user = await inter.bot.wait_for('reaction_add', timeout=20.0, check=check)
             if self.emoji_to_index.get(reaction.emoji) is not None and self.emoji_to_index[
                  reaction.emoji] == question.correct_index and reaction.count > 1:
                 logger.debug("got correct user and correct answer, adding points to user {}".format(user))
-                points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id,
+                points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                       self.difficulty_scale[question.difficulty])
-                await ctx.reply("Correct Answer")
+                await inter.response.reply("Correct Answer")
             else:
                 logger.debug("got correct user and incorrect answer, removing points from user {}".format(user))
-                points.trivia_correct_answer(ctx.message.id, ctx.message.author.id, ctx.guild.id,
+                points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                       self.difficulty_scale[question.difficulty] * -1)
-                await ctx.reply("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
+                await inter.response.reply("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
 
 
         except asyncio.TimeoutError:
-            await ctx.reply("Took too long to answer")
+            await inter.response.reply("Took too long to answer")
 
 
 def setup(bot):

@@ -137,3 +137,15 @@ def sound_remove(message_id, user_id, guild_id):
         "message_id": str(message_id)
     }
     query.add_points(obj)
+
+
+def wand_points(message_id, user_id, guild_id, points):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": points,
+        "type": "WAND",
+        "message_id": str(message_id)
+    }
+    query.add_points(obj)

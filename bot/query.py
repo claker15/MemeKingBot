@@ -64,6 +64,10 @@ removeSoundQuery = "DELETE from sounds where title = '{}' AND guild_id = '{}'"
 
 triviaCoolDownQuery = "select date from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' ORDER BY date DESC LIMIT 1"
 
+userWandQuery = "SELECT wand from user where user_id='{}'"
+
+userWandChangeQuery = "UPDATE user set wand='{}' where user_id='{}'"
+
 
 def execute_query(query: str, args: list):
     try:
@@ -266,3 +270,14 @@ def trivia_cooldown(user_id, guild_id):
     logger.debug('received response from triviaCoolDownQuery: {}'.format(data))
     return data[0][0] if len(data) > 0 else None
 
+
+def get_user_wand(user_id):
+    data = execute_query(userWandQuery, [user_id])
+    logger.debug('received response from userWandQuery: {}'.format(data))
+    return data[0]
+
+
+def change_user_wand(wand, user_id):
+    data = execute_query(userWandChangeQuery, [wand, user_id])
+    logger.debug('received response from userWandChangeQuery: {}'.format(data))
+    return data
