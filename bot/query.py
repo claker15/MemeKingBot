@@ -26,6 +26,8 @@ getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WH
 
 rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
 
+getAllUsersWhoPostedLastWeek = "SELECT user_id FROM points WHERE guild_id = '{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 GROUP BY user_id"
+
 crownsQuery = "select user_id, crowns as count from user where guild_id='{}' GROUP BY user_id ORDER BY count DESC limit 5"
 
 urlCheck = "SELECT '1' FROM url where guild_id='{}' AND LOCATE(url, '{}') > 0"
@@ -280,4 +282,10 @@ def get_user_wand(user_id):
 def change_user_wand(wand, user_id):
     data = execute_query(userWandChangeQuery, [wand, user_id])
     logger.debug('received response from userWandChangeQuery: {}'.format(data))
+    return data
+
+def get_users_who_posted_last_week(guild_id):
+    logger.debug("Getting list of users who posted last week from guild: {0}".format(guild_id))
+    data = execute_query(getAllUsersWhoPostedLastWeek, [guild_id])
+    logger.debug("received as response from getAllUsersWhoPostedLastWeek query: {0}".format(data))
     return data

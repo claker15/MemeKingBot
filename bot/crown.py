@@ -3,6 +3,7 @@ import logging
 import os
 from dotenv import load_dotenv
 import query as query
+import points as points
 
 load_dotenv()
 logger = logging.getLogger("crown")
@@ -27,3 +28,10 @@ async def crown(ctx):
         await channel.send("👑{0} is Meme King of the Week 👑".format(member.nick))
         logger.debug("succesfully crowned {0} for server {1}".format(member.nick, guild_id))
 
+    # add starting points for all people who posted last week
+    users = query.get_users_who_posted_last_week(guild_id)
+
+    for user in users:
+        userid = user[0]
+        logger.debug("Giving starting points to user {0}".format(userid))
+        points.starting_points(userid, guild_id)
