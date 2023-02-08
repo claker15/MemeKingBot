@@ -1,4 +1,4 @@
-import discord
+import disnake
 import os
 import logging
 from dotenv import load_dotenv
@@ -50,7 +50,7 @@ async def send_relax_message(author, channel, new_user):
     logger.debug("{0} has not waited for cooldown period".format(author.id))
     member = await channel.guild.fetch_member(new_user)
     await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention),
-                       file=discord.File(fp="/home/memes/Relax.png"))
+                       file=disnake.File(fp="/home/memes/Relax.png"))
 
 
 async def send_cringe_message(author, channel, date, original_user_id):
