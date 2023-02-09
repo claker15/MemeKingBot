@@ -99,7 +99,7 @@ class Trivia(commands.Cog):
         message = await inter.response.send_message(embed=embed)
         logger.debug("trvia debug 5")
         for i in range(len(self.emojis)):
-            await message.add_reaction(self.emojis[i])
+            await message.on_reaction_add(self.emojis[i])
 
         def check(reaction, user):
             return user == inter.author and reaction.emoji in self.emojis and reaction.count > 1
