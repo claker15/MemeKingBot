@@ -88,7 +88,7 @@ class Trivia(commands.Cog):
         logger.debug("starting trivia command")
         if self.cool_down(inter.author.id, inter.guild.id):
             logger.debug("trvia debug 0")
-            await inter.response.reply("On cooldown")
+            await inter.response.send_message("On cooldown")
             logger.debug("trvia debug 1")
             return
         logger.debug("trvia debug 2")
@@ -96,7 +96,7 @@ class Trivia(commands.Cog):
         logger.debug("trvia debug 3")
         embed = self.create_message(question)
         logger.debug("trvia debug 4")
-        message = await inter.response.reply(embed=embed)
+        message = await inter.response.send_message(embed=embed)
         logger.debug("trvia debug 5")
         for i in range(len(self.emojis)):
             await message.add_reaction(self.emojis[i])
@@ -111,16 +111,16 @@ class Trivia(commands.Cog):
                 logger.debug("got correct user and correct answer, adding points to user {}".format(user))
                 points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                       self.difficulty_scale[question.difficulty])
-                await inter.response.reply("Correct Answer")
+                await inter.response.send_message("Correct Answer")
             else:
                 logger.debug("got correct user and incorrect answer, removing points from user {}".format(user))
                 points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                       self.difficulty_scale[question.difficulty] * -1)
-                await inter.response.reply("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
+                await inter.response.send_message("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
 
 
         except asyncio.TimeoutError:
-            await inter.response.reply("Took too long to answer")
+            await inter.response.send_message("Took too long to answer")
 
 
 def setup(bot):
