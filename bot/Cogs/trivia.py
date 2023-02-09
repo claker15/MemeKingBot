@@ -36,7 +36,7 @@ class Trivia(commands.Cog):
                                '🇧': 1,
                                '🇨': 2,
                                '🇩': 3}
-        self.difficulty_scale = {'easy': 1, "medium": 2, "hard": 3}
+        self.difficulty_scale = {'easy': 2, "medium": 4, "hard": 6}
 
     def cool_down(self, author_id, guild_id):
         logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
