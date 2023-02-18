@@ -33,7 +33,7 @@ class Equipment(commands.Cog):
     @commands.slash_command(description="Shows which wand a user currently has")
     async def mywand(self, inter: disnake.CommandInteraction):
         logger.debug("starting wand_check command")
-        current_wand = query.get_user_wand(inter.author.id)
+        current_wand = query.get_user_wand(inter.author.id, inter.guild.id)
         await inter.response.send_message("You have a wand made out of {0}".format(current_wand))
 
 
