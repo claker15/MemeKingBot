@@ -29,9 +29,9 @@ async def crown(ctx):
         logger.debug("Successfully crowned {0} for server {1}".format(member.nick, guild_id))
 
     # add starting points for all people who posted last week
-    users = query.get_users_who_posted_last_week(ctx.guild_id)
+    users = query.get_users_who_posted_last_week(ctx.guild.id)
 
     for user in users:
         userid = user[0]
         logger.debug("Giving starting points to user {0}".format(userid))
-        points.starting_points(userid, ctx.guild_id)
+        points.starting_points(userid, ctx.guild.id)
