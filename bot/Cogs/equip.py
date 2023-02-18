@@ -23,7 +23,7 @@ class Equipment(commands.Cog):
         else:
             logger.debug("user has enough points for upgrade")
             upgrade_points(inter.id, inter.author.id, inter.guild.id)
-            current_wand = query.get_user_wand(inter.author.id)
+            current_wand = query.get_user_wand(inter.author.id, inter.guild.id)
             logger.debug("user has {} wand".format(current_wand))
             new_wand = upgrade_wand(current_wand)
             logger.debug("user is going to get {} wand".format(new_wand))
