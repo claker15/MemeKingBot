@@ -106,7 +106,7 @@ async def process_attachments(bot, message):
         query.create_post(obj)
         if cooldown:
             new_user = query.get_random_user(message.guild.id)
-            wand = create_wand(query.get_user_wand(message.author.id))
+            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.debug("adding wand points")
                 rolled_points = wand.get_points()
@@ -117,7 +117,7 @@ async def process_attachments(bot, message):
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
-            wand = create_wand(query.get_user_wand(message.author.id))
+            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.debug("adding wand points")
                 rolled_points = wand.get_points()
@@ -160,7 +160,7 @@ async def process_urls(bot, message):
         query.create_post(obj)
         if cooldown:
             new_user = query.get_random_user(message.guild.id)
-            wand = create_wand(query.get_user_wand(message.author.id))
+            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.debug("adding wand points")
                 rolled_points = wand.get_points()
@@ -171,7 +171,7 @@ async def process_urls(bot, message):
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
-            wand = create_wand(query.get_user_wand(message.author.id))
+            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.debug("adding wand points")
                 rolled_points = wand.get_points()

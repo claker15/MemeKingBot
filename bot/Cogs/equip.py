@@ -27,7 +27,7 @@ class Equipment(commands.Cog):
             logger.debug("user has {} wand".format(current_wand))
             new_wand = upgrade_wand(current_wand)
             logger.debug("user is going to get {} wand".format(new_wand))
-            query.change_user_wand(new_wand, inter.author.id)
+            query.change_user_wand(new_wand, inter.author.id, inter.guild.id)
             await inter.response.send_message("Wand has been upgraded to {0}".format(new_wand))
 
     @commands.slash_command(description="Shows which wand a user currently has")
