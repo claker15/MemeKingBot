@@ -86,7 +86,6 @@ class Trivia(commands.Cog):
 
     @commands.slash_command(description="Answer a trivia question for points")
     async def trivia(self, inter: disnake.CommandInteraction):
-        await inter.response.defer()
         logger.debug("starting trivia command")
         if self.cool_down(inter.author.id, inter.guild.id):
             logger.debug("trvia debug 0")
@@ -94,6 +93,7 @@ class Trivia(commands.Cog):
             logger.debug("trvia debug 1")
             return
         logger.debug("trvia debug 2")
+        await inter.response.defer()
         self.question = self.get_question()
         logger.debug("trvia debug 3")
         embed = self.create_message(self.question)
