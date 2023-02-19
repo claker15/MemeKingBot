@@ -32,11 +32,12 @@ class Trivia(commands.Cog):
             self.trivia_urls = json.load(file)['urls']
         self.letters = ['A', 'B', 'C', 'D']
         self.emojis = ['🇦', '🇧', '🇨', '🇩']
-        self.emoji_to_index = {'🇦': 0,
-                               '🇧': 1,
-                               '🇨': 2,
-                               '🇩': 3}
+        self.emoji_to_index = {'A': 0,
+                               'B': 1,
+                               'C': 2,
+                               'D': 3}
         self.difficulty_scale = {'easy': 2, "medium": 4, "hard": 6}
+        self.question = 0
 
     def cool_down(self, author_id, guild_id):
         logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
@@ -85,6 +86,7 @@ class Trivia(commands.Cog):
 
     @commands.slash_command(description="Answer a trivia question for points")
     async def trivia(self, inter: disnake.CommandInteraction):
+        await inter.response.defer()
         logger.debug("starting trivia command")
         if self.cool_down(inter.author.id, inter.guild.id):
             logger.debug("trvia debug 0")
@@ -92,36 +94,61 @@ class Trivia(commands.Cog):
             logger.debug("trvia debug 1")
             return
         logger.debug("trvia debug 2")
-        question = self.get_question()
+        self.question = self.get_question()
         logger.debug("trvia debug 3")
-        embed = self.create_message(question)
+        embed = self.create_message(self.question)
         logger.debug("trvia debug 4")
-        message = await inter.response.send_message(embed=embed)
+        view = TriviaButtons()
+        message = await inter.channel.send(embed=embed, view=view)
         logger.debug("trvia debug 5")
-        for i in range(len(self.emojis)):
-            await message.on_reaction_add(self.emojis[i])
 
-        def check(reaction, user):
-            return user == inter.author and reaction.emoji in self.emojis and reaction.count > 1
+        await view.wait()
+        for child in view.children:
+            if isinstance(child, disnake.ui.Button):
+                child.disabled = True
+        await message.edit(view=view)
 
-        try:
-            reaction, user = await inter.bot.wait_for('reaction_add', timeout=20.0, check=check)
-            if self.emoji_to_index.get(reaction.emoji) is not None and self.emoji_to_index[
-                 reaction.emoji] == question.correct_index and reaction.count > 1:
-                logger.debug("got correct user and correct answer, adding points to user {}".format(user))
-                points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
-                                      self.difficulty_scale[question.difficulty])
-                await inter.response.send_message("Correct Answer")
-            else:
-                logger.debug("got correct user and incorrect answer, removing points from user {}".format(user))
-                points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
-                                      self.difficulty_scale[question.difficulty] * -1)
-                await inter.response.send_message("Wrong Answer. It was {}".format(html.unescape(question.answers[question.correct_index])))
+        if view.value == self.question.correct_index:
+            logger.debug("Got correct answer. Awarding points")
+            points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
+                                           self.difficulty_scale[self.question.difficulty])
+            await inter.channel.send("Correct answer. You earned" + str(self.difficulty_scale[self.question.difficulty]) + " points")
+            await inter.edit_original_response(content="Received Answer")
+        else:
+            logger.debug("Got wrong answer. Removing points")
+            points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id, self.difficulty_scale[self.question.difficulty] * -1)
+            await inter.channel.send("Incorrect answer. You lost "+ str(self.difficulty_scale[self.question.difficulty]) + " points")
+            await inter.edit_original_response(content="Received Answer")
 
 
-        except asyncio.TimeoutError:
-            await inter.response.send_message("Took too long to answer")
+class TriviaButtons(disnake.ui.View):
+    def __init__(self):
+        super().__init__(timeout=10.0)
+        self.value = None
 
+    @disnake.ui.button(label='A', style=disnake.ButtonStyle.primary)
+    async def a_hit(self, button, inter):
+        await inter.response.send_message("Input Received...", ephemeral=True)
+        self.value = 0
+        self.stop()
+
+    @disnake.ui.button(label='B', style=disnake.ButtonStyle.primary)
+    async def b_hit(self, button, inter):
+        await inter.response.send_message("Input Received...", ephemeral=True)
+        self.value = 1
+        self.stop()
+
+    @disnake.ui.button(label='C', style=disnake.ButtonStyle.primary)
+    async def c_hit(self, button, inter):
+        await inter.response.send_message("Input Received...", ephemeral=True)
+        self.value = 2
+        self.stop()
+
+    @disnake.ui.button(label='D', style=disnake.ButtonStyle.primary)
+    async def d_hit(self, button, inter):
+        await inter.response.send_message("Input Received...", ephemeral=True)
+        self.value = 3
+        self.stop()
 
 def setup(bot):
     return bot.add_cog(Trivia(bot))

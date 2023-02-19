@@ -38,9 +38,9 @@ def run_continuously(interval=1):
     return cease_continuous_run
 
 
-def emit_crown(bot):
+async def emit_crown(bot):
     logger.debug("starting crowning")
-    bot.dispatch("crown", ctx=bot)
+    await king_crown.crown(bot)
 
 
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -64,12 +64,6 @@ bot.load_extension("Cogs.sounds")
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
-
-
-@bot.event
-async def on_crown(ctx):
-    logger.debug("On_crown event called")
-    await king_crown.crown(ctx)
 
 
 async def on_ready(self):
