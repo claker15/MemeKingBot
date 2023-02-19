@@ -7,7 +7,7 @@ import points as points
 import youtube_dl
 
 logger = logging.getLogger("soundboard")
-file_prefix_linux = "./home/code/MemekingBot/bot/sounds/"
+file_prefix_linux = "./home/code/MemeKingBot/bot/sounds/"
 file_prefix_windows = "F:/sounds/"
 
 
