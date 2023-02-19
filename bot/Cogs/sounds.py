@@ -23,7 +23,7 @@ async def play_sound(inter: disnake.MessageInteraction, path):
     voice_channel = inter.author.voice.channel
     await voice_channel.connect()
     source = disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(path))
-    inter.channel.voice_client.play(source)
+    voice_channel.voice_client.play(source)
     while inter.channel.voice_client.is_playing():
         time.sleep(1)
     await inter.channel.voice_client.disconnect()
