@@ -14,10 +14,10 @@ class url_track(commands.Cog):
         #if not, add
         if data != '1':
             query.add_url(arg, inter.guild.id)
-            await inter.response.send("{} is now being tracked".format(arg))
+            await inter.response.send_message("{} is now being tracked".format(arg))
         #otherwise send message
         else:
-            await inter.response.send("{} is already being tracked".format(arg))
+            await inter.response.send_message("{} is already being tracked".format(arg))
 
 
 def setup(bot):

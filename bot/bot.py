@@ -59,7 +59,7 @@ bot.load_extension("Cogs.track")
 bot.load_extension("Cogs.bet")
 bot.load_extension("Cogs.trivia")
 bot.load_extension("Cogs.equip")
-#bot.load_extension("Cogs.sounds")
+bot.load_extension("Cogs.sounds")
 
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
