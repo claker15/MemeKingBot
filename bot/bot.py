@@ -41,10 +41,6 @@ def run_continuously(interval=1):
 async def emit_crown(bot):
     logger.debug("starting crowning")
     await king_crown.crown(bot)
-
-async def test_schedule(bot):
-    logger.debug("schedulussy")
-    logger.debug(bot)
     
 
 
@@ -68,7 +64,6 @@ bot.load_extension("Cogs.sounds")
 
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
-schedule.every().wednesday.at('23:57').do(emit_crown, bot)
 stop_run_continuously = run_continuously()
 
 
