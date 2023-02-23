@@ -42,6 +42,11 @@ async def emit_crown(bot):
     logger.debug("starting crowning")
     await king_crown.crown(bot)
 
+async def test_schedule(bot):
+    logger.debug("schedulussy")
+    logger.debug(bot)
+    
+
 
 logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
@@ -63,6 +68,7 @@ bot.load_extension("Cogs.sounds")
 
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
+schedule.every().wednesday.at('22:45').do(test_schedule, bot)
 stop_run_continuously = run_continuously()
 
 
