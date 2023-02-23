@@ -68,7 +68,7 @@ bot.load_extension("Cogs.sounds")
 
 
 schedule.every().sunday.at('00:01').do(emit_crown, bot)
-schedule.every().wednesday.at('22:45').do(test_schedule, bot)
+schedule.every().wednesday.at('23:50').do(test_schedule, bot)
 stop_run_continuously = run_continuously()
 
 
