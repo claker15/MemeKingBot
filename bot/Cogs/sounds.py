@@ -19,14 +19,14 @@ def get_sound_as_options_array(guild_id):
     return options
 
 
-async def play_sound(inter: disnake.MessageInteraction, path, bot):
-    voice_channel: disnake.VoiceClient = inter.guild.voice_client
-    await voice_channel.connect()
-    source = disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(path))
-    voice_channel.play(source)
-    while voice_channel.is_playing():
+async def play_sound(inter: disnake.MessageInteraction, path):
+    voice_channel = inter.author.voice.channel
+    source = disnake.FFmpegPCMAudio(path)
+    voice_client = await voice_channel.connect()
+    voice_client.play(source)
+    while voice_client.is_playing():
         time.sleep(1)
-    await voice_channel.disconnect()
+    await voice_client.disconnect()
 
 
 class Sounds(commands.Cog):
@@ -54,7 +54,7 @@ class Sounds(commands.Cog):
         path = path.replace('\"', '\'')
         print(path)
         logger.debug("playing sound from path: {}".format(path))
-        inter.bot.loop.create_task(play_sound(inter, path, self.bot))
+        inter.bot.loop.create_task(play_sound(inter, path))
 
     # @commands.slash_command(description="Add a new sound. 10 second time limit.")
     # async def addsound(self, inter: disnake.CommandInteraction, sound_url):
