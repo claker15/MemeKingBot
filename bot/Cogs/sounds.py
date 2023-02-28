@@ -45,7 +45,6 @@ class Sounds(commands.Cog):
             return
 
         view = DropdownView(get_sound_as_options_array(inter.guild.id), 'play')
-        await inter.response.defer()
         await inter.send(view=view)
 
     def sound_play(self, inter: disnake.MessageInteraction, file_path):
@@ -55,7 +54,6 @@ class Sounds(commands.Cog):
         path = path.replace('\"', '\'')
         print(path)
         logger.debug("playing sound from path: {}".format(path))
-        inter.edit_original_response("Playing sound {}".format(file_path))
         inter.bot.loop.create_task(play_sound(inter, path))
 
     # @commands.slash_command(description="Add a new sound. 10 second time limit.")
@@ -153,10 +151,10 @@ class Dropdown(disnake.ui.StringSelect):
         )
         self.operation = operation
 
-
     async def callback(self, inter: disnake.MessageInteraction):
         logger.debug("got into dropdown callback")
         if self.operation == 'play':
+            inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])
 
 
