@@ -154,7 +154,7 @@ class Dropdown(disnake.ui.StringSelect):
     async def callback(self, inter: disnake.MessageInteraction):
         logger.debug("got into dropdown callback")
         if self.operation == 'play':
-            inter.response.send_message("Playing sound {}".format(self.values[0]))
+            await inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])
 
 
