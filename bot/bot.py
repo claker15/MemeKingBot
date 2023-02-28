@@ -5,10 +5,8 @@ import time
 import schedule
 import threading
 import message as king_message
-import crown as king_crown
 import chussy as reaction_add
 from dotenv import load_dotenv
-from apscheduler.schedulers.background import BackgroundScheduler
 from disnake.ext import commands
 from logging.handlers import RotatingFileHandler
 
@@ -42,6 +40,7 @@ async def emit_crown(bot):
     logger.debug("starting crowning")
     await king_crown.crown(bot)
 
+
 async def test_schedule(bot):
     logger.debug("schedulussy")
     logger.debug(bot)
@@ -65,10 +64,10 @@ bot.load_extension("Cogs.bet")
 bot.load_extension("Cogs.trivia")
 bot.load_extension("Cogs.equip")
 bot.load_extension("Cogs.sounds")
+bot.load_extension("Cogs.crown")
 
 
-schedule.every().sunday.at('00:01').do(emit_crown, bot)
-schedule.every().wednesday.at('23:57').do(emit_crown, bot)
+
 stop_run_continuously = run_continuously()
 
 

@@ -20,13 +20,13 @@ def get_sound_as_options_array(guild_id):
 
 
 async def play_sound(inter: disnake.MessageInteraction, path, bot):
-    voice_channel = inter.author.voice.channel
+    voice_channel: disnake.VoiceClient = inter.guild.voice_client
     await voice_channel.connect()
     source = disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(path))
-    bot.voice_client.play(source)
-    while bot.voice_client.is_playing():
+    voice_channel.play(source)
+    while voice_channel.is_playing():
         time.sleep(1)
-    await bot.voice_client.disconnect()
+    await voice_channel.disconnect()
 
 
 class Sounds(commands.Cog):
