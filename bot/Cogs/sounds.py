@@ -56,7 +56,7 @@ class Sounds(commands.Cog):
         logger.debug("playing sound from path: {}".format(path))
         inter.bot.loop.create_task(play_sound(inter, path))
 
-    def delete_sound(self, inter: disnake.MessageInteraction, sound):
+    async def delete_sound(self, inter: disnake.MessageInteraction, sound):
         logger.debug("removing sound from list")
         # points.sound_add(inter.id, inter.author.id, inter.guild.id)
         query.delete_sound(sound, inter.guild.id)
