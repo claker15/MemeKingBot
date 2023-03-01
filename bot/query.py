@@ -36,7 +36,7 @@ addUrl = "INSERT INTO url(url, guild_id) VALUES('{}', '{}')"
 
 kingQuery = "select user_id, SUM(value) as count from points where guild_id='{}' AND  YEARWEEK(date) = YEARWEEK(NOW() - INTERVAL 1 WEEK) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 1"
 
-changeCrownQuery = "INSERT INTO user(user_id, guild_id, created, crowns) VALUES ('{}', '{}', NOW(), 1) ON DUPLICATE KEY UPDATE crowns = crowns+1"
+changeCrownQuery = "INSERT INTO user(user_id, guild_id, created, crowns) VALUES ('{}', '{}', NOW(), 1) ON DUPLICATE KEY UPDATE crowns = crowns+1, wand = 'Wood'"
 
 pointQuery = "SELECT * FROM points where message_id='{}'"
 
