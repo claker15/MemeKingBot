@@ -49,7 +49,7 @@ class Sounds(commands.Cog):
 
     def sound_play(self, inter: disnake.MessageInteraction, file_path):
         logger.debug("got sound choice from user: {}".format(file_path))
-        # points.sound_redemption(inter.id, inter.author.id, inter.guild.id)
+        points.sound_redemption(inter.id, inter.author.id, inter.guild.id)
         path = file_prefix_linux + str(inter.guild.id) + "/" + file_path + '.mp3'
         path = path.replace('\"', '\'')
         print(path)
@@ -58,7 +58,7 @@ class Sounds(commands.Cog):
 
     async def delete_sound(self, inter: disnake.MessageInteraction, sound):
         logger.debug("removing sound from list")
-        # points.sound_add(inter.id, inter.author.id, inter.guild.id)
+        points.sound_add(inter.id, inter.author.id, inter.guild.id)
         query.delete_sound(sound, inter.guild.id)
         await inter.response.send_message("Sound removed successfully")
 
@@ -108,7 +108,7 @@ class Sounds(commands.Cog):
             data = data['entries'][0]
         logger.debug("Adding sound with information: {}".format(data))
         query.add_sound(data['title'], './sounds/{}/{}.mp3'.format(inter.guild.id, data['title']), inter.guild.id)
-        # points.sound_add(inter.id, inter.author.id, inter.guild.id)
+        points.sound_add(inter.id, inter.author.id, inter.guild.id)
         await inter.response.send_message("Sound added successfully")
     #
 
@@ -142,6 +142,7 @@ class Dropdown(disnake.ui.StringSelect):
         self.operation = operation
 
     async def callback(self, inter: disnake.MessageInteraction):
+        self.disabled = True
         logger.debug("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))

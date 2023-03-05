@@ -21,14 +21,14 @@ class Crown(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.crown.start()
+        self.crown.start(bot)
 
     def cog_unload(self):
         self.crown.cancel()
 
     @tasks.loop(time=time(hour=0, minute=1, tzinfo=timezone))
     async def crown(self, ctx):
-        if datetime.now(timezone).day != 7:
+        if datetime.now(timezone).weekday() != 0:
             logger.debug("Is not sunday. No crown today Got day: {}".format(datetime.now(timezone).day))
             pass
         logger.debug("It is sunday. Time to crown")
