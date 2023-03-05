@@ -6,7 +6,6 @@ import schedule
 import threading
 import message as king_message
 import chussy as reaction_add
-import spotipy
 from dotenv import load_dotenv
 from disnake.ext import commands
 from logging.handlers import RotatingFileHandler
