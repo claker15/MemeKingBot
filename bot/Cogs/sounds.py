@@ -64,7 +64,7 @@ class Sounds(commands.Cog):
         await inter.response.send_message("Sound removed successfully")
 
     @commands.slash_command(description="Add a new sound. 10 second time limit.")
-    async def add_sound(self, inter: disnake.CommandInteraction, sound_url: str):
+    async def add_sound(self, inter: disnake.CommandInteraction, sound_url):
         logger.debug("Starting addsound command")
         if sound_url == "":
             await inter.response.send_message("Need a video url")
