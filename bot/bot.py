@@ -6,6 +6,7 @@ import schedule
 import threading
 import message as king_message
 import chussy as reaction_add
+import spotipy
 from dotenv import load_dotenv
 from disnake.ext import commands
 from logging.handlers import RotatingFileHandler
@@ -65,6 +66,7 @@ bot.load_extension("Cogs.trivia")
 bot.load_extension("Cogs.equip")
 bot.load_extension("Cogs.sounds")
 bot.load_extension("Cogs.crown")
+# bot.load_extension("Cogs.musicsnob")
 
 
 
@@ -109,10 +111,5 @@ async def on_gamble(user, guild_id):
     bet = bot.get_cog("bet")
     await bet.gamble(user, guild_id)
 
-
-@bot.event
-async def on_presence_update(before, after):
-    if isinstance(after.activity, disnake.Spotify):
-        logger.debug("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
 
 bot.run(os.getenv("DISCORD_SECRET"))

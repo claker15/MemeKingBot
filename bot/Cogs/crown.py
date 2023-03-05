@@ -44,7 +44,7 @@ class Crown(commands.Cog):
             logger.debug("getting channel {0} from guild {1}".format(crown_channels[index], guild_id))
             channel = disnake.utils.get(await guild.fetch_channels(), name=crown_channels[index])
             logger.debug("found channel name {0} with id: {1} in guild: {2}".format(channel.name, channel.id, guild_id))
-            await channel.send("👑{0} is Meme King of the Week 👑".format(member.nick))
+            await channel.send("👑{0} is Meme King of the Week 👑. Their wand has been confiscated".format(member.nick))
             logger.debug("Successfully crowned {0} for server {1}".format(member.nick, guild_id))
 
             # add starting points for all people who posted last week

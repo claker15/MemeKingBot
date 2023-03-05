@@ -4,7 +4,7 @@ from disnake.ext import commands
 import logging
 import query as query
 import points as points
-import youtube_dl
+import yt_dlp
 
 logger = logging.getLogger("soundboard")
 file_prefix_linux = "/home/code/MemeKingBot/bot/sounds/"
@@ -19,7 +19,7 @@ def get_sound_as_options_array(guild_id):
     return options
 
 
-async def play_sound(inter: disnake.MessageInteraction, path):
+async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_channel = inter.author.voice.channel
     source = disnake.FFmpegPCMAudio(path)
     voice_client = await voice_channel.connect()
@@ -47,18 +47,19 @@ class Sounds(commands.Cog):
         view = DropdownView(get_sound_as_options_array(inter.guild.id), 'play')
         await inter.send(view=view)
 
-    def sound_play(self, inter: disnake.MessageInteraction, file_path):
+    def sound_play(self, inter: disnake.ApplicationCommandInteraction, file_path):
         logger.debug("got sound choice from user: {}".format(file_path))
-        points.sound_redemption(inter.id, inter.author.id, inter.guild.id)
+        # points.sound_redemption(inter.id, inter.author.id, inter.guild.id)
         path = file_prefix_linux + str(inter.guild.id) + "/" + file_path + '.mp3'
         path = path.replace('\"', '\'')
         print(path)
         logger.debug("playing sound from path: {}".format(path))
         inter.bot.loop.create_task(play_sound(inter, path))
 
-    async def delete_sound(self, inter: disnake.MessageInteraction, sound):
+    async def del_sound(self, inter: disnake.ApplicationCommandInteraction, sound):
         logger.debug("removing sound from list")
-        points.sound_add(inter.id, inter.author.id, inter.guild.id)
+        logger.debug("inter id = {}".format(inter.id))
+        # points.sound_add(inter.id, inter.author.id, inter.guild.id)
         query.delete_sound(sound, inter.guild.id)
         await inter.response.send_message("Sound removed successfully")
 
@@ -87,7 +88,7 @@ class Sounds(commands.Cog):
                 {'key': 'FFmpegMetadata'},
             ],
         }
-        ydl_info = youtube_dl.YoutubeDL(ydl_opts)
+        ydl_info = yt_dlp.YoutubeDL(ydl_opts)
         with ydl_info:
             metadata = ydl_info.extract_info(sound_url, download=False)
         if 'entries' in metadata:
@@ -108,13 +109,13 @@ class Sounds(commands.Cog):
             data = data['entries'][0]
         logger.debug("Adding sound with information: {}".format(data))
         query.add_sound(data['title'], './sounds/{}/{}.mp3'.format(inter.guild.id, data['title']), inter.guild.id)
-        points.sound_add(inter.id, inter.author.id, inter.guild.id)
-        await inter.response.send_message("Sound added successfully")
-    #
+        # points.sound_add(inter.id, inter.author.id, inter.guild.id)
+        await inter.edit_original_response("Sound added successfully")
 
     @commands.slash_command(description="Remove a sound from the list. Costs 10 points.")
     async def delete_sound(self, inter: disnake.CommandInteraction):
         logger.debug("starting delsound command")
+        logger.debug("inter is: {}".format(inter))
         if query.user_points(inter.guild.id, inter.author.id) < 10:
             await inter.response.send_message("Not enough points. Need 10.")
             return
@@ -141,15 +142,17 @@ class Dropdown(disnake.ui.StringSelect):
         )
         self.operation = operation
 
-    async def callback(self, inter: disnake.MessageInteraction):
-        self.disabled = True
+    async def callback(self, inter: disnake.CommandInteraction):
+        for child in self.view.children:
+            if isinstance(child, disnake.ui.Button):
+                child.disabled = True
         logger.debug("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])
         if self.operation == 'del':
             await inter.response.send_message("Removing sound chosen")
-            await Sounds.delete_sound(self, inter, self.values[0])
+            await Sounds.del_sound(self, inter, self.values[0])
 
 
 def setup(bot):
