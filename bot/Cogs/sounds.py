@@ -64,7 +64,7 @@ class Sounds(commands.Cog):
         await inter.response.send_message("Sound removed successfully")
 
     @commands.slash_command(description="Add a new sound. 10 second time limit.")
-    async def add_sound(self, inter: disnake.CommandInteraction, sound_url):
+    async def add_sound(self, inter: disnake.CommandInteraction, sound_url: str):
         logger.debug("Starting addsound command")
         if sound_url == "":
             await inter.response.send_message("Need a video url")
@@ -143,7 +143,10 @@ class Dropdown(disnake.ui.StringSelect):
         self.operation = operation
 
     async def callback(self, inter: disnake.CommandInteraction):
-        self.disabled = True
+        for child in self.view.children:
+            if isinstance(child, disnake.ui.StringSelect):
+                child.disabled = True
+        await inter.response.edit_message(view=self.view)
         logger.debug("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))
