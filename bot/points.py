@@ -172,3 +172,14 @@ def starting_points(user_id, guild_id):
         "message_id": "Starting pts"
     }
     query.add_points(obj)
+
+def music_points(user_id, guild_id, points, type):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": int(points),
+        "type": str(type),
+        "message_id": None
+    }
+    query.add_points(obj)

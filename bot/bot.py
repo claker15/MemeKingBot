@@ -65,6 +65,7 @@ bot.load_extension("Cogs.trivia")
 bot.load_extension("Cogs.equip")
 bot.load_extension("Cogs.sounds")
 bot.load_extension("Cogs.crown")
+bot.load_extension("Cogs.musicsnob")
 
 
 

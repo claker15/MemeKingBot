@@ -5,6 +5,7 @@ import os
 import mysql.connector
 import random
 from dotenv import load_dotenv
+from domain import musicentry
 
 logger = logging.getLogger('query')
 load_dotenv()
@@ -70,13 +71,33 @@ userWandQuery = "SELECT wand from user where user_id='{}' AND guild_id='{}'"
 
 userWandChangeQuery = "UPDATE user set wand='{}' where user_id='{}' AND guild_id='{}'"
 
+trackAddQuery = "INSERT INTO music(user_id, guild_id, title, artist_name, track_pop, artist_pop) VALUES ('{}', '{}', '{}', '{}', {}, {});"
 
-def execute_query(query: str, args: list):
+trackExistQuery = "SELECT 1 from music where user_id='{}' AND guild_id='{}' AND title='{}' AND artist_name='{}';"
+
+songPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop DESC LIMIT 1;"
+
+artistPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY artist_pop DESC LIMIT 1;"
+
+songPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop ASC LIMIT 1;"
+
+artistPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY artist_pop ASC LIMIT 1;"
+
+songCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY track_pop DESC LIMIT 1;"
+
+artistCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY artist_pop DESC LIMIT 1;"
+
+songCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY track_pop ASC LIMIT 1;"
+
+artistCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY artist_pop ASC LIMIT 1;"
+
+
+def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
         conn = mysql.connector.connect(user=os.getenv("DATABASE_USER"), password=os.getenv("DATABASE_PASSWORD"), host=os.getenv("DATABASE_HOST"), database=os.getenv("DATABASE_DATABASE"))
     except mysql.connector.Error as err:
         print(err)
-    cursor = conn.cursor()
+    cursor = conn.cursor(named_tuple=named_tuple)
     cursor.execute(query.format(*args))
     data = cursor.fetchall()
     conn.commit()
@@ -284,8 +305,88 @@ def change_user_wand(wand, user_id, guild_id):
     logger.debug('received response from userWandChangeQuery: {}'.format(data))
     return data
 
+
 def get_users_who_posted_last_week(guild_id):
     logger.debug("Getting list of users who posted last week from guild: {0}".format(guild_id))
     data = execute_query(getAllUsersWhoPostedLastWeek, [guild_id])
     logger.debug("received as response from getAllUsersWhoPostedLastWeek query: {0}".format(data))
+    return data
+
+
+def track_add(user_id, guild_id, title, artist_name, track_pop, artist_pop):
+    logger.debug("Adding new track entry for user: {}".format(user_id))
+    data = execute_query(trackAddQuery, [user_id, guild_id, title, artist_name, track_pop, artist_pop])
+    logger.debug("received as response from trackaddquery: {0}".format(data))
+    return data
+
+
+def track_exists(user_id, guild_id, title, artist_name):
+    logger.debug("checking track entry for user: {}".format(user_id))
+    data = execute_query(trackExistQuery, [user_id, guild_id, title, artist_name])
+    logger.debug("received as response from trackexistquery: {0}".format(data))
+    return True if len(data) > 0 else False
+
+
+def get_weekly_track_pop_high(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(songPopularityHighQuery, [guild_id], True)
+    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_weekly_artist_pop_high(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(artistPopularityHighQuery, [guild_id], True)
+    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_weekly_track_pop_low(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(songPopularityLowQuery, [guild_id], True)
+    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_weekly_artist_pop_low(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(artistPopularityLowQuery, [guild_id], True)
+    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_current_track_pop_high(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(songCurrentPopularityHighQuery, [guild_id], True)
+    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_current_artist_pop_high(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(artistCurrentPopularityHighQuery, [guild_id], True)
+    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_current_track_pop_low(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(songCurrentPopularityLowQuery, [guild_id], True)
+    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def get_current_artist_pop_low(guild_id):
+    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    data = execute_query(artistCurrentPopularityLowQuery, [guild_id], True)
+    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    return data[0]
+
+
+def music_snob_combo_query(guild_id):
+    data = []
+    data.append(get_current_track_pop_high(guild_id))
+    data.append(get_current_artist_pop_high(guild_id))
+    data.append(get_current_track_pop_low(guild_id))
+    data.append(get_current_artist_pop_low(guild_id))
     return data
