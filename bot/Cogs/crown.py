@@ -60,12 +60,12 @@ class Crown(commands.Cog):
             member = await guild.fetch_member(song_winner.user_id)
             await channel.send("{} listened to the most popular song this week. {} by {} with a popularity score of {}".format(
                 member.nick, song_winner.title, song_winner.artist_name, song_winner.track_pop))
-            points.music_points(song_winner.user_id, song_winner.guild_id, -20, "TOP_SONG")
+            points.music_points(song_winner.user_id, song_winner.guild_id, 20, "TOP_SONG")
             artist_winner = query.get_weekly_artist_pop_high(guild_id)
             member = await guild.fetch_member(artist_winner.user_id)
             await channel.send("{} listened to the most popular artist this week. {} with a popularity score of {}".format(
                     member.nick, artist_winner.artist_name, artist_winner.artist_pop))
-            points.music_points(song_winner.user_id, song_winner.guild_id, -20, "TOP_ARTIST")
+            points.music_points(song_winner.user_id, song_winner.guild_id, 20, "TOP_ARTIST")
 
             #fetch song and artist lows
             logger.debug("Starting the music snob low awards")
