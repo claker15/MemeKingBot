@@ -384,8 +384,8 @@ def get_current_artist_pop_low(guild_id):
 
 def music_snob_combo_query(guild_id):
     data = []
-    data.append(get_current_track_pop_high(guild_id))
-    data.append(get_current_artist_pop_high(guild_id))
-    data.append(get_current_track_pop_low(guild_id))
-    data.append(get_current_artist_pop_low(guild_id))
+    data.append(get_current_track_pop_high(guild_id)[0])
+    data.append(get_current_artist_pop_high(guild_id)[0])
+    data.append(get_current_track_pop_low(guild_id)[0])
+    data.append(get_current_artist_pop_low(guild_id)[0])
     return data
