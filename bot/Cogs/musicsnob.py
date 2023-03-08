@@ -66,9 +66,7 @@ class MusicSnob(commands.Cog):
         track_pop = track['popularity']
         logger.debug("track popularity is {}".format(track_pop))
         track_name = track['name']
-        logger.debug("got track from spotify: {}".format(track))
         artist = self.spotify.artist(track['artists'][0]['id'])
-        logger.debug("got artist: {}".format(artist))
         artist_pop = artist['popularity']
         artist_name = artist['name']
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
