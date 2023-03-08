@@ -143,17 +143,22 @@ class Dropdown(disnake.ui.StringSelect):
         self.operation = operation
 
     async def callback(self, inter: disnake.CommandInteraction):
-        for child in self.view.children:
-            if isinstance(child, disnake.ui.StringSelect):
-                child.disabled = True
-        await inter.response.edit_message(view=self.view)
+
         logger.info("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])
+            for child in self.view.children:
+                if isinstance(child, disnake.ui.StringSelect):
+                    child.disabled = True
+            await inter.response.edit_message(view=self.view)
         if self.operation == 'del':
             await inter.response.send_message("Removing sound chosen")
             await Sounds.del_sound(self, inter, self.values[0])
+            for child in self.view.children:
+                if isinstance(child, disnake.ui.StringSelect):
+                    child.disabled = True
+            await inter.response.edit_message(view=self.view)
 
 
 def setup(bot):
