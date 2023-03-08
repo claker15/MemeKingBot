@@ -58,11 +58,13 @@ class MusicSnob(commands.Cog):
     async def on_presence_update(self, before, after):
         if not isinstance(after.activity, disnake.Spotify):
             return
-        if after.get_role(int(music_role)) is not None:
+        if after.get_role(int(music_role)) is None:
+            logger.debug("user does not have role. Returning")
             return
         logger.debug("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track = self.spotify.track(after.activity.track_id)
         track_pop = track['popularity']
+        logger.debug("track popularity is {}".format(track_pop))
         track_name = track['name']
         logger.debug("got track from spotify: {}".format(track))
         artist = self.spotify.artist(track['artists'][0]['id'])
