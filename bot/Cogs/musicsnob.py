@@ -15,6 +15,9 @@ music_role = os.getenv("MUSIC_SNOB_ROLE_ID")
 
 
 def build_embed_field(music_entry, index, nick, embed):
+    logger.debug("Got in the embed field method")
+    logger.debug("music_entry is {}".format(music_entry))
+    logger.debug("nickname is {}".format(nick))
     if index <= 1:
         adjective = "Most"
     else:
@@ -44,9 +47,11 @@ class MusicSnob(commands.Cog):
         embed.title = "Current Music Snob Rankings"
         embed.colour = 0x0099ff
         entry_list = query.music_snob_combo_query(inter.guild.id)
-        for entry, index in entry_list:
-            nick = inter.guild.fetch_member(entry.user_id)
-            build_embed_field(entry, index, nick, embed)
+        index = 0
+        for entry in entry_list:
+            member = await inter.guild.fetch_member(entry.user_id)
+            build_embed_field(entry, index, member.nick, embed)
+            index += 1
         await inter.response.send_message(embed=embed)
 
     @commands.Cog.listener()
