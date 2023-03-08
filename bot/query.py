@@ -105,9 +105,9 @@ def execute_query(query: str, args: list, named_tuple: bool = False):
 
 
 def get_user_cooldown_date(author_id, guild_id):
-    logger.debug("Getting cooldown time for user: {0} in guild {1}".format(author_id, guild_id))
+    logger.info("Getting cooldown time for user: {0} in guild {1}".format(author_id, guild_id))
     data = execute_query(coolDownQuery, [author_id, guild_id])
-    logger.debug("received post: {0} from database".format(data))
+    logger.info("received post: {0} from database".format(data))
     if len(data) == 0:
         return None
     else:
@@ -116,7 +116,7 @@ def get_user_cooldown_date(author_id, guild_id):
 
 def get_post_by_hash(hash, guild_id):
     data = execute_query(postByHashQuery, [hash, guild_id])
-    logger.debug("post returned from getPostByHash query: {0}".format(data))
+    logger.info("post returned from getPostByHash query: {0}".format(data))
     if len(data) == 0:
         return None
     else:
@@ -124,59 +124,59 @@ def get_post_by_hash(hash, guild_id):
 
 
 def create_post(post):
-    logger.debug("Sending new post object to database: {0}".format(post))
+    logger.info("Sending new post object to database: {0}".format(post))
     data = execute_query(createPost, [post["hash"], post["path"], post["user_id"], post["guild_id"], post["message_id"]])
-    logger.debug("received as response from createPost query: {0}".format(data))
+    logger.info("received as response from createPost query: {0}".format(data))
     return True
 
 
 def add_points(obj):
-    logger.debug("Adding points entry into table: {0}".format(obj))
+    logger.info("Adding points entry into table: {0}".format(obj))
     data = execute_query(addPoints, [obj["user_id"], obj["guild_id"], obj["user_id_from"], obj["value"], obj["type"], obj["message_id"]])
-    logger.debug("received as response from createPost query: {0}".format(data))
+    logger.info("received as response from createPost query: {0}".format(data))
     return True
 
 
 def get_random_user(guild_id):
-    logger.debug("Getting random userid from guild: {0}".format(guild_id))
+    logger.info("Getting random userid from guild: {0}".format(guild_id))
     data = execute_query(getRandId, [guild_id])
-    logger.debug("received as response from getRandomUserId query: {0}".format(data))
+    logger.info("received as response from getRandomUserId query: {0}".format(data))
     random.shuffle(data)
     return data[0][0]
 
 
 def relax_rank(guild_id):
-    logger.debug("Getting relax list from guild: {0}".format(guild_id))
+    logger.info("Getting relax list from guild: {0}".format(guild_id))
     data = execute_query(getRelaxRank, [guild_id])
-    logger.debug("received as response from getRelaxRank query: {0}".format(data))
+    logger.info("received as response from getRelaxRank query: {0}".format(data))
     return data
 
 
 def cringe_rank(guild_id):
-    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    logger.info("Getting cringe list from guild: {0}".format(guild_id))
     data = execute_query(getCringeRank, [guild_id])
-    logger.debug("received as response from getCringeRank query: {0}".format(data))
+    logger.info("received as response from getCringeRank query: {0}".format(data))
     return data
 
 
 def rankings(guild_id):
-    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    logger.info("Getting cringe list from guild: {0}".format(guild_id))
     data = execute_query(rankQuery, [guild_id])
-    logger.debug("received as response from getRankings query: {0}".format(data))
+    logger.info("received as response from getRankings query: {0}".format(data))
     return data
 
 
 def crowns(guild_id):
-    logger.debug("Getting cringe list from guild: {0}".format(guild_id))
+    logger.info("Getting cringe list from guild: {0}".format(guild_id))
     data = execute_query(crownsQuery, [guild_id])
-    logger.debug("received as response from getCrowns query: {0}".format(data))
+    logger.info("received as response from getCrowns query: {0}".format(data))
     return data
 
 
 def url_check(url, guild_id):
-    logger.debug("Check if url exists in tracked list: {} for guild: {}".format(url, guild_id))
+    logger.info("Check if url exists in tracked list: {} for guild: {}".format(url, guild_id))
     data = execute_query(urlCheck, [guild_id, url])
-    logger.debug("received as response from url_check query: {0}".format(data))
+    logger.info("received as response from url_check query: {0}".format(data))
     if len(data) > 0: 
         return "1"
     else:
@@ -184,38 +184,38 @@ def url_check(url, guild_id):
 
 
 def add_url(url, guild_id):
-    logger.debug("Check if url exists in tracked list: {} for guild: {}".format(url, guild_id))
+    logger.info("Check if url exists in tracked list: {} for guild: {}".format(url, guild_id))
     data = execute_query(addUrl, [url, guild_id])
-    logger.debug("received as response from add_url query: {0}".format(data))
+    logger.info("received as response from add_url query: {0}".format(data))
     return data
 
 
 def get_king(guild_id):
-    logger.debug("Getting king for guild: {}".format(guild_id))
+    logger.info("Getting king for guild: {}".format(guild_id))
     data = execute_query(kingQuery, [guild_id])
-    logger.debug("received response from kingQuery: {}".format(data))
+    logger.info("received response from kingQuery: {}".format(data))
     return data[0][0]
 
 
 def change_king_points(user_id, guild_id):
-    logger.debug("changing point count for user: {} in guild: {}".format(user_id, guild_id))
+    logger.info("changing point count for user: {} in guild: {}".format(user_id, guild_id))
     data = execute_query(changeCrownQuery, [user_id, guild_id])
-    logger.debug("received as response when changeCrownQuery: {}".format(data))
+    logger.info("received as response when changeCrownQuery: {}".format(data))
     return data
 
 
 def get_point_info(message_id):
-    logger.debug("getting point information for message_id: {}".format(message_id))
+    logger.info("getting point information for message_id: {}".format(message_id))
     data = execute_query(pointQuery, [message_id])
-    logger.debug("received response from pointQuery: {}".format(data))
+    logger.info("received response from pointQuery: {}".format(data))
     print(data[0])
     return data[0]
 
 
 def get_sub_point(message_id):
-    logger.debug("getting information if post has been vetoed with message id: {}".format(message_id))
+    logger.info("getting information if post has been vetoed with message id: {}".format(message_id))
     data = execute_query(subQuery, [message_id])
-    logger.debug("receive response from subQuery: {}".format(data))
+    logger.info("receive response from subQuery: {}".format(data))
     if len(data) > 0:
         return True
     else:
@@ -224,7 +224,7 @@ def get_sub_point(message_id):
 
 def add_bet(message_id, user_id, target_id, guild_id, bet):
     data = execute_query(addBet, [message_id, user_id, target_id, guild_id, bet])
-    logger.debug("receive response from addBet: {}".format(data))
+    logger.info("receive response from addBet: {}".format(data))
     return data
 
 
@@ -235,150 +235,150 @@ def set_bets_invalid():
 
 def get_bets(guild_id):
     data = execute_query(getBets, [guild_id])
-    logger.debug("receive response from getBets: {}".format(data))
+    logger.info("receive response from getBets: {}".format(data))
     return data
 
 
 def bet_total(guild_id):
     data = execute_query(betTotals, [guild_id])
-    logger.debug("receive response from betTotal: {}".format(data))
+    logger.info("receive response from betTotal: {}".format(data))
     return data
 
 
 def my_bets(guild_id, user_id):
     data = execute_query(myBets, [guild_id, user_id])
-    logger.debug("receive response from myBets: {}".format(data))
+    logger.info("receive response from myBets: {}".format(data))
     return data
 
 
 def user_points(guild_id, user_id):
     data = execute_query(userPointsQuery, [guild_id, user_id])
-    logger.debug("receive response from userPointsQuery: {}".format(data))
+    logger.info("receive response from userPointsQuery: {}".format(data))
     return data[0][0] if len(data) > 0 else 0
 
 
 def all_sounds(guild_id):
     data = execute_query(allSoundsQuery, [guild_id])
-    logger.debug('receive response from all_sounds: {}'.format(data))
+    logger.info('receive response from all_sounds: {}'.format(data))
     return data
 
 
 def sound_count(guild_id):
     data = execute_query(soundCountQuery, [guild_id])
-    logger.debug('receive response from sound_count: {}'.format(data))
+    logger.info('receive response from sound_count: {}'.format(data))
     return int(data[0][0])
 
 
 def add_sound(title, path, guild_id):
     data = execute_query(addSoundQuery, [title, path, guild_id])
-    logger.debug('received response from addSoundQuery: {}'.format(data))
+    logger.info('received response from addSoundQuery: {}'.format(data))
     return True
 
 
 def get_sound_by_path(path, guild_id):
     data = execute_query(getSoundByPathQuery, [path, guild_id])
-    logger.debug('received response from getSoundByPathQuery: {}'.format(data))
+    logger.info('received response from getSoundByPathQuery: {}'.format(data))
     return True if len(data) > 0 else False
 
 
 def delete_sound(title, guild_id):
     data = execute_query(removeSoundQuery, [title, guild_id])
-    logger.debug('received response from removeSoundQuery: {}'.format(data))
+    logger.info('received response from removeSoundQuery: {}'.format(data))
     return True
 
 
 def trivia_cooldown(user_id, guild_id):
     data = execute_query(triviaCoolDownQuery, [user_id, guild_id])
-    logger.debug('received response from triviaCoolDownQuery: {}'.format(data))
+    logger.info('received response from triviaCoolDownQuery: {}'.format(data))
     return data[0][0] if len(data) > 0 else None
 
 
 def get_user_wand(user_id, guild_id):
     data = execute_query(userWandQuery, [user_id, guild_id])
-    logger.debug('received response from userWandQuery: {}'.format(data))
+    logger.info('received response from userWandQuery: {}'.format(data))
     return data[0][0]
 
 
 def change_user_wand(wand, user_id, guild_id):
     data = execute_query(userWandChangeQuery, [wand, user_id, guild_id])
-    logger.debug('received response from userWandChangeQuery: {}'.format(data))
+    logger.info('received response from userWandChangeQuery: {}'.format(data))
     return data
 
 
 def get_users_who_posted_last_week(guild_id):
-    logger.debug("Getting list of users who posted last week from guild: {0}".format(guild_id))
+    logger.info("Getting list of users who posted last week from guild: {0}".format(guild_id))
     data = execute_query(getAllUsersWhoPostedLastWeek, [guild_id])
-    logger.debug("received as response from getAllUsersWhoPostedLastWeek query: {0}".format(data))
+    logger.info("received as response from getAllUsersWhoPostedLastWeek query: {0}".format(data))
     return data
 
 
 def track_add(user_id, guild_id, title, artist_name, track_pop, artist_pop):
-    logger.debug("Adding new track entry for user: {}".format(user_id))
+    logger.info("Adding new track entry for user: {}".format(user_id))
     data = execute_query(trackAddQuery, [user_id, guild_id, title, artist_name, track_pop, artist_pop])
-    logger.debug("received as response from trackaddquery: {0}".format(data))
+    logger.info("received as response from trackaddquery: {0}".format(data))
     return data
 
 
 def track_exists(user_id, guild_id, title, artist_name):
-    logger.debug("checking track entry for user: {}".format(user_id))
+    logger.info("checking track entry for user: {}".format(user_id))
     data = execute_query(trackExistQuery, [user_id, guild_id, title, artist_name])
-    logger.debug("received as response from trackexistquery: {0}".format(data))
+    logger.info("received as response from trackexistquery: {0}".format(data))
     return True if len(data) > 0 else False
 
 
 def get_weekly_track_pop_high(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(songPopularityHighQuery, [guild_id], True)
-    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    logger.info("received as response from songPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_weekly_artist_pop_high(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(artistPopularityHighQuery, [guild_id], True)
-    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    logger.info("received as response from artistPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_weekly_track_pop_low(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(songPopularityLowQuery, [guild_id], True)
-    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    logger.info("received as response from songPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_weekly_artist_pop_low(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(artistPopularityLowQuery, [guild_id], True)
-    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    logger.info("received as response from artistPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_current_track_pop_high(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(songCurrentPopularityHighQuery, [guild_id], True)
-    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    logger.info("received as response from songPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_current_artist_pop_high(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(artistCurrentPopularityHighQuery, [guild_id], True)
-    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    logger.info("received as response from artistPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_current_track_pop_low(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(songCurrentPopularityLowQuery, [guild_id], True)
-    logger.debug("received as response from songPopularityQuery: {0}".format(data))
+    logger.info("received as response from songPopularityQuery: {0}".format(data))
     return data[0]
 
 
 def get_current_artist_pop_low(guild_id):
-    logger.debug("getting top track pop for guild: {}".format(guild_id))
+    logger.info("getting top track pop for guild: {}".format(guild_id))
     data = execute_query(artistCurrentPopularityLowQuery, [guild_id], True)
-    logger.debug("received as response from artistPopularityQuery: {0}".format(data))
+    logger.info("received as response from artistPopularityQuery: {0}".format(data))
     return data[0]
 
 

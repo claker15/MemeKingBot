@@ -5,7 +5,7 @@ logger = logging.getLogger("points")
 
 
 def reg_points(user_id, guild_id, message_id):
-    logger.debug("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
+    logger.info("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
         "user_id": str(user_id),
         "guild_id": str(guild_id),
@@ -20,12 +20,12 @@ def reg_points(user_id, guild_id, message_id):
 
 def relax_points(guild_id, user_id_from, message_id, new_user):
     #transfered to another
-    logger.debug("got relaxed. transferring points to random person")
+    logger.info("got relaxed. transferring points to random person")
     
     value = 1
     if str(new_user) == str(user_id_from):
         value = 2
-    logger.debug("got new user for points: {0}".format(new_user))
+    logger.info("got new user for points: {0}".format(new_user))
     obj = {
         "user_id": str(new_user),
         "guild_id": str(guild_id),
@@ -41,7 +41,7 @@ def cringe_points(user_id, guild_id, user_id_from, message_id):
     #points to whoever posted image first
     if user_id == user_id_from:
         return
-    logger.debug("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
+    logger.info("adding regular post points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
         "user_id": str(user_id),
         "guild_id": str(guild_id),
@@ -55,7 +55,7 @@ def cringe_points(user_id, guild_id, user_id_from, message_id):
 
 
 def neg_points(user_id, guild_id, message_id):
-    logger.debug("adding negative points for user: {0} on guild: {1}".format(user_id, guild_id))
+    logger.info("adding negative points for user: {0} on guild: {1}".format(user_id, guild_id))
     obj = {
         "user_id": str(user_id),
         "guild_id": str(guild_id),

@@ -26,11 +26,11 @@ async def parse_message(bot, message):
         return
     urls = get_urls(message.content)
     if len(urls) > 0:
-        logger.debug("urls found in message")
+        logger.info("urls found in message")
         await process_urls(bot, message)
         return
     if len(message.attachments) > 0:
-        logger.debug("attachments found in message")
+        logger.info("attachments found in message")
         await process_attachments(bot, message)
         return
 
@@ -47,26 +47,26 @@ def create_post_object(hash, path, user_id, guild_id, message_id):
 
 
 async def send_relax_message(author, channel, new_user):
-    logger.debug("{0} has not waited for cooldown period".format(author.id))
+    logger.info("{0} has not waited for cooldown period".format(author.id))
     member = await channel.guild.fetch_member(new_user)
     await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention),
                        file=disnake.File(fp="/home/memes/Relax.png"))
 
 
 async def send_cringe_message(author, channel, date, original_user_id):
-    logger.debug("post exists. sending cringe message. date: " + date)
+    logger.info("post exists. sending cringe message. date: " + date)
     orignal = await channel.guild.fetch_member(original_user_id)
     await channel.send(
         "{0} Cringe. Old meme, :b:ruh. Last posted at {1} by {2} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
             author.mention, date, orignal.mention))
 
 async def send_equip_message(message, points):
-    logger.debug("Equipment rolled. Sending message")
+    logger.info("Equipment rolled. Sending message")
     await message.reply("You're lucky. Your spell had the added effect of {0} points".format(points))
 
 
 def save_attachments(image, filename):
-    logger.debug("saving new image with filename: {0}".format(filename))
+    logger.info("saving new image with filename: {0}".format(filename))
     with open(file_save_path + filename, 'wb') as outfile:
         for chunk in image:
             outfile.write(chunk)
@@ -76,13 +76,13 @@ def cool_down(author_id, guild_id):
     logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
     timezone = pytz.timezone('America/New_York')
     last_post_time = query.get_user_cooldown_date(author_id, guild_id)
-    logger.debug("got last_post_time: {0}".format(last_post_time))
+    logger.info("got last_post_time: {0}".format(last_post_time))
     if last_post_time is None:
         return False
     now = datetime.datetime.now(timezone)
-    logger.debug("now: {}".format(now))
+    logger.info("now: {}".format(now))
     diff_time = now - timezone.localize(last_post_time)
-    logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
+    logger.info("{0} minutes since last post from user: {1}".format(diff_time, author_id))
     if diff_time.seconds / 60 < 5.0:
         return True
     else:
@@ -90,12 +90,12 @@ def cool_down(author_id, guild_id):
 
 
 async def process_attachments(bot, message):
-    logger.debug("starting attachment processing for message {0}".format(message.id))
+    logger.info("starting attachment processing for message {0}".format(message.id))
     attach = message.attachments[0]
-    logger.debug("processing message attachment: {0}".format(attach.url))
+    logger.info("processing message attachment: {0}".format(attach.url))
     res = requests.get(attach.url)
     new_hash = str(imagehash.dhash(Image.open(BytesIO(res.content))))
-    logger.debug("image hashed to: {0}".format(new_hash))
+    logger.info("image hashed to: {0}".format(new_hash))
     post = query.get_post_by_hash(new_hash, message.guild.id)
     print(post)
     cooldown = cool_down(message.author.id, message.guild.id)
@@ -108,7 +108,7 @@ async def process_attachments(bot, message):
             new_user = query.get_random_user(message.guild.id)
             wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
-                logger.debug("adding wand points")
+                logger.info("adding wand points")
                 rolled_points = wand.get_points()
                 await send_equip_message(message, rolled_points)
                 points.wand_points(message.id, new_user, message.guild.id, rolled_points)
@@ -119,7 +119,7 @@ async def process_attachments(bot, message):
         else:
             wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
-                logger.debug("adding wand points")
+                logger.info("adding wand points")
                 rolled_points = wand.get_points()
                 await send_equip_message(message, rolled_points)
                 points.wand_points(message.id, message.author.id, message.guild.id, rolled_points)
@@ -139,15 +139,15 @@ async def process_attachments(bot, message):
 def get_urls(string):
     extractor = URLExtract()
     urls = extractor.find_urls(string)
-    logger.debug("found urls {0}".format(urls))
+    logger.info("found urls {0}".format(urls))
     return urls
 
 
 async def process_urls(bot, message):
-    logger.debug("starting profcessing urls in message {0}".format(message.content))
+    logger.info("starting profcessing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
     url = urls[0]
-    logger.debug("start parsing url: {0}".format(urls[0]))
+    logger.info("start parsing url: {0}".format(urls[0]))
     res = query.url_check(urls[0], message.guild.id)
     if res != '1':
         return
@@ -162,7 +162,7 @@ async def process_urls(bot, message):
             new_user = query.get_random_user(message.guild.id)
             wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
-                logger.debug("adding wand points")
+                logger.info("adding wand points")
                 rolled_points = wand.get_points()
                 await send_equip_message(message, rolled_points)
                 points.wand_points(message.id, new_user, message.guild.id, rolled_points)
@@ -173,7 +173,7 @@ async def process_urls(bot, message):
         else:
             wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
-                logger.debug("adding wand points")
+                logger.info("adding wand points")
                 rolled_points = wand.get_points()
                 await send_equip_message(message, rolled_points)
                 points.wand_points(message.id, message.author.id, message.guild.id, rolled_points)

@@ -35,7 +35,7 @@ class Sounds(commands.Cog):
 
     @commands.slash_command(description="Play a sound using points")
     async def sounds(self, inter: disnake.CommandInteraction):
-        logger.debug("starting sound playing command")
+        logger.info("starting sound playing command")
         if inter.author.voice is None:
             await inter.response.send_message("Must be connected to a voice channel")
             return
@@ -48,24 +48,24 @@ class Sounds(commands.Cog):
         await inter.send(view=view)
 
     def sound_play(self, inter: disnake.ApplicationCommandInteraction, file_path):
-        logger.debug("got sound choice from user: {}".format(file_path))
+        logger.info("got sound choice from user: {}".format(file_path))
         # points.sound_redemption(inter.id, inter.author.id, inter.guild.id)
         path = file_prefix_linux + str(inter.guild.id) + "/" + file_path + '.mp3'
         path = path.replace('\"', '\'')
         print(path)
-        logger.debug("playing sound from path: {}".format(path))
+        logger.info("playing sound from path: {}".format(path))
         inter.bot.loop.create_task(play_sound(inter, path))
 
     async def del_sound(self, inter: disnake.ApplicationCommandInteraction, sound):
-        logger.debug("removing sound from list")
-        logger.debug("inter id = {}".format(inter.id))
+        logger.info("removing sound from list")
+        logger.info("inter id = {}".format(inter.id))
         # points.sound_add(inter.id, inter.author.id, inter.guild.id)
         query.delete_sound(sound, inter.guild.id)
         await inter.response.send_message("Sound removed successfully")
 
     @commands.slash_command(description="Add a new sound. 10 second time limit.")
     async def add_sound(self, inter: disnake.CommandInteraction, sound_url: str):
-        logger.debug("Starting addsound command")
+        logger.info("Starting addsound command")
         if sound_url == "":
             await inter.response.send_message("Need a video url")
             return
@@ -75,7 +75,7 @@ class Sounds(commands.Cog):
         if query.user_points(inter.guild.id, inter.author.id) < 10:
             await inter.response.send_message("Not enough points. Need 10.")
             return
-        logger.debug("checks passed. Getting video metadata")
+        logger.info("checks passed. Getting video metadata")
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': './sounds/{}/%(title)s.%(ext)s'.format(inter.guild.id),
@@ -93,7 +93,7 @@ class Sounds(commands.Cog):
             metadata = ydl_info.extract_info(sound_url, download=False)
         if 'entries' in metadata:
             metadata = metadata['entries'][0]
-        logger.debug("Got video metadata: {}".format(metadata))
+        logger.info("Got video metadata: {}".format(metadata))
         if query.get_sound_by_path('./sounds/{}/{}.mp3'.format(inter.guild.id, metadata['title']), inter.guild.id):
             await inter.response.send_message("Video already exists")
             return
@@ -102,24 +102,24 @@ class Sounds(commands.Cog):
             return
         await inter.response.defer()
         await inter.channel.send("Starting sound download")
-        logger.debug("all checks passed. Downloading video and converting")
+        logger.info("all checks passed. Downloading video and converting")
         with ydl_info:
             data = ydl_info.extract_info(sound_url, download=True)
         if 'entries' in data:
             data = data['entries'][0]
-        logger.debug("Adding sound with information: {}".format(data))
+        logger.info("Adding sound with information: {}".format(data))
         query.add_sound(data['title'], './sounds/{}/{}.mp3'.format(inter.guild.id, data['title']), inter.guild.id)
         # points.sound_add(inter.id, inter.author.id, inter.guild.id)
         await inter.edit_original_response("Sound added successfully")
 
     @commands.slash_command(description="Remove a sound from the list. Costs 10 points.")
     async def delete_sound(self, inter: disnake.CommandInteraction):
-        logger.debug("starting delsound command")
-        logger.debug("inter is: {}".format(inter))
+        logger.info("starting delsound command")
+        logger.info("inter is: {}".format(inter))
         if query.user_points(inter.guild.id, inter.author.id) < 10:
             await inter.response.send_message("Not enough points. Need 10.")
             return
-        logger.debug("checks passed. Listing sounds to user")
+        logger.info("checks passed. Listing sounds to user")
         view = DropdownView(get_sound_as_options_array(inter.guild.id), 'del')
         await inter.response.send_message(view=view)
         await inter.response.defer()
@@ -147,7 +147,7 @@ class Dropdown(disnake.ui.StringSelect):
             if isinstance(child, disnake.ui.StringSelect):
                 child.disabled = True
         await inter.response.edit_message(view=self.view)
-        logger.debug("got into dropdown callback")
+        logger.info("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])

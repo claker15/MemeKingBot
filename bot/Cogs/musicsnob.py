@@ -15,9 +15,9 @@ music_role = os.getenv("MUSIC_SNOB_ROLE_ID")
 
 
 def build_embed_field(music_entry, index, nick, embed):
-    logger.debug("Got in the embed field method")
-    logger.debug("music_entry is {}".format(music_entry))
-    logger.debug("nickname is {}".format(nick))
+    logger.info("Got in the embed field method")
+    logger.info("music_entry is {}".format(music_entry))
+    logger.info("nickname is {}".format(nick))
     if index <= 1:
         adjective = "Most"
     else:
@@ -59,21 +59,21 @@ class MusicSnob(commands.Cog):
         if not isinstance(after.activity, disnake.Spotify):
             return
         if after.get_role(int(music_role)) is None:
-            logger.debug("user does not have role. Returning")
+            logger.info("user does not have role. Returning")
             return
-        logger.debug("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
+        logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track = self.spotify.track(after.activity.track_id)
         track_pop = track['popularity']
-        logger.debug("track popularity is {}".format(track_pop))
+        logger.info("track popularity is {}".format(track_pop))
         track_name = track['name']
         artist = self.spotify.artist(track['artists'][0]['id'])
         artist_pop = artist['popularity']
         artist_name = artist['name']
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
-            logger.debug("track already exists in database for user: {}".format(after.id))
+            logger.info("track already exists in database for user: {}".format(after.id))
             return
         query.track_add(after.id, after.guild.id, track_name, artist_name, track_pop, artist_pop)
-        logger.debug("Added track: {} successfully for user: {}".format(track_name, after.id))
+        logger.info("Added track: {} successfully for user: {}".format(track_name, after.id))
 
 
 def setup(bot):

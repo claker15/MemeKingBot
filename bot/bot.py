@@ -37,17 +37,17 @@ def run_continuously(interval=1):
 
 
 async def emit_crown(bot):
-    logger.debug("starting crowning")
+    logger.info("starting crowning")
     await king_crown.crown(bot)
 
 
 async def test_schedule(bot):
-    logger.debug("schedulussy")
-    logger.debug(bot)
+    logger.info("schedulussy")
+    logger.info(bot)
     
 
 
-logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename="bot.log", level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
 logger = logging.getLogger()
 logger.addHandler(handler)
@@ -79,19 +79,19 @@ async def on_ready(self):
 
 @bot.event
 async def on_message(message):
-    logger.debug("Received message")
+    logger.info("Received message")
     if message.author == bot.user:
-        logger.debug("bot message. No process")
+        logger.info("bot message. No process")
         return
     if not os.getenv("READ_CHANNELS").__contains__(message.channel.name):
-        logger.debug("Wrong channel")
+        logger.info("Wrong channel")
         return
-    logger.debug("Parsing other contents of message")
+    logger.info("Parsing other contents of message")
     if message.content != "" and message.content[0] == "!":
-        logger.debug("running ! command")
+        logger.info("running ! command")
         await bot.process_commands(message)
     else:
-        logger.debug("Parsing other contents of message")
+        logger.info("Parsing other contents of message")
         await king_message.parse_message(bot, message)
         # geodude = await message.guild.fetch_emoji("358102351287943178")
         # await message.add_reaction(geodude)
@@ -99,7 +99,7 @@ async def on_message(message):
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    logger.debug("Reaction added to message")
+    logger.info("Reaction added to message")
     if payload.emoji.name == os.getenv("EMOJI_NAME"):
         channel = bot.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)

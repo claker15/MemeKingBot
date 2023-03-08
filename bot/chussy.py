@@ -15,7 +15,7 @@ async def check(message, geodude):
             sub_from_user = data[3]
         else:
             sub_from_user = data[1]
-    logger.debug("removing points from user: {}".format(sub_from_user))
+    logger.info("removing points from user: {}".format(sub_from_user))
     if query.get_sub_point(message.id):
         return
     else:

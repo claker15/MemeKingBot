@@ -15,37 +15,37 @@ class Ranking(commands.Cog):
 
     @commands.slash_command(description="Gives weekly rankings")
     async def ranking(self, inter: disnake.CommandInteraction):
-        logger.debug("starting weekly ranking command")
+        logger.info("starting weekly ranking command")
         await inter.send(embed=await create_rank_message(inter.guild, "ranking", ''))
 
     @commands.slash_command(description="Gives rankings of crowns")
     async def crowns(self, inter: disnake.CommandInteraction):
-        logger.debug("starting king crowns command")
+        logger.info("starting king crowns command")
         await inter.send(embed=await create_rank_message(inter.guild, "crowns", ''))
 
     @commands.slash_command(description="Gives current ranking of relaxes in the week")
     async def bigrelax(self, inter: disnake.CommandInteraction):
-        logger.debug("starting most relax command")
+        logger.info("starting most relax command")
         await inter.send(embed=await create_rank_message(inter.guild, "relax", ''))
 
     @commands.slash_command(description="Gives current ranking of cringes in the week")
     async def bigcringe(self, inter: disnake.CommandInteraction):
-        logger.debug("starting most cringe command")
+        logger.info("starting most cringe command")
         await inter.send(embed=await create_rank_message(inter.guild, "cringe", ''))
 
     @commands.slash_command(description="Gives current bets that are outstanding")
     async def betboard(self, inter: disnake.CommandInteraction):
-        logger.debug("starting bet board command")
+        logger.info("starting bet board command")
         await inter.send(embed=await create_rank_message(inter.guild, 'betboard', ''))
 
     @commands.slash_command(description="Gives user's bets that are outstanding")
     async def mybets(self, inter: disnake.CommandInteraction):
-        logger.debug("starting mybets command")
+        logger.info("starting mybets command")
         await inter.send(embed=await create_rank_message(inter.guild, 'mybets', inter.author.id))
 
     @commands.slash_command(description="Gives a user's current point value")
     async def mypoints(self, inter: disnake.CommandInteraction):
-        logger.debug("starting mypoints command")
+        logger.info("starting mypoints command")
         await inter.send(embed=await create_rank_message(inter.guild, 'mypoints', inter.author.id))
 
 def setup(bot):
@@ -88,7 +88,7 @@ async def create_rank_message(guild, querytype, user_id):
             embed.title = "Your current points"
             embed.colour = 0x0099ff
         for user in users:
-            logger.debug("Getting nickname for user {0} with count {1}".format(user[0], user[1]))
+            logger.info("Getting nickname for user {0} with count {1}".format(user[0], user[1]))
             member = await guild.fetch_member(user[0])
             embed.add_field(name=member.nick, value=user[1], inline=False)
         return embed

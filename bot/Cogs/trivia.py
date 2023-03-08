@@ -46,14 +46,14 @@ class Trivia(commands.Cog):
             return False
         now = datetime.datetime.now()
         diff_time = (now - last_post_time).seconds / 60.0
-        logger.debug("{0} minutes since last post from user: {1}".format(diff_time, author_id))
+        logger.info("{0} minutes since last post from user: {1}".format(diff_time, author_id))
         if diff_time < 5.0:
             return True
         else:
             return False
 
     def get_question(self):
-        logger.debug("getting trivia answer from api")
+        logger.info("getting trivia answer from api")
         trivia_url = random.choice(self.trivia_urls)
         if trivia_url['category'] is None:
             trivia_url['category'] = ''
@@ -61,7 +61,7 @@ class Trivia(commands.Cog):
             trivia_url['difficulty'] = ''
         print(trivia_url['url'])
         res = requests.get(trivia_url['url'])
-        logger.debug('Got request from trivia api: {}'.format(res))
+        logger.info('Got request from trivia api: {}'.format(res))
         print(res.json())
         if trivia_url['results_response'] != "":
             results = res.json()[trivia_url['results_response']][0]
@@ -86,21 +86,21 @@ class Trivia(commands.Cog):
 
     @commands.slash_command(description="Answer a trivia question for points")
     async def trivia(self, inter: disnake.CommandInteraction):
-        logger.debug("starting trivia command")
+        logger.info("starting trivia command")
         if self.cool_down(inter.author.id, inter.guild.id):
-            logger.debug("trvia debug 0")
+            logger.info("trvia debug 0")
             await inter.response.send_message("On cooldown")
-            logger.debug("trvia debug 1")
+            logger.info("trvia debug 1")
             return
-        logger.debug("trvia debug 2")
+        logger.info("trvia debug 2")
         await inter.response.defer()
         self.question = self.get_question()
-        logger.debug("trvia debug 3")
+        logger.info("trvia debug 3")
         embed = self.create_message(self.question)
-        logger.debug("trvia debug 4")
+        logger.info("trvia debug 4")
         view = TriviaButtons()
         message = await inter.channel.send(embed=embed, view=view)
-        logger.debug("trvia debug 5")
+        logger.info("trvia debug 5")
 
         await view.wait()
         for child in view.children:
@@ -109,13 +109,13 @@ class Trivia(commands.Cog):
         await message.edit(view=view)
 
         if view.value == self.question.correct_index:
-            logger.debug("Got correct answer. Awarding points")
+            logger.info("Got correct answer. Awarding points")
             points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                            self.difficulty_scale[self.question.difficulty])
             await inter.channel.send("Correct answer. You earned" + str(self.difficulty_scale[self.question.difficulty]) + " points")
             await inter.edit_original_response(content="Received Answer")
         else:
-            logger.debug("Got wrong answer. Removing points")
+            logger.info("Got wrong answer. Removing points")
             points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id, self.difficulty_scale[self.question.difficulty] * -1)
             await inter.channel.send("Incorrect answer. You lost "+ str(self.difficulty_scale[self.question.difficulty]) + " points")
             await inter.edit_original_response(content="Received Answer")
