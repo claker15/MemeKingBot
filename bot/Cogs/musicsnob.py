@@ -65,6 +65,9 @@ class MusicSnob(commands.Cog):
         track = self.spotify.track(after.activity.track_id)
         track_pop = track['popularity']
         logger.info("track popularity is {}".format(track_pop))
+        if track_pop == 0:
+            logger.info("Got track with popularity 0")
+            return
         track_name = track['name']
         artist = self.spotify.artist(track['artists'][0]['id'])
         artist_pop = artist['popularity']
