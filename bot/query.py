@@ -5,7 +5,6 @@ import os
 import mysql.connector
 import random
 from dotenv import load_dotenv
-from domain import musicentry
 
 logger = logging.getLogger('query')
 load_dotenv()
