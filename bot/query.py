@@ -72,7 +72,7 @@ userWandChangeQuery = "UPDATE user set wand='{}' where user_id='{}' AND guild_id
 
 trackAddQuery = "INSERT INTO music(user_id, guild_id, title, artist_name, track_pop, artist_pop) VALUES ('{}', '{}', '{}', '{}', {}, {});"
 
-trackExistQuery = "SELECT 1 from music where user_id='{}' AND guild_id='{}' AND title='{}' AND artist_name='{}';"
+trackExistQuery = "SELECT 1 from music m where user_id='{}' AND guild_id='{}' AND title='{}' AND artist_name='{}' OR EXISTS (select * from music_winners mw where guild_id = m.guild_id AND title = m.title AND artist_name = m.artist_name ) LIMIT 1;"
 
 songPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop DESC LIMIT 1;"
 
@@ -89,6 +89,9 @@ artistCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND 
 songCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY track_pop ASC LIMIT 1;"
 
 artistCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY artist_pop ASC LIMIT 1;"
+
+trackWinnerAddQuery = "INSERT INTO music_winners(user_id, guild_id, title, artist_name) VALUES ('{}', '{}', '{}', '{}');"
+
 
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
@@ -316,6 +319,13 @@ def track_add(user_id, guild_id, title, artist_name, track_pop, artist_pop):
     logger.info("Adding new track entry for user: {}".format(user_id))
     data = execute_query(trackAddQuery, [user_id, guild_id, title, artist_name, track_pop, artist_pop])
     logger.info("received as response from trackaddquery: {0}".format(data))
+    return data
+
+
+def track_winner_add(user_id, guild_id, title, artist_name):
+    logger.info("Adding new track entry for user: {}".format(user_id))
+    data = execute_query(trackWinnerAddQuery, [user_id, guild_id, title, artist_name])
+    logger.info("received as response from trackwinneraddquery: {0}".format(data))
     return data
 
 
