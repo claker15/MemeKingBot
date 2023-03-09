@@ -68,7 +68,7 @@ class MusicSnob(commands.Cog):
         if not isinstance(after.activity, disnake.Spotify):
             return
         if after.get_role(int(music_role)) is None:
-            logger.info("user does not have role. Returning")
+            logger.info("user: {} does not have role. Returning".format(after.id))
             return
         logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track = self.spotify.track(after.activity.track_id)
