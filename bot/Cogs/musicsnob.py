@@ -34,7 +34,7 @@ def build_embed_field(music_entry, index, nick, embed):
         pop = music_entry.artist_pop
 
     name = "{} Popular {} of the Week".format(adjective, search_type)
-    value = "{}: {} by {} with popularity of {}".format(nick, music_entry.title, music_entry.artist_name, pop)
+    value = "{}: {} by {} with popularity of {:,}".format(nick, music_entry.title, music_entry.artist_name, pop)
     embed.add_field(name=name, value=value, inline=False)
 
 
@@ -79,7 +79,7 @@ class MusicSnob(commands.Cog):
         track_pop = track.get_playcount()
         artist = self.network.get_artist(artist_name)
         artist_pop = artist.get_playcount()
-        logger.info("From lastfm, got track plays: {} and artist plays: {}")
+        logger.info("From lastfm, got track plays: {} and artist plays: {}".format(track_pop, artist_pop))
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.info("track already exists in database for user: {}".format(after.id))
             return
