@@ -127,9 +127,14 @@ class Sounds(commands.Cog):
 
 class DropdownView(disnake.ui.View):
     def __init__(self, options, operation):
-        super().__init__()
+        super().__init__(timeout=15)
         self.selection = ""
         self.add_item(Dropdown(options, operation))
+
+    async def on_timeout(self):
+        for child in self.children:
+            child.disabled = True
+        await self.message.edit(content="You took too long! Disabled all the components.", view=self)
 
 
 class Dropdown(disnake.ui.StringSelect):
@@ -143,22 +148,13 @@ class Dropdown(disnake.ui.StringSelect):
         self.operation = operation
 
     async def callback(self, inter: disnake.CommandInteraction):
-
         logger.info("got into dropdown callback")
         if self.operation == 'play':
             await inter.response.send_message("Playing sound {}".format(self.values[0]))
             Sounds.sound_play(self, inter, self.values[0])
-            for child in self.view.children:
-                if isinstance(child, disnake.ui.StringSelect):
-                    child.disabled = True
-            await inter.response.edit_message(view=self.view)
         if self.operation == 'del':
             await inter.response.send_message("Removing sound chosen")
             await Sounds.del_sound(self, inter, self.values[0])
-            for child in self.view.children:
-                if isinstance(child, disnake.ui.StringSelect):
-                    child.disabled = True
-            await inter.response.edit_message(view=self.view)
 
 
 def setup(bot):
