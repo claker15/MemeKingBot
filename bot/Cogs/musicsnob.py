@@ -6,12 +6,16 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import os
 import query as query
 from dotenv import load_dotenv
+import pylast
 
 logger = logging.getLogger("musicsnob")
 load_dotenv()
 client_id = os.getenv("SPOTIFY_CLIENT_ID")
 secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 music_role = os.getenv("MUSIC_SNOB_ROLE_ID")
+last_fm_key = os.getenv("LAST_FM_API_KEY")
+last_fm_secret = os.getenv("LAST_FM_API_SECRET")
+
 
 
 def build_embed_field(music_entry, index, nick, embed):
@@ -40,6 +44,11 @@ class MusicSnob(commands.Cog):
         self.bot = bot
         auth_manager = SpotifyClientCredentials(client_id, secret)
         self.spotify = spotipy.Spotify(client_credentials_manager=auth_manager)
+        self.network = pylast.LastFMNetwork(
+            api_key=last_fm_key,
+            api_secret=last_fm_secret
+        )
+
 
     @commands.slash_command(description="Look at the current music snob running entries")
     async def snob_board(self, inter: disnake.CommandInteraction):
@@ -63,15 +72,14 @@ class MusicSnob(commands.Cog):
             return
         logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track = self.spotify.track(after.activity.track_id)
-        track_pop = track['popularity']
-        logger.info("track popularity is {}".format(track_pop))
-        if track_pop == 0:
-            logger.info("Got track with popularity 0")
-            return
         track_name = track['name']
         artist = self.spotify.artist(track['artists'][0]['id'])
-        artist_pop = artist['popularity']
         artist_name = artist['name']
+        track = self.network.get_track(artist_name, track_name)
+        track_pop = track.get_playcount()
+        artist = self.network.get_artist(artist_name)
+        artist_pop = artist.get_playcount()
+        logger.info("From lastfm, got track plays: {} and artist plays: {}")
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.info("track already exists in database for user: {}".format(after.id))
             return
