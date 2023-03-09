@@ -75,14 +75,15 @@ class MusicSnob(commands.Cog):
         track_name = track['name']
         artist = self.spotify.artist(track['artists'][0]['id'])
         artist_name = artist['name']
+        if query.track_exists(after.id, after.guild.id, track_name, artist_name):
+            logger.info("track already exists in database for user: {}".format(after.id))
+            return
         track = self.network.get_track(artist_name, track_name)
         track_pop = track.get_playcount()
         artist = self.network.get_artist(artist_name)
         artist_pop = artist.get_playcount()
         logger.info("From lastfm, got track plays: {} and artist plays: {}".format(track_pop, artist_pop))
-        if query.track_exists(after.id, after.guild.id, track_name, artist_name):
-            logger.info("track already exists in database for user: {}".format(after.id))
-            return
+
         query.track_add(after.id, after.guild.id, track_name, artist_name, track_pop, artist_pop)
         logger.info("Added track: {} successfully for user: {}".format(track_name, after.id))
 
