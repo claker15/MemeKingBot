@@ -71,10 +71,8 @@ class MusicSnob(commands.Cog):
             logger.info("user: {} does not have role. Returning".format(after.id))
             return
         logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
-        track = self.spotify.track(after.activity.track_id)
-        track_name = track['name']
-        artist = self.spotify.artist(track['artists'][0]['id'])
-        artist_name = artist['name']
+        track_name = after.activity.title
+        artist_name = after.activity.artist
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.info("track already exists in database for user: {}".format(after.id))
             return
