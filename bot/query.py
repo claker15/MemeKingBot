@@ -94,6 +94,10 @@ trackWinnerAddQuery = "INSERT INTO song_winner(guild_id, title, artist_name) VAL
 
 artistWinnerAddQuery = "INSERT INTO artist_winner(guild_id, artist_name) VALUES ('{}', '{}');"
 
+loginCheckQuery = "SELECT 1 from login where user_id='{}' AND guild_id='{}' AND date='{}';"
+
+loginAddQuery = "INSERT INTO login(user_id, guild_id, date) VALUES ('{}', '{}', '{}')"
+
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
@@ -405,4 +409,16 @@ def music_snob_combo_query(guild_id):
     data.append(get_current_artist_pop_high(guild_id))
     data.append(get_current_track_pop_low(guild_id))
     data.append(get_current_artist_pop_low(guild_id))
+    return data
+
+def login_check(user_id, guild_id, date):
+    logger.info("checking if user is in table for date in guild: {}".format(guild_id))
+    data = execute_query(loginCheckQuery, [user_id, guild_id, date])
+    logger.info("received as response from loginCheckQuery: {0}".format(data))
+    return True if len(data) > 0 else False
+
+def login_add(user_id, guild_id, date):
+    logger.info("adding user to login table for guild: {}".format(guild_id))
+    data = execute_query(loginAddQuery, [user_id, guild_id, date])
+    logger.info("received as response from loginAddQuery: {0}".format(data))
     return data

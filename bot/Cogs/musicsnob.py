@@ -72,7 +72,7 @@ class MusicSnob(commands.Cog):
             return
         logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track_name = after.activity.title
-        artist_name = after.activity.artist
+        artist_name = after.activity.artists[0]
         if query.track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.info("track already exists in database for user: {}".format(after.id))
             return

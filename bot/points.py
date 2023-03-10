@@ -183,3 +183,14 @@ def music_points(user_id, guild_id, points, type):
         "message_id": None
     }
     query.add_points(obj)
+
+def login_points(user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": 10,
+        "type": "LOGIN",
+        "message_id": None
+    }
+    query.add_points(obj)
