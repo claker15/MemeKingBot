@@ -14,7 +14,7 @@ logger = logging.getLogger("crown")
 url = os.getenv("BOT_API_URL")
 crown_guilds = os.getenv("CROWN_GUILDS").split(',')
 crown_channels = os.getenv("CROWN_CHANNELS").split(',')
-timezone = pytz.timezone('America/New_York')
+timezone = datetime.now().astimezone().tzinfo
 
 
 class Crown(commands.Cog):
@@ -26,11 +26,12 @@ class Crown(commands.Cog):
     def cog_unload(self):
         self.crown.cancel()
 
-    @tasks.loop(time=time(hour=0, minute=1, tzinfo=timezone))
+    @tasks.loop(hours=1)
     async def crown(self, ctx):
-        if datetime.now(timezone).weekday() != 0:
-            logger.info("Is not sunday. No crown today Got day: {}".format(datetime.now(timezone).day))
-            pass
+        await self.bot.wait_until_ready()
+        if datetime.now().weekday() != 6 and datetime.now().hour != 0:
+            logger.info("Is not sunday. No crown today. Got day: {}".format(datetime.now(timezone).weekday()))
+            return
         logger.info("It is sunday. Time to crown")
         for index, guild_id in enumerate(crown_guilds):
             logger.info("finding user_id for king on server {0}".format(guild_id))
