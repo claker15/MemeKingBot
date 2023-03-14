@@ -98,6 +98,8 @@ loginCheckQuery = "SELECT 1 from login where user_id='{}' AND guild_id='{}' AND 
 
 loginAddQuery = "INSERT INTO login(user_id, guild_id, date) VALUES ('{}', '{}', '{}')"
 
+clearTracksQuery = "TRUNCATE TABLE music;"
+
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
@@ -421,4 +423,10 @@ def login_add(user_id, guild_id, date):
     logger.info("adding user to login table for guild: {}".format(guild_id))
     data = execute_query(loginAddQuery, [user_id, guild_id, date])
     logger.info("received as response from loginAddQuery: {0}".format(data))
+    return data
+
+def clear_tracks():
+    logger.info("removing all entries in track table ")
+    data = execute_query(loginAddQuery, [])
+    logger.info("received as response from clear_track: {0}".format(data))
     return data

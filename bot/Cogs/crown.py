@@ -87,6 +87,9 @@ class Crown(commands.Cog):
             points.music_points(artist_winner.user_id, artist_winner.guild_id, 20, "LOW_ARTIST")
             query.artist_winner_add(artist_winner.guild_id, artist_winner.artist_name)
 
+            query.clear_tracks()
+
+
 
 def setup(bot):
     return bot.add_cog(Crown(bot))
