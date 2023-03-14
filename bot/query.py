@@ -72,7 +72,7 @@ userWandChangeQuery = "UPDATE user set wand='{}' where user_id='{}' AND guild_id
 
 trackAddQuery = "INSERT INTO music(user_id, guild_id, title, artist_name, track_pop, artist_pop) VALUES ('{}', '{}', '{}', '{}', {}, {});"
 
-trackExistQuery = "SELECT 1 from music m where user_id='{}' AND guild_id='{}' AND title='{}' AND artist_name='{}' OR EXISTS (select * from song_winner sw  where sw.guild_id = m.guild_id AND sw.title = m.title AND sw.artist_name = m.artist_name ) OR EXISTS(select * from artist_winner aw where aw.guild_id = m.guild_id AND aw.artist_name = m.artist_name ) LIMIT 1;"
+trackExistQuery = "SELECT 1 from music m where (guild_id='{}' AND title='{}' AND artist_name='{}') OR EXISTS (select * from song_winner sw  where sw.guild_id = {} AND sw.title = {} AND sw.artist_name = {} ) OR EXISTS(select * from artist_winner aw where aw.guild_id = {} AND aw.artist_name = {} ) LIMIT 1;"
 
 songPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop DESC LIMIT 1;"
 
@@ -344,7 +344,7 @@ def artist_winner_add(guild_id, artist_name):
 
 def track_exists(user_id, guild_id, title, artist_name):
     logger.info("checking track entry for user: {}".format(user_id))
-    data = execute_query(trackExistQuery, [user_id, guild_id, title, artist_name])
+    data = execute_query(trackExistQuery, [guild_id, title, artist_name, guild_id, title, artist_name, guild_id, artist_name])
     logger.info("received as response from trackexistquery: {0}".format(data))
     return True if len(data) > 0 else False
 
