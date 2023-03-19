@@ -26,7 +26,7 @@ class Crown(commands.Cog):
     def cog_unload(self):
         self.crown.cancel()
 
-    @tasks.loop(minutes=15)
+    @tasks.loop(hours=1)
     async def crown(self, ctx):
         await self.bot.wait_until_ready()
         if datetime.now().weekday() == 6 and datetime.now().hour == 0:
