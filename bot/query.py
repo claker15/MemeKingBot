@@ -413,11 +413,13 @@ def music_snob_combo_query(guild_id):
     data.append(get_current_artist_pop_low(guild_id))
     return data
 
+
 def login_check(user_id, guild_id, date):
     logger.info("checking if user is in table for date in guild: {}".format(guild_id))
     data = execute_query(loginCheckQuery, [user_id, guild_id, date])
     logger.info("received as response from loginCheckQuery: {0}".format(data))
     return True if len(data) > 0 else False
+
 
 def login_add(user_id, guild_id, date):
     logger.info("adding user to login table for guild: {}".format(guild_id))
@@ -425,8 +427,10 @@ def login_add(user_id, guild_id, date):
     logger.info("received as response from loginAddQuery: {0}".format(data))
     return data
 
+
 def clear_tracks():
     logger.info("removing all entries in track table ")
-    data = execute_query(loginAddQuery, [])
+    data = execute_query(clearTracksQuery, [])
     logger.info("received as response from clear_track: {0}".format(data))
     return data
+
