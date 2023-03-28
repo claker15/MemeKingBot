@@ -18,7 +18,7 @@ createPost = "INSERT INTO post(hash, path, user_id, guild_id, message_id, create
 
 addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, message_id) VALUES ('{}', '{}', '{}', {},'{}','{}')"
 
-getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 2 WEEK) ORDER BY RAND()"
+getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) ORDER BY RAND()"
 
 getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
@@ -26,7 +26,7 @@ getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WH
 
 rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
 
-getAllUsersWhoPostedLastWeek = "SELECT user_id FROM points WHERE guild_id = '{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 GROUP BY user_id"
+getAllUsersWhoPostedLastWeek = "SELECT user_id FROM post WHERE guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 GROUP BY user_id"
 
 crownsQuery = "select user_id, crowns as count from user where guild_id='{}' GROUP BY user_id ORDER BY count DESC limit 5"
 
