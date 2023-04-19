@@ -35,8 +35,7 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
         except:
             pass
 
-    voice_client.play(FFmpegPCMAudio(path, **FFMPEG_OPTIONS), after=my_after
-    )
+    voice_client.play(FFmpegPCMAudio(path, **FFMPEG_OPTIONS), after=my_after)
     # logger.info("Sound is playing, keeping thread open")
     # while voice_client.is_playing():
     #     logger.info("Sound is still playing. Sleeping for a second")
