@@ -9,6 +9,7 @@ import yt_dlp
 logger = logging.getLogger("soundboard")
 file_prefix_linux = "/home/code/MemeKingBot/bot/sounds/"
 file_prefix_windows = "F:/sounds/"
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 
 def get_sound_as_options_array(guild_id):
@@ -22,7 +23,7 @@ def get_sound_as_options_array(guild_id):
 async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_channel = inter.author.voice.channel
     logger.info("Playing track at path: {}".format(path))
-    source = disnake.FFmpegPCMAudio(path)
+    source = disnake.FFmpegPCMAudio(path, options=FFMPEG_OPTIONS)
     voice_client = await voice_channel.connect()
     voice_client.play(source)
     while voice_client.is_playing():
