@@ -62,14 +62,14 @@ class Crown(commands.Cog):
                 await channel.send(
                     "{} listened to the most popular song this week. {} by {} with a popularity score of {}".format(
                         member.nick, song_winner.title, song_winner.artist_name, song_winner.track_pop))
-                points.music_points(song_winner.user_id, song_winner.guild_id, 20, "TOP_SONG")
+                points.music_points(song_winner.user_id, song_winner.guild_id, 5, "TOP_SONG")
                 query.track_winner_add(song_winner.guild_id, song_winner.title, song_winner.artist_name)
                 artist_winner = query.get_weekly_artist_pop_high(guild_id)
                 member = await guild.fetch_member(artist_winner.user_id)
                 await channel.send(
                     "{} listened to the most popular artist this week. {} with a popularity score of {}".format(
                         member.nick, artist_winner.artist_name, artist_winner.artist_pop))
-                points.music_points(artist_winner.user_id, artist_winner.guild_id, 20, "TOP_ARTIST")
+                points.music_points(artist_winner.user_id, artist_winner.guild_id, 5, "TOP_ARTIST")
                 query.artist_winner_add(artist_winner.guild_id, artist_winner.artist_name)
 
                 # fetch song and artist lows
@@ -79,14 +79,14 @@ class Crown(commands.Cog):
                 await channel.send(
                     "{} listened to the least popular song this week. {} by {} with a popularity score of {}".format(
                         member.nick, song_winner.title, song_winner.artist_name, song_winner.track_pop))
-                points.music_points(song_winner.user_id, song_winner.guild_id, 20, "LOW_SONG")
+                points.music_points(song_winner.user_id, song_winner.guild_id, 5, "LOW_SONG")
                 query.track_winner_add(song_winner.guild_id, song_winner.title, song_winner.artist_name)
                 artist_winner = query.get_weekly_artist_pop_low(guild_id)
                 member = await guild.fetch_member(artist_winner.user_id)
                 await channel.send(
                     "{} listened to the least popular artist this week. {} with a popularity score of {}".format(
                         member.nick, artist_winner.artist_name, artist_winner.artist_pop))
-                points.music_points(artist_winner.user_id, artist_winner.guild_id, 20, "LOW_ARTIST")
+                points.music_points(artist_winner.user_id, artist_winner.guild_id, 5, "LOW_ARTIST")
                 query.artist_winner_add(artist_winner.guild_id, artist_winner.artist_name)
 
                 query.clear_tracks()

@@ -23,26 +23,26 @@ class bet(commands.Cog):
         load_dotenv()
 
     @commands.slash_command(description="Make a bet on who will receive the next relax points")
-    async def bet(self, inter: disnake.CommandInteraction, arg: int, arg1: disnake.User):
+    async def bet(self, inter: disnake.CommandInteraction, bet_amount: int, user: disnake.User):
         logger.info("starting bet command")
-        logger.info("got user from arg: {}".format(arg1))
+        logger.info("got user from arg: {}".format(user))
         if inter.channel.id != int(os.getenv("GAMBLE_CHANNEL")):
             logger.info("not the right channel response")
             await inter.response.send_message("Wrong channel")
             return
 
         logger.info("after stripping")
-        if int(arg) < 0:
+        if int(bet_amount) < 0:
             logger.info('negative number response')
             await inter.response.send_message("Bet cannot be negative")
             return
-        if query.user_points(inter.guild.id, inter.author.id) < int(arg):
+        if query.user_points(inter.guild.id, inter.author.id) < int(bet_amount):
             logger.info("No points response")
             await inter.response.send_message("Not enough points")
             return
         logger.info("bet has been validated. time to add it for user {}".format(inter.author))
-        query.add_bet(inter.id, inter.author.id, arg1.id, inter.guild.id, arg)
-        points.bet_points(inter.id, inter.author.id, inter.guild.id, arg)
+        query.add_bet(inter.id, inter.author.id, user.id, inter.guild.id, bet_amount)
+        points.bet_points(inter.id, inter.author.id, inter.guild.id, bet_amount)
         await inter.response.send_message("Bet taken. Good luck!")
         logger.info("bet successfully added")
         return
