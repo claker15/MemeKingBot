@@ -81,6 +81,7 @@ class Sounds(commands.Cog):
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': './sounds/{}/%(title)s.%(ext)s'.format(inter.guild.id),
+            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'postprocessors': [
                 {
                     'key': 'FFmpegExtractAudio',
