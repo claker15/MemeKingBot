@@ -54,7 +54,7 @@ class Sounds(commands.Cog):
             return
 
         view = DropdownView(get_sound_as_options_array(inter.guild.id), 'play')
-        await inter.send(view=view)
+        view.message = await inter.send(view=view)
 
     def sound_play(self, inter: disnake.ApplicationCommandInteraction, file_path):
         logger.info("got sound choice from user: {}".format(file_path))
@@ -136,13 +136,16 @@ class Sounds(commands.Cog):
 
 
 class DropdownView(disnake.ui.View):
+    message: disnake.Message
     def __init__(self, options, operation):
-        super().__init__(timeout=15)
+        super().__init__(timeout=10)
         self.selection = ""
         self.add_item(Dropdown(options, operation))
 
     async def on_timeout(self):
         self.clear_items()
+        self.message.edit(view=self)
+
 
 
 class Dropdown(disnake.ui.StringSelect):
