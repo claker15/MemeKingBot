@@ -9,7 +9,7 @@ import yt_dlp
 logger = logging.getLogger("soundboard")
 file_prefix_linux = "/home/code/MemeKingBot/bot/sounds/"
 file_prefix_windows = "F:/sounds/"
-FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn -report'}
+FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn -report -stimeout 10000'}
 
 
 def get_sound_as_options_array(guild_id):
