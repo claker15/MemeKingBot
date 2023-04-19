@@ -167,7 +167,7 @@ class Dropdown(disnake.ui.StringSelect):
             await inter.response.send_message("Removing sound chosen")
             await Sounds.del_sound(self, inter, self.values[0])
         self.disabled = True
-        await inter.response.edit_message(view=self.view)
+        await self.view.message.edit(view=self.view)
 
 
 def setup(bot):
