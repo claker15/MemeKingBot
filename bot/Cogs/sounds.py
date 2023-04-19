@@ -28,7 +28,7 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_client = await voice_channel.connect()
 
     def my_after(error):
-        coro = voice_client.disconnect(),
+        coro = await voice_client.disconnect(),
         fut = asyncio.run_coroutine_threadsafe(coro, voice_client.loop)
         try:
             fut.result()
