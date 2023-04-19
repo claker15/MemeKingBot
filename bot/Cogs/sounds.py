@@ -10,7 +10,7 @@ import yt_dlp
 logger = logging.getLogger("soundboard")
 file_prefix_linux = "/home/code/MemeKingBot/bot/sounds/"
 file_prefix_windows = "F:/sounds/"
-FFMPEG_OPTIONS = {'options': '-vn -report'}
+FFMPEG_OPTIONS = {'options': '-vn -report -filter:a "volume=1.5"'}
 
 
 def get_sound_as_options_array(guild_id):
