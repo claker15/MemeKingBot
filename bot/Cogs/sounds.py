@@ -23,9 +23,8 @@ def get_sound_as_options_array(guild_id):
 async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_channel = inter.author.voice.channel
     logger.info("Playing track at path: {}".format(path))
-    source = disnake.FFmpegPCMAudio(path, options=FFMPEG_OPTIONS)
     voice_client = await voice_channel.connect()
-    voice_client.play(source)
+    voice_client.play(disnake.FFmpegPCMAudio(executable="ffmpeg", source=path, options=FFMPEG_OPTIONS))
     while voice_client.is_playing():
         time.sleep(1)
     await voice_client.disconnect()
