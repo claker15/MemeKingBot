@@ -28,7 +28,7 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_client.play(FFmpegPCMAudio(path, **FFMPEG_OPTIONS))
     # while voice_client.is_playing():
     #     time.sleep(1)
-    # await voice_client.disconnect()
+    await voice_client.disconnect()
 
 
 class Sounds(commands.Cog):
