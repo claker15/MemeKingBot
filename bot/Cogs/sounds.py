@@ -26,10 +26,16 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_channel = inter.author.voice.channel
     logger.info("Playing track at path: {}".format(path))
     voice_client = await voice_channel.connect()
-    voice_client.play(FFmpegPCMAudio(path, **FFMPEG_OPTIONS), after=lambda : asyncio.run_coroutine_threadsafe(
-        coro=voice_client.disconnect(),
-        loop=voice_client.loop
-        ).result()
+
+    def my_after(error):
+        coro = voice_client.disconnect(),
+        fut = asyncio.run_coroutine_threadsafe(coro, voice_client.loop)
+        try:
+            fut.result()
+        except:
+            pass
+
+    voice_client.play(FFmpegPCMAudio(path, **FFMPEG_OPTIONS), after=my_after
     )
     # logger.info("Sound is playing, keeping thread open")
     # while voice_client.is_playing():
@@ -38,6 +44,8 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     #     time.sleep(1)
     # logger.info("Sound is done. Disconnecting from voice")
     # await voice_client.disconnect()
+
+
 
 
 class Sounds(commands.Cog):
