@@ -11,7 +11,7 @@ from disnake.ext import commands
 from logging.handlers import RotatingFileHandler
 
 
-logging.basicConfig(filename="bot.log", level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename="bot.log", level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 handler = RotatingFileHandler(filename="bot.log", maxBytes=5*1024*1024, backupCount=1)
 logger = logging.getLogger()
 logger.addHandler(handler)
