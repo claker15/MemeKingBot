@@ -25,7 +25,8 @@ async def play_sound(inter: disnake.ApplicationCommandInteraction, path):
     voice_channel = inter.author.voice.channel
     logger.info("Playing track at path: {}".format(path))
     voice_client = await voice_channel.connect()
-    voice_client.play(FFmpegOpusAudio.from_probe(path, **FFMPEG_OPTIONS))
+    source = await FFmpegOpusAudio.from_probe(path, **FFMPEG_OPTIONS)
+    voice_client.play(source)
     while voice_client.is_playing():
         time.sleep(1)
     await voice_client.disconnect()
