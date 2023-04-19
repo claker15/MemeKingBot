@@ -137,7 +137,6 @@ class DropdownView(disnake.ui.View):
     async def on_timeout(self):
         for child in self.children:
             child.disabled = True
-        await self.message.edit(content="You took too long! Disabled all the components.", view=self)
 
 
 class Dropdown(disnake.ui.StringSelect):
