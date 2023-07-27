@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import logging
 import openai
 import tiktoken
-from .. import query as query
+import query as query
 
 load_dotenv()
 logger = logging.getLogger("gpt")
