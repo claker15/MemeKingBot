@@ -31,7 +31,7 @@ bot.load_extension("Cogs.sounds")
 bot.load_extension("Cogs.crown")
 bot.load_extension("Cogs.musicsnob")
 bot.load_extension("Cogs.login")
-# bot.load_extension("Cogs.chatmkb")
+bot.load_extension("Cogs.chatmkb")
 
 
 async def on_ready(self):

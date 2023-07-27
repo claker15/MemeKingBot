@@ -11,6 +11,14 @@ gpt_api_key = os.getenv("CHATGPT_API_KEY")
 ai_model = os.getenv("CHATGPT_MODEL")
 encoding = tiktoken.encoding_for_model(ai_model)
 token_limit = os.getenv("CHATGPT_TOKEN_LIMIT")
+use_gpt = os.getenv("USE_GPT")
+
+
+def gpt_enabled() -> bool:
+    if use_gpt == "TRUE":
+        return True
+    else:
+        return False
 
 
 def num_tokens_from_string(string: str) -> int:
