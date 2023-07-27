@@ -11,7 +11,7 @@ from urlextract import URLExtract
 import query as query
 import points as points
 import pytz
-from chat_gpt.chat_gpt import prompt_once, gpt_enabled
+from .chat_gpt.chat_gpt import prompt_once, gpt_enabled
 from wand.wand_factory import *
 
 

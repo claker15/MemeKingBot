@@ -3,9 +3,9 @@ import os
 import disnake
 from disnake.ext import commands
 from dotenv import load_dotenv
-from bot.chat_gpt.chat_gpt import prompt_once, gpt_enabled
+from ..chat_gpt.chat_gpt import prompt_once, gpt_enabled
 import logging
-from bot.query import *
+from ..query import *
 
 load_dotenv()
 logger = logging.getLogger("gpt")
