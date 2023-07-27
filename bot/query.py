@@ -100,6 +100,12 @@ loginAddQuery = "INSERT INTO login(user_id, guild_id, date) VALUES ('{}', '{}', 
 
 clearTracksQuery = "TRUNCATE TABLE music;"
 
+getBotBehaviors = "SELECT * FROM ai_rules where guild_id='{}'"
+
+addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
+
+removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id={}"
+
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
@@ -434,3 +440,23 @@ def clear_tracks():
     logger.info("received as response from clear_track: {0}".format(data))
     return data
 
+
+def get_behaviors(guild_id: str):
+    logger.info("Getting chatgpt behaviors")
+    data = execute_query(getBotBehaviors, [guild_id])
+    logger.info("received as response from getBotBehaviors: {0}".format(data))
+    return data
+
+
+def add_behavior(guild_id: str, rule: str):
+    logger.info("Adding chatgpt behaviors")
+    data = execute_query(addBotBehaviors, [rule, guild_id])
+    logger.info("received as response from addBotBehaviors: {0}".format(data))
+    return data
+
+
+def remove_bot_behavior(guild_id: str, index: int):
+    logger.info("Removing chatgpt behaviors")
+    data = execute_query(addBotBehaviors, [guild_id, index])
+    logger.info("received as response from removeBotBehaviors: {0}".format(data))
+    return data

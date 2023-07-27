@@ -11,8 +11,7 @@ from urlextract import URLExtract
 import query as query
 import points as points
 import pytz
-from wand.wand import Wand
-from dateutil import relativedelta
+from chat_gpt.chat_gpt import prompt_once
 from wand.wand_factory import *
 
 
@@ -48,21 +47,26 @@ def create_post_object(hash, path, user_id, guild_id, message_id):
 
 async def send_relax_message(author, channel, new_user):
     logger.info("{0} has not waited for cooldown period".format(author.id))
+    author = await channel.guild.fetch_memeber(author.id)
     member = await channel.guild.fetch_member(new_user)
-    await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention),
-                       file=disnake.File(fp="/home/memes/Relax.png"))
+    res = prompt_once("Make a passive aggressive comment to {} that they are losing their meme points to {} and that they deserve it and need to relax".format(author.nick, member.nick), str(channel.guild.id))
+    await channel.send(content="{0}. {1}, {2}".format(author.mention, member.mention, res))
 
 
 async def send_cringe_message(author, channel, date, original_user_id):
     logger.info("post exists. sending cringe message. date: " + date)
+    author = await channel.guild.fetch_member(author.id)
     orignal = await channel.guild.fetch_member(original_user_id)
+    res = prompt_once("Make a passive aggressive comment to {} about how their taste in memes is cringe and that {} had a better taste on {}".format(author.nick, orignal.nick, str(date)), str(channel.guild.id))
     await channel.send(
-        "{0} Cringe. Old meme, :b:ruh. Last posted at {1} by {2} https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".format(
-            author.mention, date, orignal.mention))
+        "{0} {3}. Last posted at {1} by {2}".format(
+            author.mention, date, orignal.mention, res))
+
 
 async def send_equip_message(message, points):
     logger.info("Equipment rolled. Sending message")
-    await message.reply("You're lucky. Your spell had the added effect of {0} points".format(points))
+    res = prompt_once("Make a short comment about a user casting a spell and shortly describe its effect.")
+    await message.reply("{0} Your spell had the added effect of {1} points".format(res, points))
 
 
 def save_attachments(image, filename):
