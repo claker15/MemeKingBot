@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import logging
 import openai
 import tiktoken
-import query as query
+from .query import *
 
 load_dotenv()
 logger = logging.getLogger("gpt")
@@ -28,7 +28,7 @@ def num_tokens_from_string(string: str) -> int:
 
 
 def get_opening_message(guild_id):
-    rules = query.get_behaviors(guild_id)
+    rules = get_behaviors(guild_id)
     content = "You are MemekingBot. At most, your responses will be 2-3 sentences."
     for rule in rules:
         content = content + rule['rule']
