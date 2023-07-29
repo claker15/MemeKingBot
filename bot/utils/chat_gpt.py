@@ -33,10 +33,7 @@ def get_opening_message(guild_id):
     for rule in rules:
         content = content + rule.rule
     logger.info("This is the first message content: {}".format(content))
-    return {
-        "role": "system",
-        "content": content
-    }
+    return content
 
 
 def prompt_once(prompt: str, guild_id: str) -> str:
