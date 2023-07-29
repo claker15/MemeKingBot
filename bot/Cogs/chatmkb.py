@@ -45,7 +45,7 @@ class ChatMkb(commands.Cog):
             return
         rules = get_behaviors(str(inter.guild.id))
         embed = new_embed("Current AI Rules")
-        for i, rule in rules:
+        for i, rule in enumerate(rules):
             embed.add_field(name=i, value=rule.rule, inline=False)
         await inter.send(embed=embed)
 
