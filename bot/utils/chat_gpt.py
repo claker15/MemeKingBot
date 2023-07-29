@@ -47,7 +47,7 @@ def prompt_once(prompt: str, guild_id: str) -> str:
         logger.info("sending prompt to gpt: {}", prompt)
         response = openai.ChatCompletion.create(
             model=ai_model,
-            message=[
+            messages=[
                 {"role": "system", "content": opening_message},
                 {"role": "user", "content": prompt}
             ],
