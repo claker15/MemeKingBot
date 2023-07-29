@@ -7,7 +7,7 @@ from .query import *
 
 load_dotenv()
 logger = logging.getLogger("gpt")
-gpt_api_key = os.getenv("CHATGPT_API_KEY")
+openai.api_key = os.getenv("CHATGPT_API_KEY")
 ai_model = os.getenv("CHATGPT_MODEL")
 encoding = tiktoken.encoding_for_model(ai_model)
 token_limit = os.getenv("CHATGPT_TOKEN_LIMIT")
