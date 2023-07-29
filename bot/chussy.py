@@ -1,5 +1,5 @@
-import query as query
-from bot.utils import points as points
+from .utils import query as query
+from .utils import points as points
 import logging
 from discord.utils import get
 
