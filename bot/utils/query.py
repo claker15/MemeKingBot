@@ -104,7 +104,7 @@ getBotBehaviors = "SELECT * FROM ai_rules where guild_id='{}'"
 
 addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
 
-removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id={}"
+removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id='{}'"
 
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
