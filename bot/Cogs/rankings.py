@@ -4,7 +4,7 @@ import logging
 import json
 from disnake.ext import commands
 from discord.ext.commands.core import guild_only
-import query as query
+from ..utils.query import *
 
 logger = logging.getLogger("rankings")
 
@@ -56,33 +56,33 @@ async def create_rank_message(guild, querytype, user_id):
         users = []
         embed = disnake.Embed()
         if querytype == "ranking":
-            users = query.rankings(guild.id)
+            users = rankings(guild.id)
             embed.title = "Current Meme King Rankings"
             embed.colour = 0x0099ff
         elif querytype == "crowns":
-            users = query.crowns(guild.id)
+            users = crowns(guild.id)
             embed.title = "Coronation Leaderboard 👑"
             embed.colour = 0x0099ff
         elif querytype == "relax":
-            users = query.relax_rank(guild.id)
+            users = relax_rank(guild.id)
             embed.title = "Biggest Pussy of the Week that Needs to Relax"
             embed.colour = 0x0099ff
         elif querytype == "cringe":
-            users = query.cringe_rank(guild.id)
+            users = cringe_rank(guild.id)
             embed.title = "Most Cringiest of the Week"
             embed.colour = 0x0099ff
         elif querytype == "betboard":
-            users = query.bet_total(guild.id)
+            users = bet_total(guild.id)
             embed.title = "Current Bets on Who Will Be the Next Pussy That Needs to Relax"
             embed.colour = 0x0099ff
         elif querytype == 'mybets':
-            users = query.my_bets(guild.id, user_id)
+            users = my_bets(guild.id, user_id)
             user = await guild.fetch_member(users[0][2])
             embed.title = "Current targets of bets for you {}".format(user.nick)
             embed.colour = 0x0099ff
         elif querytype == 'mypoints':
             user = await guild.fetch_member(user_id)
-            userPoints = query.user_points(guild.id, user_id)
+            userPoints = user_points(guild.id, user_id)
             userObj = [user_id, userPoints]
             users = [userObj]
             embed.title = "Your current points"

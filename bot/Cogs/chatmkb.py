@@ -1,7 +1,11 @@
 import disnake
+import os
+from dotenv import load_dotenv
+import logging
 from disnake.ext import commands
-from ..chat_gpt import prompt_once, gpt_enabled
-from ..query import *
+from ..utils.chat_gpt import prompt_once, gpt_enabled
+from ..utils.query import add_behavior, remove_bot_behavior, get_behaviors
+
 
 load_dotenv()
 logger = logging.getLogger("gpt")
@@ -38,7 +42,7 @@ class ChatMkb(commands.Cog):
         if not gpt_enabled():
             inter.response.send_message("GPT Disabled")
             return
-        rules = getBotBehaviors(inter.guild.id)
+        rules = get_behaviors(str(inter.guild.id))
         embed = new_embed("Current AI Rules")
         for rule, i in rules:
             embed.add_field(name=i, value=rule['rule'], inline=False)

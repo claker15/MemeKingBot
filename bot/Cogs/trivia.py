@@ -5,8 +5,8 @@ import requests
 import logging
 import random
 import datetime
-import query as query
-import points as points
+from ..utils.query import *
+from ..utils.points import *
 import html
 import json
 
@@ -41,7 +41,7 @@ class Trivia(commands.Cog):
 
     def cool_down(self, author_id, guild_id):
         logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
-        last_post_time = query.trivia_cooldown(author_id, guild_id)
+        last_post_time = trivia_cooldown(author_id, guild_id)
         if last_post_time is None:
             return False
         now = datetime.datetime.now()
@@ -110,13 +110,13 @@ class Trivia(commands.Cog):
 
         if view.value == self.question.correct_index:
             logger.info("Got correct answer. Awarding points")
-            points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
+            trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                            self.difficulty_scale[self.question.difficulty])
             await inter.channel.send("Correct answer. You earned" + str(self.difficulty_scale[self.question.difficulty]) + " points")
             await inter.edit_original_response(content="Received Answer")
         else:
             logger.info("Got wrong answer. Removing points")
-            points.trivia_correct_answer(inter.id, inter.author.id, inter.guild.id, self.difficulty_scale[self.question.difficulty] * -1)
+            trivia_correct_answer(inter.id, inter.author.id, inter.guild.id, self.difficulty_scale[self.question.difficulty] * -1)
             await inter.channel.send("Incorrect answer. You lost "+ str(self.difficulty_scale[self.question.difficulty]) + " points")
             await inter.edit_original_response(content="Received Answer")
 

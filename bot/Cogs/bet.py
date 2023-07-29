@@ -1,8 +1,8 @@
 import os
 import disnake
 from disnake.ext import commands
-import query as query
-import points as points
+from ..utils.query import *
+from ..utils.points import *
 from dotenv import load_dotenv
 import logging
 
@@ -36,13 +36,13 @@ class bet(commands.Cog):
             logger.info('negative number response')
             await inter.response.send_message("Bet cannot be negative")
             return
-        if query.user_points(inter.guild.id, inter.author.id) < int(bet_amount):
+        if user_points(inter.guild.id, inter.author.id) < int(bet_amount):
             logger.info("No points response")
             await inter.response.send_message("Not enough points")
             return
         logger.info("bet has been validated. time to add it for user {}".format(inter.author))
-        query.add_bet(inter.id, inter.author.id, user.id, inter.guild.id, bet_amount)
-        points.bet_points(inter.id, inter.author.id, inter.guild.id, bet_amount)
+        add_bet(inter.id, inter.author.id, user.id, inter.guild.id, bet_amount)
+        bet_points(inter.id, inter.author.id, inter.guild.id, bet_amount)
         await inter.response.send_message("Bet taken. Good luck!")
         logger.info("bet successfully added")
         return
@@ -57,13 +57,13 @@ class bet(commands.Cog):
         guild = self.bot.get_guild(int(guild_id))
         channel = guild.get_channel(int(os.getenv("GAMBLE_CHANNEL")))
         logger.info('getting outstanding bets for guild {}'.format(guild_id))
-        bets = query.get_bets(guild_id)
+        bets = get_bets(guild_id)
         if len(bets) == 0:
             return
         logger.info('calculating payouts and listing users who won {}'.format(bets))
         for bet in bets:
             if bet[3] == user_picked:
-                points.bet_win_points(bet[1], bet[2], bet[4], 3 * bet[5])
+                bet_win_points(bet[1], bet[2], bet[4], 3 * bet[5])
                 if bet[2] not in embed_totals:
                     embed_totals[bet[2]] = 3 * bet[5]
                 else:
@@ -74,7 +74,7 @@ class bet(commands.Cog):
             embed.add_field(name=name.nick, value=embed_totals[user], inline=False)
         await channel.send(embed=embed)
         logger.info('setting all bets to invalid')
-        query.set_bets_invalid()
+        set_bets_invalid()
         return
 
 

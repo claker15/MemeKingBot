@@ -5,8 +5,8 @@ from disnake.ext import commands
 import logging
 from dotenv import load_dotenv
 import pytz
-import query as query
-import points as points
+from ..utils.query import *
+from ..utils.points import login_points
 
 load_dotenv()
 logger = logging.getLogger("login")
@@ -23,10 +23,10 @@ class Login(commands.Cog):
         if after.channel is not None and str(after.channel.id) == tracked_channel:
             timezone = pytz.timezone('America/New_York')
             date = datetime.datetime.now(timezone).date()
-            if not query.login_check(member.id, after.channel.guild.id, date):
+            if not login_check(member.id, after.channel.guild.id, date):
                 logger.info("Adding user: {} to guild: {} for date: {}".format(member.id, after.channel.guild.id, date))
-                query.login_add(member.id, after.channel.guild.id, date)
-                points.login_points(member.id, after.channel.guild.id)
+                login_add(member.id, after.channel.guild.id, date)
+                login_points(member.id, after.channel.guild.id)
             else:
                 logger.info("User: {} already logged in today".format(member.id))
         else:

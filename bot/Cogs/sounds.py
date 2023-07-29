@@ -4,8 +4,8 @@ import disnake
 from disnake.ext import commands
 from disnake import FFmpegPCMAudio
 import logging
-import query as query
-import points as points
+from ..utils.query import *
+from ..utils.points import *
 import yt_dlp
 
 logger = logging.getLogger("soundboard")
@@ -15,7 +15,7 @@ FFMPEG_OPTIONS = {'options': '-vn'}
 
 
 def get_sound_as_options_array(guild_id):
-    sounds = query.all_sounds(guild_id)
+    sounds = all_sounds(guild_id)
     options = []
     for i in range(len(sounds)):
         options.append(disnake.SelectOption(label=sounds[i][0], value=sounds[i][0]))
@@ -49,7 +49,7 @@ class Sounds(commands.Cog):
             await inter.response.send_message("Must be connected to a voice channel")
             return
 
-        if query.user_points(inter.guild.id, inter.author.id) < 5:
+        if user_points(inter.guild.id, inter.author.id) < 5:
             await inter.response.send_message("Not enough points. Need 5.")
             return
 
@@ -69,7 +69,7 @@ class Sounds(commands.Cog):
         logger.info("removing sound from list")
         logger.info("inter id = {}".format(inter.id))
         # points.sound_add(inter.id, inter.author.id, inter.guild.id)
-        query.delete_sound(sound, inter.guild.id)
+        delete_sound(sound, inter.guild.id)
         await inter.response.send_message("Sound removed successfully")
 
     @commands.slash_command(description="Add a new sound. 10 second time limit.")
@@ -78,10 +78,10 @@ class Sounds(commands.Cog):
         if sound_url == "":
             await inter.response.send_message("Need a video url")
             return
-        if query.sound_count(inter.guild.id) >= 10:
+        if sound_count(inter.guild.id) >= 10:
             await inter.response.send_message("Sound limit for server reached")
             return
-        if query.user_points(inter.guild.id, inter.author.id) < 10:
+        if user_points(inter.guild.id, inter.author.id) < 10:
             await inter.response.send_message("Not enough points. Need 10.")
             return
         logger.info("checks passed. Getting video metadata")
@@ -104,7 +104,7 @@ class Sounds(commands.Cog):
         if 'entries' in metadata:
             metadata = metadata['entries'][0]
         logger.info("Got video metadata: {}".format(metadata))
-        if query.get_sound_by_path('./sounds/{}/{}.mp3'.format(inter.guild.id, metadata['title']), inter.guild.id):
+        if get_sound_by_path('./sounds/{}/{}.mp3'.format(inter.guild.id, metadata['title']), inter.guild.id):
             await inter.response.send_message("Video already exists")
             return
         if metadata['duration'] > 10:
@@ -118,7 +118,7 @@ class Sounds(commands.Cog):
         if 'entries' in data:
             data = data['entries'][0]
         logger.info("Adding sound with information: {}".format(data))
-        query.add_sound(data['title'], './sounds/{}/{}.mp3'.format(inter.guild.id, data['title']), inter.guild.id)
+        add_sound(data['title'], './sounds/{}/{}.mp3'.format(inter.guild.id, data['title']), inter.guild.id)
         # points.sound_add(inter.id, inter.author.id, inter.guild.id)
         await inter.edit_original_response("Sound added successfully")
 
@@ -126,7 +126,7 @@ class Sounds(commands.Cog):
     async def delete_sound(self, inter: disnake.CommandInteraction):
         logger.info("starting delsound command")
         logger.info("inter is: {}".format(inter))
-        if query.user_points(inter.guild.id, inter.author.id) < 10:
+        if user_points(inter.guild.id, inter.author.id) < 10:
             await inter.response.send_message("Not enough points. Need 10.")
             return
         logger.info("checks passed. Listing sounds to user")
@@ -145,7 +145,6 @@ class DropdownView(disnake.ui.View):
     async def on_timeout(self):
         self.clear_items()
         await self.message.edit(view=self)
-
 
 
 class Dropdown(disnake.ui.StringSelect):

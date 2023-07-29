@@ -1,6 +1,6 @@
 import disnake
 from disnake.ext import commands
-import query as query
+from ..utils.query import *
 
 
 class url_track(commands.Cog):
@@ -10,10 +10,10 @@ class url_track(commands.Cog):
     @commands.slash_command(description="Add url to track for points")
     async def track(self, inter: disnake.CommandInteraction, arg):
         #check if it exists in database
-        data = query.url_check(arg, inter.guild.id)
+        data = url_check(arg, inter.guild.id)
         #if not, add
         if data != '1':
-            query.add_url(arg, inter.guild.id)
+            add_url(arg, inter.guild.id)
             await inter.response.send_message("{} is now being tracked".format(arg))
         #otherwise send message
         else:

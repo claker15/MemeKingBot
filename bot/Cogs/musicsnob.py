@@ -4,7 +4,7 @@ import logging
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
-import query as query
+from ..utils.query import *
 from dotenv import load_dotenv
 import pylast
 
@@ -15,7 +15,6 @@ secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 music_role = os.getenv("MUSIC_SNOB_ROLE_ID")
 last_fm_key = os.getenv("LAST_FM_API_KEY")
 last_fm_secret = os.getenv("LAST_FM_API_SECRET")
-
 
 
 def build_embed_field(music_entry, index, nick, embed):
@@ -55,7 +54,7 @@ class MusicSnob(commands.Cog):
         embed = disnake.Embed()
         embed.title = "Current Music Snob Rankings"
         embed.colour = 0x0099ff
-        entry_list = query.music_snob_combo_query(inter.guild.id)
+        entry_list = music_snob_combo_query(inter.guild.id)
         index = 0
         for entry in entry_list:
             member = await inter.guild.fetch_member(entry.user_id)
@@ -73,7 +72,7 @@ class MusicSnob(commands.Cog):
         logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track_name = after.activity.title
         artist_name = after.activity.artists[0]
-        if query.track_exists(after.id, after.guild.id, track_name, artist_name):
+        if track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.info("track already exists in database for user: {}".format(after.id))
             return
         track = self.network.get_track(artist_name, track_name)
@@ -82,7 +81,7 @@ class MusicSnob(commands.Cog):
         artist_pop = artist.get_playcount()
         logger.info("From lastfm, got track plays: {} and artist plays: {}".format(track_pop, artist_pop))
 
-        query.track_add(after.id, after.guild.id, track_name, artist_name, track_pop, artist_pop)
+        track_add(after.id, after.guild.id, track_name, artist_name, track_pop, artist_pop)
         logger.info("Added track: {} successfully for user: {}".format(track_name, after.id))
 
 

@@ -8,10 +8,10 @@ from io import BytesIO
 import imagehash
 from PIL import Image
 from urlextract import URLExtract
-import query as query
-import points as points
+from utils.query import *
+from utils import points as points
 import pytz
-from bot.chat_gpt import prompt_once, gpt_enabled
+from utils.chat_gpt import prompt_once, gpt_enabled
 from wand.wand_factory import *
 
 
@@ -97,7 +97,7 @@ def save_attachments(image, filename):
 def cool_down(author_id, guild_id):
     logging.debug("starting cooldown check for user: {0} in guild: {1}".format(author_id, guild_id))
     timezone = pytz.timezone('America/New_York')
-    last_post_time = query.get_user_cooldown_date(author_id, guild_id)
+    last_post_time = get_user_cooldown_date(author_id, guild_id)
     logger.info("got last_post_time: {0}".format(last_post_time))
     if last_post_time is None:
         return False
@@ -118,17 +118,16 @@ async def process_attachments(bot, message):
     res = requests.get(attach.url)
     new_hash = str(imagehash.dhash(Image.open(BytesIO(res.content))))
     logger.info("image hashed to: {0}".format(new_hash))
-    post = query.get_post_by_hash(new_hash, message.guild.id)
+    post = get_post_by_hash(new_hash, message.guild.id)
     print(post)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
     if post is None:
-        obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,
-                                 message.id)
-        query.create_post(obj)
+        obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,message.id)
+        create_post(obj)
         if cooldown:
-            new_user = query.get_random_user(message.guild.id)
-            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
+            new_user = get_random_user(message.guild.id)
+            wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
                 rolled_points = wand.get_points()
@@ -139,7 +138,7 @@ async def process_attachments(bot, message):
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
-            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
+            wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
                 rolled_points = wand.get_points()
@@ -170,19 +169,19 @@ async def process_urls(bot, message):
     urls = get_urls(message.content)
     url = urls[0]
     logger.info("start parsing url: {0}".format(urls[0]))
-    res = query.url_check(urls[0], message.guild.id)
+    res = url_check(urls[0], message.guild.id)
     if res != '1':
         return
-    post = query.get_post_by_hash(url, message.guild.id)
+    post = get_post_by_hash(url, message.guild.id)
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
     if post is None:
         obj = create_post_object(url, url, message.author.id, message.guild.id, message.id)
         # add url
-        query.create_post(obj)
+        create_post(obj)
         if cooldown:
-            new_user = query.get_random_user(message.guild.id)
-            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
+            new_user = get_random_user(message.guild.id)
+            wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
                 rolled_points = wand.get_points()
@@ -193,7 +192,7 @@ async def process_urls(bot, message):
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
-            wand = create_wand(query.get_user_wand(message.author.id, message.guild.id))
+            wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
                 rolled_points = wand.get_points()
