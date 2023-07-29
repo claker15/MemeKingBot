@@ -443,20 +443,20 @@ def clear_tracks():
 
 def get_behaviors(guild_id: str):
     logger.info("Getting chatgpt behaviors")
-    data = execute_query(getBotBehaviors, [guild_id])
+    data = execute_query(getBotBehaviors, [guild_id], True)
     logger.info("received as response from getBotBehaviors: {0}".format(data))
     return data
 
 
 def add_behavior(guild_id: str, rule: str):
     logger.info("Adding chatgpt behaviors")
-    data = execute_query(addBotBehaviors, [rule, guild_id])
+    data = execute_query(addBotBehaviors, [rule, guild_id], True)
     logger.info("received as response from addBotBehaviors: {0}".format(data))
     return data
 
 
 def remove_bot_behavior(guild_id: str, index: int):
     logger.info("Removing chatgpt behaviors")
-    data = execute_query(addBotBehaviors, [guild_id, index])
+    data = execute_query(addBotBehaviors, [guild_id, index], True)
     logger.info("received as response from removeBotBehaviors: {0}".format(data))
     return data
