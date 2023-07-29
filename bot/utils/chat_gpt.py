@@ -51,7 +51,7 @@ def prompt_once(prompt: str, guild_id: str) -> str:
         response = openai.ChatCompletion.create(
             model=ai_model,
             message=[
-                opening_message,
+                {"role": "system", "content": opening_message},
                 {"role": "user", "content": prompt}
             ],
             temperature=1
