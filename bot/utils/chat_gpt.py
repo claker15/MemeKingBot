@@ -53,7 +53,7 @@ def prompt_once(prompt: str, guild_id: str) -> str:
             ],
             temperature=1
         )
-        logger.info("response from chatgpt: {}", response)
+        logger.info("response from chatgpt: {}", response['choices'][0]['message']['content'])
     except openai.error.APIError as e:
         logger.info("got exception: {}", e)
         return "Could not complete request, API is down"
