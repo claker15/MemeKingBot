@@ -46,7 +46,7 @@ class ChatMkb(commands.Cog):
         rules = get_behaviors(str(inter.guild.id))
         embed = new_embed("Current AI Rules")
         for rule, i in rules:
-            embed.add_field(name=i, value=rule['rule'], inline=False)
+            embed.add_field(name=i, value=rule.rule, inline=False)
         await inter.send(embed=embed)
 
     @commands.slash_command(description="Add a new behavior rule for MemekingBot")
