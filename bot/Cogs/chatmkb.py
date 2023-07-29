@@ -28,6 +28,7 @@ class ChatMkb(commands.Cog):
 
     @commands.slash_command(description="Send a prompt to ChatGPT")
     async def prompt(self, inter: disnake.CommandInteraction, prompt: str):
+        await inter.response.defer()
         if not gpt_enabled():
             inter.response.send_message("GPT Disabled")
             return
@@ -35,7 +36,7 @@ class ChatMkb(commands.Cog):
             await inter.response.send_message("Prompt too long.")
             return
         res = prompt_once(prompt, str(inter.guild.id))
-        await inter.response.send_message(res)
+        await inter.edit_original_response(content=res)
 
     @commands.slash_command(description="View current bot behavior rules")
     async def get_ai_rules(self, inter: disnake.CommandInteraction):
