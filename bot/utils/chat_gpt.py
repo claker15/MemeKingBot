@@ -31,7 +31,7 @@ def get_opening_message(guild_id):
     rules = get_behaviors(guild_id)
     content = "You are MemekingBot. At most, your responses will be 2-3 sentences."
     for rule in rules:
-        content = content + rule['rule']
+        content = content + rule.rule
     logger.info("This is the first message content: {}".format(content))
     return {
         "role": "system",
