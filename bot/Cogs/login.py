@@ -5,8 +5,8 @@ from disnake.ext import commands
 import logging
 from dotenv import load_dotenv
 import pytz
-from ..utils.query import *
-from ..utils.points import login_points
+from utils.query import *
+from utils.points import login_points
 
 load_dotenv()
 logger = logging.getLogger("login")

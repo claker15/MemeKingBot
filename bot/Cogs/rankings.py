@@ -4,7 +4,7 @@ import logging
 import json
 from disnake.ext import commands
 from discord.ext.commands.core import guild_only
-from ..utils.query import *
+from utils.query import *
 
 logger = logging.getLogger("rankings")
 

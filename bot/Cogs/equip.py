@@ -1,8 +1,8 @@
 import disnake
 from disnake.ext import commands
-from ..wand.wand_factory import *
-from ..utils.points import *
-from ..utils.query import *
+from wand.wand_factory import *
+from utils.points import *
+from utils.query import *
 import logging
 
 logger = logging.getLogger("Equipment")

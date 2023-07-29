@@ -1,8 +1,8 @@
 import os
 import disnake
 from disnake.ext import commands
-from ..utils.query import *
-from ..utils.points import *
+from utils.query import *
+from utils.points import *
 from dotenv import load_dotenv
 import logging
 

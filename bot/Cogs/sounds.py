@@ -4,8 +4,8 @@ import disnake
 from disnake.ext import commands
 from disnake import FFmpegPCMAudio
 import logging
-from ..utils.query import *
-from ..utils.points import *
+from utils.query import *
+from utils.points import *
 import yt_dlp
 
 logger = logging.getLogger("soundboard")

@@ -5,8 +5,8 @@ import requests
 import logging
 import random
 import datetime
-from ..utils.query import *
-from ..utils.points import *
+from utils.query import *
+from utils.points import *
 import html
 import json
 

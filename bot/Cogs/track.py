@@ -1,6 +1,6 @@
 import disnake
 from disnake.ext import commands
-from ..utils.query import *
+from utils.query import *
 
 
 class url_track(commands.Cog):

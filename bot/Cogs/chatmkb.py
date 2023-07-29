@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv
 import logging
 from disnake.ext import commands
-from ..utils.chat_gpt import prompt_once, gpt_enabled
-from ..utils.query import add_behavior, remove_bot_behavior, get_behaviors
+from utils.chat_gpt import prompt_once, gpt_enabled
+from utils.query import add_behavior, remove_bot_behavior, get_behaviors
 
 
 load_dotenv()

@@ -4,7 +4,7 @@ import logging
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
-from ..utils.query import *
+from utils.query import *
 from dotenv import load_dotenv
 import pylast
 

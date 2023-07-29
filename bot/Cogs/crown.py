@@ -6,8 +6,8 @@ from datetime import datetime
 from datetime import time
 import pytz
 from dotenv import load_dotenv
-from ..utils.query import *
-from ..utils.points import *
+from utils.query import *
+from utils.points import *
 
 load_dotenv()
 logger = logging.getLogger("crown")
