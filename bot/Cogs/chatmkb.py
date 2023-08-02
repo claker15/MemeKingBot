@@ -49,7 +49,7 @@ class ChatMkb(commands.Cog):
         if voice_enabled():
             audio = generate(
                 text=res,
-                voice="British",
+                voice="Scientist",
                 model="eleven_monolingual_v1"
             )
             save(audio, "voice.wav")
