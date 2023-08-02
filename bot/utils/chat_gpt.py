@@ -71,6 +71,6 @@ def prompt_once(prompt: str, guild_id: str) -> str:
         return "Could not complete request, API Connection error"
     except openai.error.RateLimitError as e:
         logger.info("got exception: {}", e)
-        return "Could not complete request, Rate Limit Reached {},"
+        return "Could not complete request, Rate Limit Reached"
 
     return res

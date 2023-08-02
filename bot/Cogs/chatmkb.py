@@ -7,7 +7,7 @@ from disnake.ext import commands
 from utils.chat_gpt import prompt_once, gpt_enabled, voice_enabled
 from utils.query import add_behavior, remove_bot_behavior, get_behaviors
 import asyncio
-from elevenlabs import generate, play, set_api_key
+from elevenlabs import generate, play, set_api_key, save
 import subprocess
 from disnake import FFmpegPCMAudio
 import ffmpeg
@@ -45,13 +45,14 @@ class ChatMkb(commands.Cog):
             await inter.response.send_message("Prompt too long.")
             return
         res = prompt_once(prompt, str(inter.guild.id))
+        await inter.edit_original_response(content=res)
         if voice_enabled():
             audio = generate(
                 text=res,
                 voice="British",
                 model="eleven_monolingual_v1"
             )
-            bufferedio = io.BytesIO(audio)
+            save(audio, "voice.wav")
             logger.info("Got a response from elevenlabs: {}", len(audio))
             voice_channel = inter.author.voice.channel
             if voice_channel is not None:
@@ -65,10 +66,11 @@ class ChatMkb(commands.Cog):
                         fut.result()
                     except:
                         pass
+                    os.remove("./voice.wav")
 
-                voice_client.play(FFmpegPCMAudio(bufferedio, **FFMPEG_OPTIONS), after=my_after)
+                voice_client.play(FFmpegPCMAudio("./voice.wav"), after=my_after)
 
-        await inter.edit_original_response(content=res)
+
 
     @commands.slash_command(description="View current bot behavior rules")
     async def get_ai_rules(self, inter: disnake.CommandInteraction):
