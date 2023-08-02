@@ -47,7 +47,7 @@ def create_post_object(hash, path, user_id, guild_id, message_id):
 
 async def send_relax_message(author, channel, new_user):
     logger.info("{0} has not waited for cooldown period".format(author.id))
-    author = await channel.guild.fetch_memeber(author.id)
+    author = await channel.guild.fetch_member(author.id)
     member = await channel.guild.fetch_member(new_user)
     if gpt_enabled():
         res = prompt_once("Make a passive aggressive comment to {} that they are losing their meme points to {} and that they deserve it and need to relax".format(author.nick, member.nick), str(channel.guild.id))

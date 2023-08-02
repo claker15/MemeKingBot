@@ -12,6 +12,14 @@ ai_model = os.getenv("CHATGPT_MODEL")
 encoding = tiktoken.encoding_for_model(ai_model)
 token_limit = os.getenv("CHATGPT_TOKEN_LIMIT")
 use_gpt = os.getenv("USE_GPT")
+use_voice = os.getenv("USE_VOICE")
+
+
+def voice_enabled() -> bool:
+    if use_voice == "FALSE":
+        return False
+    else:
+        return True
 
 
 def gpt_enabled() -> bool:
@@ -53,7 +61,8 @@ def prompt_once(prompt: str, guild_id: str) -> str:
             ],
             temperature=1
         )
-        logger.info("response from chatgpt: {}", response['choices'][0]['message']['content'])
+        res = response['choices'][0]['message']['content']
+        logger.info("response from chatgpt: {}", res)
     except openai.error.APIError as e:
         logger.info("got exception: {}", e)
         return "Could not complete request, API is down"
@@ -64,4 +73,4 @@ def prompt_once(prompt: str, guild_id: str) -> str:
         logger.info("got exception: {}", e)
         return "Could not complete request, Rate Limit Reached {},"
 
-    return response['choices'][0]['message']['content']
+    return res

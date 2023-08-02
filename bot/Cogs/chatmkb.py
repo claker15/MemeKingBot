@@ -1,16 +1,25 @@
 import disnake
 import os
+import io
 from dotenv import load_dotenv
 import logging
 from disnake.ext import commands
-from utils.chat_gpt import prompt_once, gpt_enabled
+from utils.chat_gpt import prompt_once, gpt_enabled, voice_enabled
 from utils.query import add_behavior, remove_bot_behavior, get_behaviors
+import asyncio
+from elevenlabs import generate, play, set_api_key
+import subprocess
+from disnake import FFmpegPCMAudio
+import ffmpeg
 
 
 load_dotenv()
 logger = logging.getLogger("gpt")
 gpt_api_key = os.getenv("CHATGPT_API_KEY")
 ai_model = os.getenv("CHATGPT_MODEL")
+eleven_api_key = os.getenv("ELEVEN_API_KEY")
+set_api_key(eleven_api_key)
+FFMPEG_OPTIONS = {'options': '-vn'}
 
 
 def new_embed(title: str) -> disnake.Embed:
@@ -36,6 +45,29 @@ class ChatMkb(commands.Cog):
             await inter.response.send_message("Prompt too long.")
             return
         res = prompt_once(prompt, str(inter.guild.id))
+        if voice_enabled():
+            audio = generate(
+                text=res,
+                voice="British",
+                model="eleven_monolingual_v1"
+            )
+            bufferedio = io.BytesIO(audio)
+            logger.info("Got a response from elevenlabs: {}", len(audio))
+            voice_channel = inter.author.voice.channel
+            if voice_channel is not None:
+                logger.info("Playing voice")
+                voice_client = await voice_channel.connect()
+
+                def my_after(error):
+                    coro = voice_client.disconnect()
+                    fut = asyncio.run_coroutine_threadsafe(coro, voice_client.loop)
+                    try:
+                        fut.result()
+                    except:
+                        pass
+
+                voice_client.play(FFmpegPCMAudio(bufferedio, **FFMPEG_OPTIONS), after=my_after)
+
         await inter.edit_original_response(content=res)
 
     @commands.slash_command(description="View current bot behavior rules")
