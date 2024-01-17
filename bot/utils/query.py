@@ -64,7 +64,7 @@ getSoundByPathQuery = "SELECT path from sounds where path = '{}' AND guild_id = 
 
 removeSoundQuery = "DELETE from sounds where title = '{}' AND guild_id = '{}'"
 
-triviaCoolDownQuery = "select date from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' ORDER BY date DESC LIMIT 1"
+triviaCoolDownQuery = "select date from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' AND value > 0 ORDER BY date DESC LIMIT 1"
 
 userWandQuery = "SELECT wand from user where user_id='{}' AND guild_id='{}'"
 

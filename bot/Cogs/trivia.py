@@ -112,7 +112,7 @@ class Trivia(commands.Cog):
             logger.info("Got correct answer. Awarding points")
             trivia_correct_answer(inter.id, inter.author.id, inter.guild.id,
                                            self.difficulty_scale[self.question.difficulty])
-            await inter.channel.send("Correct answer. You earned" + str(self.difficulty_scale[self.question.difficulty]) + " points")
+            await inter.channel.send("Correct answer. You earned " + str(self.difficulty_scale[self.question.difficulty]) + " points")
             await inter.edit_original_response(content="Received Answer")
         else:
             logger.info("Got wrong answer. Removing points")
