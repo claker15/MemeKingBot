@@ -18,9 +18,9 @@ last_fm_secret = os.getenv("LAST_FM_API_SECRET")
 
 
 def build_embed_field(music_entry, index, nick, embed):
-    logger.info("Got in the embed field method")
-    logger.info("music_entry is {}".format(music_entry))
-    logger.info("nickname is {}".format(nick))
+    logger.debug("Got in the embed field method")
+    logger.debug("music_entry is {}".format(music_entry))
+    logger.debug("nickname is {}".format(nick))
     if index <= 1:
         adjective = "Most"
     else:
@@ -67,22 +67,22 @@ class MusicSnob(commands.Cog):
         if not isinstance(after.activity, disnake.Spotify):
             return
         if after.get_role(int(music_role)) is None:
-            logger.info("user: {} does not have role. Returning".format(after.id))
+            logger.debug("user: {} does not have role. Returning".format(after.id))
             return
-        logger.info("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
+        logger.debug("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track_name = after.activity.title
         artist_name = after.activity.artists[0]
         if track_exists(after.id, after.guild.id, track_name, artist_name):
-            logger.info("track already exists in database for user: {}".format(after.id))
+            logger.debug("track already exists in database for user: {}".format(after.id))
             return
         track = self.network.get_track(artist_name, track_name)
         track_pop = track.get_playcount()
         artist = self.network.get_artist(artist_name)
         artist_pop = artist.get_playcount()
-        logger.info("From lastfm, got track plays: {} and artist plays: {}".format(track_pop, artist_pop))
+        logger.debug("From lastfm, got track plays: {} and artist plays: {}".format(track_pop, artist_pop))
 
         track_add(after.id, after.guild.id, track_name, artist_name, track_pop, artist_pop)
-        logger.info("Added track: {} successfully for user: {}".format(track_name, after.id))
+        logger.debug("Added track: {} successfully for user: {}".format(track_name, after.id))
 
 
 def setup(bot):
