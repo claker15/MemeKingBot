@@ -106,6 +106,17 @@ addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
 
 removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id='{}'"
 
+betTargetQuery = "SELECT user_id from next_relax where guild_id='{}'"
+
+setBetTargetsInactive = "UPDATE SET active = 0 where guild_id='{}'"
+
+newBetTargetQuery = "INSERT INTO next_relax(user_id, guild_id) VALUES ('{}', '{}')"
+
+randomUserListQuery = "select user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) AND user_id != '{}' ORDER BY RAND() LIMIT {}"
+
+addBetWithWeight = "INSERT INTO bets(message_id, user_id, target_id, guild_id, bet, weight, valid) VALUES ('{}', '{}', '{}', '{}', '{}', {}, True)"
+
+
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
@@ -460,3 +471,41 @@ def remove_bot_behavior(guild_id: str, index: int):
     data = execute_query(addBotBehaviors, [guild_id, index], True)
     logger.debug("received as response from removeBotBehaviors: {0}".format(data))
     return data
+
+
+def get_next_bet_target(guild_id: str):
+    logger.debug("Getting next bet target for guild: {}", guild_id)
+    data = execute_query(betTargetQuery, [guild_id], True)
+    logger.debug("received as response from betTargetQuery: {0}".format(data))
+    return data[0]
+
+
+def change_bet_target(guild_id: str):
+    logger.debug("Changing next bet target for guild: {}", guild_id)
+    execute_query(setBetsInvalid, [guild_id], True)
+    user = get_random_user(guild_id)
+    data = execute_query(newBetTargetQuery, [user, guild_id], True)
+    logger.debug("received as response from newBetTargetQuery: {0}".format(data))
+    return
+
+
+def get_random_user_list_exclude_user_id(guild_id: str, user_id: str, length: int):
+    logger.debug("Getting random list of users")
+    data = execute_query(randomUserListQuery, [guild_id, user_id, length], True)
+    logger.debug("received as response from randomUserListQuery: {0}".format(data))
+    return data
+
+
+def get_betting_list(guild_id: str, user_id: str, length: int):
+    data = get_random_user_list_exclude_user_id(guild_id, user_id, length)
+    data.append(get_next_bet_target(guild_id))
+    return data
+
+
+def add_bet_with_weight(message_id, user_id, target_id, guild_id, bet, weight):
+    logger.debug("Adding bet with weight")
+    data = execute_query(addBetWithWeight, [message_id, user_id, target_id, guild_id, bet, weight], True)
+    logger.debug("received as response from addBetWithWeight: {0}".format(data))
+    return data
+
+

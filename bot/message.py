@@ -33,6 +33,10 @@ async def parse_message(bot, message):
         await process_attachments(bot, message)
         return
 
+def get_chosen_bet_target(guild_id: str):
+    return get_next_bet_target(guild_id)
+
+
 
 def create_post_object(hash, path, user_id, guild_id, message_id):
     obj = {
@@ -126,7 +130,8 @@ async def process_attachments(bot, message):
         obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,message.id)
         create_post(obj)
         if cooldown:
-            new_user = get_random_user(message.guild.id)
+            # new_user = get_random_user(message.guild.id)
+            new_user = get_next_bet_target(message.guild.id)
             wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
@@ -135,6 +140,7 @@ async def process_attachments(bot, message):
                 points.wand_points(message.id, new_user, message.guild.id, rolled_points)
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", user=new_user, guild_id=message.guild.id)
+            change_bet_target(message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
@@ -165,7 +171,7 @@ def get_urls(string):
 
 
 async def process_urls(bot, message):
-    logger.info("starting profcessing urls in message {0}".format(message.content))
+    logger.info("starting processing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
     url = urls[0]
     logger.info("start parsing url: {0}".format(urls[0]))

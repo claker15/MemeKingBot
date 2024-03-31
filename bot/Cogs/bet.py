@@ -1,5 +1,9 @@
+import datetime
 import os
+import string
+
 import disnake
+from disnake import ModalInteraction, MessageInteraction
 from disnake.ext import commands
 from utils.query import *
 from utils.points import *
@@ -9,6 +13,8 @@ import logging
 
 logger = logging.getLogger('bet')
 
+new_bet_weights = {'2': float(1.30), '3': float(1.50), '4': float(1.70), '5': float(2.00), '6': float(3.00)}
+list_length_subtractions = {'2': 0, '3': float(0.20), '4': float(0.12), '5': float(0.25), '6': float(0.33)}
 
 def strip_char_from_target(string):
     stripped = string
@@ -23,7 +29,7 @@ class bet(commands.Cog):
         load_dotenv()
 
     @commands.slash_command(description="Make a bet on who will receive the next relax points")
-    async def bet(self, inter: disnake.CommandInteraction, bet_amount: int, user: disnake.User):
+    async def classic_bet(self, inter: disnake.CommandInteraction, bet_amount: int, user: disnake.User):
         logger.info("starting bet command")
         logger.info("got user from arg: {}".format(user))
         if inter.channel.id != int(os.getenv("GAMBLE_CHANNEL")):
@@ -63,11 +69,11 @@ class bet(commands.Cog):
         logger.info('calculating payouts and listing users who won {}'.format(bets))
         for bet in bets:
             if bet[3] == user_picked:
-                bet_win_points(bet[1], bet[2], bet[4], 3 * bet[5])
+                bet_win_points(bet[1], bet[2], bet[4], bet[6] * bet[5])
                 if bet[2] not in embed_totals:
-                    embed_totals[bet[2]] = 3 * bet[5]
+                    embed_totals[bet[2]] = bet[6] * bet[5]
                 else:
-                    embed_totals[bet[2]] = embed_totals[bet[2]] + (3 * bet[5])
+                    embed_totals[bet[2]] = embed_totals[bet[2]] + (bet[6] * bet[5])
         logger.info('adding totals for user who won bets {}'.format(embed_totals))
         for user in embed_totals:
             name = await guild.fetch_member(user)
@@ -76,6 +82,71 @@ class bet(commands.Cog):
         logger.info('setting all bets to invalid')
         set_bets_invalid()
         return
+
+    @commands.slash_command(description="Make a bet on who will receive the next relax points.")
+    async def bet(self, inter: disnake.CommandInteraction, bet_amount: int, user_number: str = commands.Param(name="numberofchoices", choices=['2', '3', '4', '5', '6'])):
+        #TODO: user cannot bet again if they have active bets
+
+        #get list and make list of nicknames
+        user_ids = get_betting_list(inter.guild.id, inter.author.id, user_number)
+        userObjects = []
+        for i in range(len(user_ids)):
+            userObjects.append(await inter.guild.fetch_member(user_ids[i].user_id))
+        userNickNames = []
+        for i in range(len(userObjects)):
+            userNickNames.append(userObjects[i].nick if userObjects[i].nick is not None else userObjects[i].name)
+        #get user's choices
+
+        choiceView = UserBetView()
+        dropdown = UserDropdown(userNickNames, bet_amount)
+        choiceView.add_item(dropdown)
+
+        async def select_callback(select_interaction: MessageInteraction, /) -> None:
+            dropdown.disabled = True
+            await inter.edit_original_response(view=choiceView)
+            # calculate bets
+            # for each choice -- bet_amount / number of actual choices * new_bet_wieghts(number of overall choices) - (number of actual choices * list_length_subtractions(number of overall choices))
+            user_choices = select_interaction.values
+            amount_for_each = dropdown.bet_amount / len(user_choices)
+            for i in range(len(user_choices)):
+                split_bet_amount = float(amount_for_each)
+                weight = new_bet_weights[str(len(userNickNames))] - (float(len(user_choices)) * list_length_subtractions[str(len(userNickNames))])
+                logger.info("{} making bet record using amount: {:0.2f} and weight: {:0.2f}".format(inter.author.id, split_bet_amount, weight))
+                #TODO: Get all values for bets table and add entry
+
+            await select_interaction.response.send_message("Bet taken")
+
+
+        dropdown.callback = select_callback
+
+        await inter.response.send_message("Make your choices", view=choiceView, ephemeral=True)
+
+        return
+
+
+
+
+class UserDropdown(disnake.ui.StringSelect):
+    def __init__(self, displayList, bet_amount):
+
+        self.bet_amount = bet_amount
+        options = []
+        for i in range(len(displayList)):
+            options.append(disnake.SelectOption(label=displayList[i]))
+
+        super().__init__(
+            placeholder="Choose users to bet on",
+            options=options,
+            min_values=1,
+            max_values=len(displayList) - 1 if len(displayList) > 1 else 1,
+        )
+
+class UserBetView(disnake.ui.View):
+
+    user_choices = []
+
+    def __init__(self):
+        super().__init__()
 
 
 def setup(bot):
