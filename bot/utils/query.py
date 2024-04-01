@@ -112,7 +112,7 @@ setBetTargetsInactive = "UPDATE SET active = 0 where guild_id='{}'"
 
 newBetTargetQuery = "INSERT INTO next_relax(user_id, guild_id) VALUES ('{}', '{}')"
 
-randomUserListQuery = "select user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) AND user_id != '{}' ORDER BY RAND() LIMIT {}"
+randomUserListQuery = "select user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) AND user_id != {} ORDER BY RAND() LIMIT {}"
 
 addBetWithWeight = "INSERT INTO bets(message_id, user_id, target_id, guild_id, bet, weight, valid) VALUES ('{}', '{}', '{}', '{}', '{}', {}, True)"
 
@@ -503,8 +503,8 @@ def get_random_user_list_exclude_user_id(guild_id: str, user_id: str, length: in
     return data
 
 
-def get_betting_list(guild_id: str, user_id: str, length: int):
-    data = get_random_user_list_exclude_user_id(guild_id, user_id, length)
+def get_betting_list(guild_id: str, length: int):
+    data = get_random_user_list_exclude_user_id(guild_id, get_next_bet_target(guild_id).user_id, length)
     data.append(get_next_bet_target(guild_id))
     return data
 

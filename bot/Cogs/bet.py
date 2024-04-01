@@ -68,11 +68,11 @@ class bet(commands.Cog):
         logger.info('calculating payouts and listing users who won {}'.format(bets))
         for bet in bets:
             if bet[3] == user_picked:
-                bet_win_points(bet[1], bet[2], bet[4], bet[6] * bet[5])
+                bet_win_points(bet[1], bet[2], bet[4], float(bet[6]) * float(bet[5]))
                 if bet[2] not in embed_totals:
-                    embed_totals[bet[2]] = bet[6] * bet[5]
+                    embed_totals[bet[2]] = float(bet[6]) * float(bet[5])
                 else:
-                    embed_totals[bet[2]] = embed_totals[bet[2]] + (bet[6] * bet[5])
+                    embed_totals[bet[2]] = embed_totals[bet[2]] + (float(bet[6]) * float(bet[5]))
         logger.info('adding totals for user who won bets {}'.format(embed_totals))
         for user in embed_totals:
             name = await guild.fetch_member(user)
@@ -88,19 +88,22 @@ class bet(commands.Cog):
         if (check_existing_bet(inter.author.id, inter.guild.id)):
             await inter.response.send_message("Bet already exists. You cannot bet again")
             return
-        if (user_points(inter.author.id) <= 0):
-            await inter.response.send_message("Not enough points to bet")
-            return
+        # if (user_points(inter.guild.id, inter.author.id) <= 0):
+        #     await inter.response.send_message("Not enough points to bet")
+        #     return
 
         #get list and make list of nicknames
-        user_ids = get_betting_list(inter.guild.id, inter.author.id, user_number)
+        user_ids = get_betting_list(inter.guild.id, int(user_number) - 1)
         userNickNames = []
         userDict = {}
         for i in range(len(user_ids)):
             user = await inter.guild.fetch_member(user_ids[i].user_id)
             nickname = user.nick if user.nick is not None else user.name
             userNickNames.append(nickname)
-            userDict.__setitem__(nickname, user_ids[i])
+            print("{}: {}".format(i, nickname))
+            userDict.__setitem__(nickname, user_ids[i].user_id)
+        print(userDict)
+        print(userNickNames)
 
         #get user's choices
         choiceView = UserBetView()
