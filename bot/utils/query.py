@@ -106,7 +106,7 @@ addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
 
 removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id='{}'"
 
-betTargetQuery = "SELECT user_id from next_relax where guild_id='{}'"
+betTargetQuery = "SELECT user_id from next_relax where guild_id='{}' AND active = 1"
 
 setBetTargetsInactive = "UPDATE SET active = 0 where guild_id='{}'"
 

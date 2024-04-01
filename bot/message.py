@@ -186,7 +186,7 @@ async def process_urls(bot, message):
         # add url
         create_post(obj)
         if cooldown:
-            new_user = get_random_user(message.guild.id)
+            new_user = get_next_bet_target(message.guild.id)
             wand = create_wand(get_user_wand(message.author.id, message.guild.id))
             if wand.roll():
                 logger.info("adding wand points")
@@ -195,6 +195,7 @@ async def process_urls(bot, message):
                 points.wand_points(message.id, new_user, message.guild.id, rolled_points)
             points.relax_points(message.guild.id, message.author.id, message.id, new_user)
             bot.dispatch("gamble", new_user, message.guild.id)
+            change_bet_target(message.guild.id)
             await send_relax_message(message.author, message.channel, new_user)
             return
         else:
