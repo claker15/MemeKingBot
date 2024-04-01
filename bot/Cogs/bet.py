@@ -132,10 +132,10 @@ class bet(commands.Cog):
 
         return
 
-    @commands.slash_command(description="See current running total on all bets this week.")
-    async def PotTotal(self, inter: disnake.CommandInteraction):
-        await inter.response.send_message("Current betting totals is {}".format(get_split_pot_total(inter.guild.id)))
-        return
+    # @commands.slash_command(description="See current running total on all bets this week.")
+    # async def PotTotal(self, inter: disnake.CommandInteraction):
+    #     await inter.response.send_message("Current betting totals is {}".format(get_split_pot_total(inter.guild.id)))
+    #     return
 
 class UserDropdown(disnake.ui.StringSelect):
     def __init__(self, displayList, bet_amount):
