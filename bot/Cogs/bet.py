@@ -85,7 +85,7 @@ class bet(commands.Cog):
     @commands.slash_command(description="Make a bet on who will receive the next relax points.")
     async def bet(self, inter: disnake.CommandInteraction, bet_amount: int, user_number: str = commands.Param(name="numberofchoices", choices=['2', '3', '4', '5', '6'])):
 
-        if (check_existing_bet(inter.author.id, inter.guild.id)):
+        if (check_existing_bet(inter.guild.id, inter.author.id)):
             await inter.response.send_message("Bet already exists. You cannot bet again")
             return
         # if (user_points(inter.guild.id, inter.author.id) <= 0):
@@ -100,10 +100,7 @@ class bet(commands.Cog):
             user = await inter.guild.fetch_member(user_ids[i].user_id)
             nickname = user.nick if user.nick is not None else user.name
             userNickNames.append(nickname)
-            print("{}: {}".format(i, nickname))
             userDict.__setitem__(nickname, user_ids[i].user_id)
-        print(userDict)
-        print(userNickNames)
 
         #get user's choices
         choiceView = UserBetView()

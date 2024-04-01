@@ -520,7 +520,7 @@ def check_existing_bet(guild_id, user_id):
     logger.debug("Adding bet with weight")
     data = execute_query(existingBetCheckQuery, [guild_id, user_id], True)
     logger.debug("received as response from addBetWithWeight: {0}".format(data))
-    return True if len(data) == 1 else False
+    return True if len(data) > 0 else False
 
 
 def get_split_pot_total(guild_id):
