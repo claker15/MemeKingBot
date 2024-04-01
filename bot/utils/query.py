@@ -116,6 +116,13 @@ randomUserListQuery = "select user_id from post where guild_id = '{}' AND YEARWE
 
 addBetWithWeight = "INSERT INTO bets(message_id, user_id, target_id, guild_id, bet, weight, valid) VALUES ('{}', '{}', '{}', '{}', '{}', {}, True)"
 
+existingBetCheckQuery = "SELECT * from bets where guild_id = '{}' and user_id = '{}' and valid = 1 LIMIT 1"
+
+splitPotQuery = "SELECT SUM(bet) as points from bets where guild_id = '{}' and YEARWEEK(date) = YEARWEEK(NOW())"
+
+splitPotLastWeekQuery = "SELECT SUM(bet) as points from bets where guild_id = '{}' and YEARWEEK(date) = YEARWEEK(NOW() - 1)"
+
+
 
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
@@ -507,5 +514,27 @@ def add_bet_with_weight(message_id, user_id, target_id, guild_id, bet, weight):
     data = execute_query(addBetWithWeight, [message_id, user_id, target_id, guild_id, bet, weight], True)
     logger.debug("received as response from addBetWithWeight: {0}".format(data))
     return data
+
+
+def check_existing_bet(guild_id, user_id):
+    logger.debug("Adding bet with weight")
+    data = execute_query(existingBetCheckQuery, [guild_id, user_id], True)
+    logger.debug("received as response from addBetWithWeight: {0}".format(data))
+    return True if len(data) == 1 else False
+
+
+def get_split_pot_total(guild_id):
+    logger.debug("Getting total bet points")
+    data = execute_query(splitPotQuery, [guild_id], True)
+    logger.debug("received as response from splitPotQuery: {0}".format(data))
+    return data[0].points
+
+
+def get_last_week_split_pot_total(guild_id):
+    logger.debug("Getting total bet points")
+    data = execute_query(splitPotLastWeekQuery, [guild_id], True)
+    logger.debug("received as response from splitPotQuery: {0}".format(data))
+    return data[0].points
+
 
 

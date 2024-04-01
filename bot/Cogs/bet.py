@@ -10,11 +10,10 @@ from utils.points import *
 from dotenv import load_dotenv
 import logging
 
-
 logger = logging.getLogger('bet')
 
 new_bet_weights = {'2': float(1.30), '3': float(1.50), '4': float(1.70), '5': float(2.00), '6': float(3.00)}
-list_length_subtractions = {'2': 0, '3': float(0.20), '4': float(0.12), '5': float(0.25), '6': float(0.33)}
+list_length_subtractions = {'2': 0, '3': float(0.20), '4': float(0.12), '5': float(0.23), '6': float(0.30)}
 
 def strip_char_from_target(string):
     stripped = string
@@ -85,18 +84,25 @@ class bet(commands.Cog):
 
     @commands.slash_command(description="Make a bet on who will receive the next relax points.")
     async def bet(self, inter: disnake.CommandInteraction, bet_amount: int, user_number: str = commands.Param(name="numberofchoices", choices=['2', '3', '4', '5', '6'])):
-        #TODO: user cannot bet again if they have active bets
+
+        if (check_existing_bet(inter.author.id, inter.guild.id)):
+            await inter.response.send_message("Bet already exists. You cannot bet again")
+            return
+        if (user_points(inter.author.id) <= 0):
+            await inter.response.send_message("Not enough points to bet")
+            return
 
         #get list and make list of nicknames
         user_ids = get_betting_list(inter.guild.id, inter.author.id, user_number)
-        userObjects = []
-        for i in range(len(user_ids)):
-            userObjects.append(await inter.guild.fetch_member(user_ids[i].user_id))
         userNickNames = []
-        for i in range(len(userObjects)):
-            userNickNames.append(userObjects[i].nick if userObjects[i].nick is not None else userObjects[i].name)
-        #get user's choices
+        userDict = {}
+        for i in range(len(user_ids)):
+            user = await inter.guild.fetch_member(user_ids[i].user_id)
+            nickname = user.nick if user.nick is not None else user.name
+            userNickNames.append(nickname)
+            userDict.__setitem__(nickname, user_ids[i])
 
+        #get user's choices
         choiceView = UserBetView()
         dropdown = UserDropdown(userNickNames, bet_amount)
         choiceView.add_item(dropdown)
@@ -107,12 +113,15 @@ class bet(commands.Cog):
             # calculate bets
             # for each choice -- bet_amount / number of actual choices * new_bet_wieghts(number of overall choices) - (number of actual choices * list_length_subtractions(number of overall choices))
             user_choices = select_interaction.values
+            bet_points(inter.id, inter.author.id, inter.guild.id, dropdown.bet_amount)
             amount_for_each = dropdown.bet_amount / len(user_choices)
             for i in range(len(user_choices)):
                 split_bet_amount = float(amount_for_each)
                 weight = new_bet_weights[str(len(userNickNames))] - (float(len(user_choices)) * list_length_subtractions[str(len(userNickNames))])
                 logger.info("{} making bet record using amount: {:0.2f} and weight: {:0.2f}".format(inter.author.id, split_bet_amount, weight))
-                #TODO: Get all values for bets table and add entry
+                target_user_id = userDict[user_choices[i]]
+                add_bet_with_weight(inter.id, inter.author.id, target_user_id, inter.guild.id, split_bet_amount, weight)
+
 
             await select_interaction.response.send_message("Bet taken")
 
@@ -123,8 +132,10 @@ class bet(commands.Cog):
 
         return
 
-
-
+    @commands.slash_command(description="See current running total on all bets this week.")
+    async def PotTotal(self, inter: disnake.CommandInteraction):
+        await inter.response.send_message("Current betting totals is {}".format(get_split_pot_total(inter.guild.id)))
+        return
 
 class UserDropdown(disnake.ui.StringSelect):
     def __init__(self, displayList, bet_amount):
