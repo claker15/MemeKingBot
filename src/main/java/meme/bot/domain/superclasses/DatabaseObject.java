@@ -28,4 +28,20 @@ public class DatabaseObject {
         this.created = new Date();
 
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getGuildId() {
+        return guildId;
+    }
 }

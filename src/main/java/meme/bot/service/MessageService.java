@@ -8,6 +8,7 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.discordjson.json.AttachmentData;
 import meme.bot.domain.subclasses.Point;
 import meme.bot.domain.subclasses.Post;
+import meme.bot.factory.ResponseMessageFactory;
 import meme.bot.repository.PointRepository;
 import meme.bot.repository.PostRepository;
 import meme.bot.utils.MessageInfo;
@@ -47,11 +48,14 @@ public class MessageService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            Boolean exists = hashExists(newHash);
-            if (!exists) {
+            Post post = hashExists(newHash);
+            if (post == null) {
                 createPost(messageInfo.getAuthorId(), messageInfo.getGuildId(), newHash.toString(), messageInfo.getMessageId());
+                String newUserId = postRepository.getRandUserId(messageInfo.getGuildId());
                 if (onCooldown(messageInfo.getAuthorId(), messageInfo.getGuildId())) {
-                    createPostPoints(messageInfo.getAuthorId(), messageInfo.getGuildId(), messageInfo.getMessageId(), postRepository.getRandUserId(messageInfo.getGuildId()));
+                    createPostPoints(newUserId, messageInfo.getGuildId(), messageInfo.getMessageId(), messageInfo.getAuthorId());
+                    messageInfo.getMessage().getChannel()
+                            .flatMap(channel -> channel.createMessage(ResponseMessageFactory.buildResponseMessage("relax", messageInfo.getAuthorId(), newUserId)));
                 }
                 else {
                     createPostPoints(messageInfo.getAuthorId(), messageInfo.getGuildId(), messageInfo.getMessageId(), null);
@@ -60,7 +64,7 @@ public class MessageService {
             else {
                 //send cringe message
                 messageInfo.getMessage().getChannel()
-                        .flatMap(channel -> channel.createMessage("cringe"));
+                        .flatMap(channel -> channel.createMessage(ResponseMessageFactory.buildResponseMessage("cringe", messageInfo.getAuthorId(), post.getCreated().toString(), post.getUserId())));
             }
         });
     }
@@ -79,9 +83,8 @@ public class MessageService {
         return hasher.hash(newFile);
     }
 
-    private Boolean hashExists(Hash hash) {
-        Post existingHash = postRepository.findByHash(hash.toString());
-        return existingHash != null;
+    private Post hashExists(Hash hash) {
+        return postRepository.findByHash(hash.toString());
     }
 
     private void createPost(String userId, String guildId, String hash, String messageId) {

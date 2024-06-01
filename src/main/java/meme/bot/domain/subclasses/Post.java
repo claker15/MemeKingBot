@@ -13,4 +13,12 @@ public class Post extends DatabaseObject {
         this.hash = hash;
         this.messageId = messageId;
     }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
 }
