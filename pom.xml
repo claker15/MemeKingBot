@@ -46,12 +46,16 @@
 			<version>6.5.2.Final</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>dev.brachtendorf</groupId>
 			<artifactId>JImageHash</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nibor.autolink</groupId>
+			<artifactId>autolink</artifactId>
+			<version>0.11.0</version>
 		</dependency>
 
 		<dependency>

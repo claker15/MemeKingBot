@@ -13,4 +13,11 @@ public class Point extends DatabaseObject {
 
     private String messageId;
 
+    public Point(String userId, String guildId, Integer value, String type, String userIdFrom, String messageId) {
+        super(userId, guildId);
+        this.value = value;
+        this.type = type;
+        this.userIdFrom = userIdFrom;
+        this.messageId = messageId;
+    }
 }

@@ -1,18 +1,14 @@
 package meme.bot.MemeKingBot;
 
-import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.EventDispatcher;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.presence.ClientActivity;
-import discord4j.core.object.presence.ClientPresence;
 import discord4j.rest.RestClient;
 import meme.bot.service.MessageService;
+import meme.bot.utils.MessageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
@@ -52,9 +48,9 @@ public class MemeKingBotApplication {
 
 		//register regular message listener
 		client.on(MessageCreateEvent.class).subscribe(event -> {
-			Message message = event.getMessage();
-			if (listeningChannels.contains(message.getChannel().block().getId().asString())) {
-				messageService.processMessage(message);
+			MessageInfo info = new MessageInfo(event);
+			if (listeningChannels.contains(info.getChannelId())) {
+				messageService.processMessage(info);
 			}
 		});
 		return client;

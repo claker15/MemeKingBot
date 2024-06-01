@@ -5,17 +5,20 @@ import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.hashAlgorithms.PerceptiveHash;
 import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Message;
 import discord4j.discordjson.json.AttachmentData;
+import meme.bot.domain.subclasses.Point;
 import meme.bot.domain.subclasses.Post;
+import meme.bot.repository.PointRepository;
 import meme.bot.repository.PostRepository;
+import meme.bot.utils.MessageInfo;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,24 +27,41 @@ public class MessageService {
     @Autowired
     private PostRepository postRepository;
 
-    public void processMessage(Message message) {
+    @Autowired
+    private PointRepository pointRepository;
+
+    @Value("${bot.cooldown.durationInSecs}")
+    private Integer cooldownThreshold;
+
+    public void processMessage(MessageInfo messageInfo) {
 
         System.out.println("Got message");
-        List<Attachment> attachments =  message.getAttachments();
+
+        //need to get both attachments and urls
+        //url examples: https://github.com/robinst/autolink-java
+        List<Attachment> attachments =  messageInfo.getMessage().getAttachments();
         attachments.forEach(attachment -> {
+            Hash newHash;
             try {
-                Hash newHash = hashImage(attachment);
-                Boolean exists = hashExists(newHash);
-                if (!exists) {
-                    //add new post and award points
-                }
-                else {
-                    //send cringe message
-                }
+                newHash = hashImage(attachment);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
+            Boolean exists = hashExists(newHash);
+            if (!exists) {
+                createPost(messageInfo.getAuthorId(), messageInfo.getGuildId(), newHash.toString(), messageInfo.getMessageId());
+                if (onCooldown(messageInfo.getAuthorId(), messageInfo.getGuildId())) {
+                    createPostPoints(messageInfo.getAuthorId(), messageInfo.getGuildId(), messageInfo.getMessageId(), postRepository.getRandUserId(messageInfo.getGuildId()));
+                }
+                else {
+                    createPostPoints(messageInfo.getAuthorId(), messageInfo.getGuildId(), messageInfo.getMessageId(), null);
+                }
+            }
+            else {
+                //send cringe message
+                messageInfo.getMessage().getChannel()
+                        .flatMap(channel -> channel.createMessage("cringe"));
+            }
         });
     }
 
@@ -57,12 +77,24 @@ public class MessageService {
         }
         HashingAlgorithm hasher = new PerceptiveHash(16);
         return hasher.hash(newFile);
-
     }
 
     private Boolean hashExists(Hash hash) {
         Post existingHash = postRepository.findByHash(hash.toString());
         return existingHash != null;
+    }
+
+    private void createPost(String userId, String guildId, String hash, String messageId) {
+        Post post = new Post(userId, guildId, hash, messageId);
+        postRepository.save(post);
+    }
+    private void createPostPoints(String userId, String guildId, String messageId, String userIdFrom) {
+        Point point = new Point(userId, guildId, 1, "POST", userIdFrom, messageId);
+        pointRepository.save(point);
+    }
+    private Boolean onCooldown(String userId, String guildId) {
+        List<Post> posts = postRepository.findByUserIdAndGuildIdAndCreatedAfterOrderByCreatedDesc(userId, guildId, new Date(System.currentTimeMillis() - (1000L * cooldownThreshold)));
+        return !posts.isEmpty();
     }
 
 }
