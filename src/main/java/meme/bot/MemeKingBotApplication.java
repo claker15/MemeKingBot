@@ -1,4 +1,4 @@
-package meme.bot.MemeKingBot;
+package meme.bot;
 
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -9,15 +9,15 @@ import meme.bot.service.MessageService;
 import meme.bot.utils.MessageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 
 import java.util.List;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses = {meme.bot.MemeKingBot.GlobalCommandRegistrar.class})
+@EnableAutoConfiguration
 public class MemeKingBotApplication {
 
 	@Value("${bot.token}")
@@ -60,5 +60,7 @@ public class MemeKingBotApplication {
 	public RestClient discordRestClient(GatewayDiscordClient client) {
 		return client.getRestClient();
 	}
+
+
 
 }

@@ -3,12 +3,13 @@ package meme.bot.repository;
 import meme.bot.domain.subclasses.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT userId, SUM(value) as count FROM point WHERE guild_id = ?0 AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5")
-    List<User> getWeeklyUserRankings(String guildId);
+    @Query("SELECT userId, SUM(pointValue) as count FROM Point WHERE guildId = :guild AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY userId ORDER BY SUM(pointValue) DESC LIMIT 5")
+    List<User> getWeeklyUserRankings(@Param(value="guild")String guildId);
 
 }

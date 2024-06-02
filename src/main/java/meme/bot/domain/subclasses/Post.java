@@ -1,20 +1,27 @@
 package meme.bot.domain.subclasses;
 
+import jakarta.persistence.Entity;
 import meme.bot.domain.superclasses.DatabaseObject;
 
+import java.math.BigInteger;
+
+@Entity
 public class Post extends DatabaseObject {
 
-    private String hash;
+    private BigInteger hash;
 
     private String messageId;
 
-    public Post(String userId, String guildId, String hash, String messageId) {
+    public Post() {
+    }
+
+    public Post(String userId, String guildId, BigInteger hash, String messageId) {
         super(userId, guildId);
         this.hash = hash;
         this.messageId = messageId;
     }
 
-    public String getHash() {
+    public BigInteger getHash() {
         return hash;
     }
 

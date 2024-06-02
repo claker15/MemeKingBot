@@ -1,6 +1,5 @@
 package meme.bot.service;
 
-import com.austinv11.servicer.Service;
 import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.hashAlgorithms.PerceptiveHash;
@@ -15,9 +14,11 @@ import meme.bot.utils.MessageInfo;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +51,7 @@ public class MessageService {
             }
             Post post = hashExists(newHash);
             if (post == null) {
-                createPost(messageInfo.getAuthorId(), messageInfo.getGuildId(), newHash.toString(), messageInfo.getMessageId());
+                createPost(messageInfo.getAuthorId(), messageInfo.getGuildId(), newHash.getHashValue(), messageInfo.getMessageId());
                 String newUserId = postRepository.getRandUserId(messageInfo.getGuildId());
                 if (onCooldown(messageInfo.getAuthorId(), messageInfo.getGuildId())) {
                     createPostPoints(newUserId, messageInfo.getGuildId(), messageInfo.getMessageId(), messageInfo.getAuthorId());
@@ -62,7 +63,6 @@ public class MessageService {
                 }
             }
             else {
-                //send cringe message
                 messageInfo.getMessage().getChannel()
                         .flatMap(channel -> channel.createMessage(ResponseMessageFactory.buildResponseMessage("cringe", messageInfo.getAuthorId(), post.getCreated().toString(), post.getUserId())));
             }
@@ -73,21 +73,21 @@ public class MessageService {
 
         AttachmentData data = attachment.getData();
         String imageUrl = data.url();
-        File newFile = new File("");
+        File newFile = new File("/tmp/temp");
         try {
             FileUtils.copyURLToFile(URI.create(imageUrl).toURL(), newFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        HashingAlgorithm hasher = new PerceptiveHash(16);
+        HashingAlgorithm hasher = new PerceptiveHash(32);
         return hasher.hash(newFile);
     }
 
     private Post hashExists(Hash hash) {
-        return postRepository.findByHash(hash.toString());
+        return postRepository.findByHash(hash.getHashValue());
     }
 
-    private void createPost(String userId, String guildId, String hash, String messageId) {
+    private void createPost(String userId, String guildId, BigInteger hash, String messageId) {
         Post post = new Post(userId, guildId, hash, messageId);
         postRepository.save(post);
     }

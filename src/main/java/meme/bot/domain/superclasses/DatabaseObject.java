@@ -29,6 +29,10 @@ public class DatabaseObject {
 
     }
 
+    public DatabaseObject() {
+
+    }
+
     public Long getId() {
         return id;
     }
