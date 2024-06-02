@@ -16,7 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUserIdAndGuildIdAndCreatedAfterOrderByCreatedDesc(String userId, String guildId, Date date);
 
-    @Query(value = "select rand(), user_id from post where guild_id = :guild AND WEEK(created) = WEEK(NOW()) - 1 ORDER BY RAND()", nativeQuery = true)
-    String getRandUserId(@Param(value="guild")String guildId);
+    @Query(value = "select * from post where guild_id = :guild AND created > :begDate AND created < :endDate ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Post getRandUserId(@Param(value="guild")String guildId,
+                         @Param(value="begDate")Date beginningDate,
+                         @Param(value="endDate")Date endingDate);
 
 }

@@ -2,8 +2,11 @@ package meme.bot.factory;
 
 import discord4j.core.spec.MessageCreateFields;
 import discord4j.core.spec.MessageCreateSpec;
+import org.springframework.util.ResourceUtils;
 
 import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.InputStream;
 
 public class ResponseMessageFactory {
 
@@ -14,15 +17,16 @@ public class ResponseMessageFactory {
 
         switch (type) {
             case "cringe":
-                messageSpec.content("%s Cringe. Old meme, :b:ruh. Last posted at %s by %s https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".formatted((Object[]) args));
+                messageSpec.content("<@%s> Cringe. Old meme, :b:ruh. Last posted at %s by <@%s> https://newfastuff.com/wp-content/uploads/2019/07/DyPlSV9.png".formatted((Object[]) args));
                 break;
             case "relax":
-                messageSpec.content("{0}. {1}, enjoy the point".formatted((Object[]) args));
+                messageSpec.content("<@%s>. <@%s>, enjoy the point".formatted((Object[]) args));
                 try {
-                    messageSpec.addFile((MessageCreateFields.File) ImageIO.read(ResponseMessageFactory.class.getClassLoader().getResource("/resources/images/Relax.png")));
+                    InputStream stream = ResponseMessageFactory.class.getResourceAsStream("resources/images/Relax.png");
+                    messageSpec.addFile(MessageCreateFields.File.of("relax.png", stream));
                 }
                 catch (Exception e) {
-
+                    System.out.println(e.getMessage());
                 }
                 break;
             case "equip":
