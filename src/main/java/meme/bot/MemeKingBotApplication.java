@@ -1,12 +1,8 @@
 package meme.bot;
 
-import discord4j.core.DiscordClientBuilder;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.EventDispatcher;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.rest.RestClient;
 import meme.bot.service.MessageService;
-import meme.bot.utils.MessageInfo;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,29 +34,8 @@ public class MemeKingBotApplication {
 
 
 	@Bean
-	public GatewayDiscordClient gatewayDiscordClient() {
-		GatewayDiscordClient client =  DiscordClientBuilder.create(botToken)
-				.build()
-				.gateway()
-				.setEventDispatcher(EventDispatcher.replaying())
-				.login()
-				.block();
-
-		//register regular message listener
-		client.on(MessageCreateEvent.class).subscribe(event -> {
-			MessageInfo info = new MessageInfo(event);
-			if (listeningChannels.contains(info.getChannelId())) {
-				messageService.processMessage(info);
-			}
-		});
-		return client;
+	public JDA botClient() {
+		return JDABuilder.createDefault(botToken).build();
 	}
-
-	@Bean
-	public RestClient discordRestClient(GatewayDiscordClient client) {
-		return client.getRestClient();
-	}
-
-
 
 }

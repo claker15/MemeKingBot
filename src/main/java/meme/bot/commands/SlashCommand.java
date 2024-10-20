@@ -1,7 +1,6 @@
 package meme.bot.commands;
 
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
  * A simple interface defining our slash command class contract.
@@ -10,7 +9,6 @@ import reactor.core.publisher.Mono;
  */
 public interface SlashCommand {
 
-    String getName();
 
-    Mono<Void> handle(ChatInputInteractionEvent event);
+    void handle(SlashCommandInteractionEvent event);
 }

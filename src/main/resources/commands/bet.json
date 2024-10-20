@@ -1,0 +1,18 @@
+{
+  "name": "bet",
+  "description": "Place a bet",
+  "options": [
+    {
+      "name": "User",
+      "description": "User who you wish to bet on",
+      "type": 6,
+      "required": true
+    },
+    {
+      "name": "Points",
+      "description": "Amount of points to bet",
+      "type": 10,
+      "required": true
+    }
+  ]
+}

@@ -3,15 +3,13 @@ package meme.bot.service;
 import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.hashAlgorithms.PerceptiveHash;
-import discord4j.core.object.entity.Attachment;
-import discord4j.discordjson.json.AttachmentData;
 import meme.bot.domain.subclasses.Point;
 import meme.bot.domain.subclasses.Post;
 import meme.bot.factory.ResponseMessageFactory;
 import meme.bot.repository.PointRepository;
 import meme.bot.repository.PostRepository;
 import meme.bot.utils.DateUtils;
-import meme.bot.utils.MessageInfo;
+import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,52 +38,51 @@ public class MessageService {
     @Value("${bot.cooldown.durationInSecs}")
     private Integer cooldownThreshold;
 
-    public void processMessage(MessageInfo messageInfo) {
+    public void processMessage(Message message) {
 
         LOGGER.info("Received Message");
 
         //need to get both attachments and urls
         //url examples: https://github.com/robinst/autolink-java
-        List<Attachment> attachments =  messageInfo.getMessage().getAttachments();
-        LOGGER.info("found attachments for message id: {}", messageInfo.getMessageId());
+
+        List<Message.Attachment> attachments =  message.getAttachments();
+        LOGGER.info("found attachments for message id: {}", message.getId());
         attachments.forEach(attachment -> {
+            if (!attachment.isImage()) {
+                return;
+            }
             Hash newHash;
             try {
                 newHash = hashImage(attachment);
-                LOGGER.info("Calculated hash: {} for message id: {}", newHash.getHashValue(), messageInfo.getMessageId());
+                LOGGER.info("Calculated hash: {} for message id: {}", newHash.getHashValue(), message.getId());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             Post post = hashExists(newHash);
             if (post == null) {
-                LOGGER.info("Post is new, checking cooldown period for user: {}", messageInfo.getAuthorId());
-                Boolean isCooldown = onCooldown(messageInfo.getAuthorId(), messageInfo.getGuildId());
-                createPost(messageInfo.getAuthorId(), messageInfo.getGuildId(), newHash.getHashValue(), messageInfo.getMessageId());
-                Post newUser = postRepository.getRandUserId(messageInfo.getGuildId(), DateUtils.getCurrentWeekBeginningAndEndDates().get(0), DateUtils.getCurrentWeekBeginningAndEndDates().get(1));
+                LOGGER.info("Post is new, checking cooldown period for user: {}", message.getAuthor().getId());
+                Boolean isCooldown = onCooldown(message.getAuthor().getId(), message.getGuildId());
+                createPost(message.getAuthor().getId(), message.getGuildId(), newHash.getHashValue(), message.getId());
+                Post newUser = postRepository.getRandUserId( message.getGuildId(), DateUtils.getCurrentWeekBeginningAndEndDates().get(0), DateUtils.getCurrentWeekBeginningAndEndDates().get(1));
                 if (isCooldown) {
-                    LOGGER.info("User {} on cooldown, sending points to new user", messageInfo.getAuthorId());
-                    createPostPoints(newUser.getUserId(), messageInfo.getGuildId(), messageInfo.getMessageId(), messageInfo.getAuthorId());
-                    messageInfo.getMessage().getChannel()
-                            .flatMap(channel -> channel.createMessage(ResponseMessageFactory.buildResponseMessage("relax", messageInfo.getAuthorId(), newUser.getUserId())))
-                            .subscribe();
+                    LOGGER.info("User {} on cooldown, sending points to new user", message.getAuthor().getId());
+                    createPostPoints(newUser.getUserId(), message.getGuildId(), message.getId(), message.getAuthor().getId());
+                    message.reply(ResponseMessageFactory.buildResponseMessage("relax",  message.getAuthor().getId(), newUser.getUserId())).queue();
                 }
                 else {
-                    createPostPoints(messageInfo.getAuthorId(), messageInfo.getGuildId(), messageInfo.getMessageId(), null);
+                    createPostPoints(message.getAuthor().getId(), message.getGuildId(),message.getId(), null);
                 }
             }
             else {
-                LOGGER.info("Post exists, sending cringe message for message id: {}", messageInfo.getMessageId());
-                messageInfo.getMessage().getChannel()
-                        .flatMap(channel -> channel.createMessage(ResponseMessageFactory.buildResponseMessage("cringe", messageInfo.getAuthorId(), post.getCreated().toString(), post.getUserId())))
-                        .subscribe();
+                LOGGER.info("Post exists, sending cringe message for message id: {}", message.getId());
+                message.reply(ResponseMessageFactory.buildResponseMessage("cringe", message.getAuthor().getId(), post.getCreated().toString(), post.getUserId())).queue();
             }
         });
     }
 
-    private Hash hashImage(Attachment attachment) throws IOException {
+    private Hash hashImage(Message.Attachment attachment) throws IOException {
 
-        AttachmentData data = attachment.getData();
-        String imageUrl = data.url();
+        String imageUrl = attachment.getUrl();
         File newFile = new File("/tmp/temp");
         try {
             FileUtils.copyURLToFile(URI.create(imageUrl).toURL(), newFile);

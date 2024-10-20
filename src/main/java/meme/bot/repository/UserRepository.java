@@ -4,7 +4,6 @@ import meme.bot.domain.subclasses.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import reactor.util.function.Tuple2;
 
 import java.util.List;
 

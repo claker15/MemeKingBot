@@ -1,9 +1,12 @@
 package meme.bot.MemeKingBot;
 
-import discord4j.common.JacksonResources;
-import discord4j.discordjson.json.ApplicationCommandRequest;
-import discord4j.rest.RestClient;
-import discord4j.rest.service.ApplicationService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,48 +16,45 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 public class GlobalCommandRegistrar implements ApplicationRunner {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private final RestClient client;
+    private JDA jda;
 
     //Use the rest client provided by our Bean
-    public GlobalCommandRegistrar(RestClient client) {
-        this.client = client;
+    public GlobalCommandRegistrar(JDA jda) {
+        this.jda = jda;
     }
 
     //This method will run only once on each start up and is automatically called with Spring so blocking is okay.
     @Override
-    public void run(ApplicationArguments args) throws IOException {
-        //Create an ObjectMapper that supported Discord4J classes
-        final JacksonResources d4jMapper = JacksonResources.create();
+    public void run(ApplicationArguments args) throws IOException, URISyntaxException {
 
-        // Convenience variables for the sake of easier to read code below.
-        PathMatchingResourcePatternResolver matcher = new PathMatchingResourcePatternResolver();
-        final ApplicationService applicationService = client.getApplicationService();
-        final long applicationId = client.getApplicationId().block();
+        CommandListUpdateAction commands = jda.updateCommands();
 
-        //Get our commands json from resources as command data
-        List<ApplicationCommandRequest> commands = new ArrayList<>();
-        for (Resource resource : matcher.getResources("commands/*.json")) {
-            ApplicationCommandRequest request = d4jMapper.getObjectMapper()
-                    .readValue(resource.getInputStream(), ApplicationCommandRequest.class);
+        commands.addCommands(
+                Commands.slash("bet", "Place a bet")
+                        .addOption(OptionType.STRING, "user", "User who you wish to bet on", true)
+                        .addOption(OptionType.INTEGER, "points", "Amount of points to bet", true),
+                Commands.slash("ranking", "Get current week's rankings")
+        );
 
-            commands.add(request);
-        }
+        commands.queue();
 
-        /* Bulk overwrite commands. This is now idempotent, so it is safe to use this even when only 1 command
-        is changed/added/removed
-        */
-        applicationService.bulkOverwriteGlobalApplicationCommand(applicationId, commands)
-                .doOnNext(ignore -> LOGGER.info("Successfully registered Global Commands"))
-                .doOnError(e -> LOGGER.error("Failed to register global commands", e))
-                .subscribe();
     }
+
 }
