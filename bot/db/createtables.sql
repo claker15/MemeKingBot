@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS MEMEKING;
 
 USE MEMEKING;
 
-DROP TABLE IF EXISTS user;
+DROP TABLE user;
 
 CREATE TABLE user (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -36,7 +36,7 @@ CREATE TABLE points(
     type VARCHAR(20),
     message_id VARCHAR(50),
     created TIMESTAMP DEFAULT (NOW())
-)
+);
 
 DROP TABLE url;
 
@@ -68,7 +68,7 @@ CREATE TABLE sounds(
     path VARCHAR(500),
     guild_id VARCHAR(50),
     created TIMESTAMP DEFAULT (NOW())
-)
+);
 
 DROP TABLE music;
 
