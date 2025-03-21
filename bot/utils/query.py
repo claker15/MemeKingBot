@@ -24,7 +24,7 @@ getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points W
 
 getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'RELAX' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
-rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(created:) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
+rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
 
 getAllUsersWhoPostedLastWeek = "SELECT user_id FROM post WHERE guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 GROUP BY user_id"
 
