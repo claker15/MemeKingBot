@@ -20,11 +20,11 @@ addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, me
 
 getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) ORDER BY RAND()"
 
-getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
+getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
-getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'RELAX' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
+getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'RELAX' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
-rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
+rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{}' AND YEARWEEK(created:) = YEARWEEK(NOW()) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 5"
 
 getAllUsersWhoPostedLastWeek = "SELECT user_id FROM post WHERE guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 GROUP BY user_id"
 
@@ -34,7 +34,7 @@ urlCheck = "SELECT '1' FROM url where guild_id='{}' AND LOCATE(url, '{}') > 0"
 
 addUrl = "INSERT INTO url(url, guild_id) VALUES('{}', '{}')"
 
-kingQuery = "select user_id, SUM(value) as count from points where guild_id='{}' AND  YEARWEEK(date) = YEARWEEK(NOW() - INTERVAL 1 WEEK) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 1"
+kingQuery = "select user_id, SUM(value) as count from points where guild_id='{}' AND  YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) GROUP BY user_id ORDER BY SUM(value) DESC LIMIT 1"
 
 changeCrownQuery = "INSERT INTO user(user_id, guild_id, created, crowns) VALUES ('{}', '{}', NOW(), 1) ON DUPLICATE KEY UPDATE crowns = crowns+1, wand = 'Wood'"
 
@@ -52,7 +52,7 @@ betTotals = "SELECT target_id, SUM(bet) FROM bets WHERE guild_id='{}' AND valid=
 
 myBets = "SELECT target_id, SUM(bet), user_id FROM bets where guild_id='{}' AND user_id='{}' AND valid=1 GROUP BY target_id, user_id"
 
-userPointsQuery = "SELECT SUM(value) as count FROM points WHERE guild_id = '{}' AND user_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) GROUP BY user_id"
+userPointsQuery = "SELECT SUM(value) as count FROM points WHERE guild_id = '{}' AND user_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id"
 
 allSoundsQuery = "SELECT title, path from sounds where guild_id = '{}'"
 
@@ -64,7 +64,7 @@ getSoundByPathQuery = "SELECT path from sounds where path = '{}' AND guild_id = 
 
 removeSoundQuery = "DELETE from sounds where title = '{}' AND guild_id = '{}'"
 
-triviaCoolDownQuery = "select date from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' AND value > 0 ORDER BY date DESC LIMIT 1"
+triviaCoolDownQuery = "select created from points where user_id='{}' AND guild_id='{}' AND type = 'TRIVIA_CORRECT' AND value > 0 ORDER BY created DESC LIMIT 1"
 
 userWandQuery = "SELECT wand from user where user_id='{}' AND guild_id='{}'"
 
@@ -74,29 +74,29 @@ trackAddQuery = "INSERT INTO music(user_id, guild_id, title, artist_name, track_
 
 trackExistQuery = "SELECT 1 from music m where (guild_id='{}' AND title='{}' AND artist_name='{}') OR EXISTS (select * from song_winner sw  where sw.guild_id = '{}' AND sw.title = '{}' AND sw.artist_name = '{}' ) OR EXISTS(select * from artist_winner aw where aw.guild_id = '{}' AND aw.artist_name = '{}' ) LIMIT 1;"
 
-songPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop DESC LIMIT 1;"
+songPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 ORDER BY track_pop DESC LIMIT 1;"
 
-artistPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY artist_pop DESC LIMIT 1;"
+artistPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 ORDER BY artist_pop DESC LIMIT 1;"
 
-songPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY track_pop ASC LIMIT 1;"
+songPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 ORDER BY track_pop ASC LIMIT 1;"
 
-artistPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW())-1 ORDER BY artist_pop ASC LIMIT 1;"
+artistPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 ORDER BY artist_pop ASC LIMIT 1;"
 
-songCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY track_pop DESC LIMIT 1;"
+songCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW()) ORDER BY track_pop DESC LIMIT 1;"
 
-artistCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY artist_pop DESC LIMIT 1;"
+artistCurrentPopularityHighQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW()) ORDER BY artist_pop DESC LIMIT 1;"
 
-songCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY track_pop ASC LIMIT 1;"
+songCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW()) ORDER BY track_pop ASC LIMIT 1;"
 
-artistCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(date) = YEARWEEK(NOW()) ORDER BY artist_pop ASC LIMIT 1;"
+artistCurrentPopularityLowQuery = "SELECT * from music WHERE guild_id='{}' AND YEARWEEK(created) = YEARWEEK(NOW()) ORDER BY artist_pop ASC LIMIT 1;"
 
 trackWinnerAddQuery = "INSERT INTO song_winner(guild_id, title, artist_name) VALUES ('{}', '{}', '{}');"
 
 artistWinnerAddQuery = "INSERT INTO artist_winner(guild_id, artist_name) VALUES ('{}', '{}');"
 
-loginCheckQuery = "SELECT 1 from login where user_id='{}' AND guild_id='{}' AND date='{}';"
+loginCheckQuery = "SELECT 1 from login where user_id='{}' AND guild_id='{}' AND created='{}';"
 
-loginAddQuery = "INSERT INTO login(user_id, guild_id, date) VALUES ('{}', '{}', '{}')"
+loginAddQuery = "INSERT INTO login(user_id, guild_id, created) VALUES ('{}', '{}', '{}')"
 
 clearTracksQuery = "TRUNCATE TABLE music;"
 

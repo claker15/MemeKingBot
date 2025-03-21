@@ -108,5 +108,5 @@ CREATE TABLE login(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     user_id VARCHAR(50),
     guild_id VARCHAR(50),
-    date TIMESTAMP DEFAULT (NOW())
+    created TIMESTAMP DEFAULT (NOW())
 );
