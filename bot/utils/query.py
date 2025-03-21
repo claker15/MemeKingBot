@@ -106,6 +106,8 @@ addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
 
 removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id='{}'"
 
+newUserQuery = "INSERT INTO user(user_id, guild_id) values ('{}', '{}')"
+
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
     try:
@@ -459,4 +461,11 @@ def remove_bot_behavior(guild_id: str, index: int):
     logger.debug("Removing chatgpt behaviors")
     data = execute_query(addBotBehaviors, [guild_id, index], True)
     logger.debug("received as response from removeBotBehaviors: {0}".format(data))
+    return data
+
+
+def new_user(user_id: str, guild_id: str):
+    logger.debug("Adding new user")
+    data = execute_query(newUserQuery, [user_id, guild_id], True)
+    logger.debug("received as response from newUser: {0}".format(data))
     return data

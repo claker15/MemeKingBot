@@ -9,6 +9,7 @@ from utils.query import *
 from utils.points import *
 import html
 import json
+import os
 
 logger = logging.getLogger("trivia")
 
@@ -28,7 +29,8 @@ class Trivia(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.trivia_urls = []
-        with open("trivia_urls.json") as file:
+        path = os.path.dirname(__file__)
+        with open(os.path.join(path, "trivia_urls.json")) as file:
             self.trivia_urls = json.load(file)['urls']
         self.letters = ['A', 'B', 'C', 'D']
         self.emojis = ['🇦', '🇧', '🇨', '🇩']

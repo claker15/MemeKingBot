@@ -8,8 +8,9 @@ CREATE TABLE user (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     user_id VARCHAR(50),
     guild_id VARCHAR(50),
+    crowns INT DEFAULT (0),
+    wand VARCHAR(20) DEFAULT ('Wood'),
     created TIMESTAMP DEFAULT (NOW()),
-    crowns INT
 );
 
 DROP TABLE IF EXISTS post;

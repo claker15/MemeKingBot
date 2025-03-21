@@ -100,6 +100,8 @@ def cool_down(author_id, guild_id):
     last_post_time = get_user_cooldown_date(author_id, guild_id)
     logger.info("got last_post_time: {0}".format(last_post_time))
     if last_post_time is None:
+        # add user to database
+        new_user(author_id, guild_id)
         return False
     now = datetime.datetime.now(timezone)
     logger.info("now: {}".format(now))
@@ -123,7 +125,7 @@ async def process_attachments(bot, message):
     cooldown = cool_down(message.author.id, message.guild.id)
     # save image if not there
     if post is None:
-        obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id,message.id)
+        obj = create_post_object(new_hash, file_save_path + attach.filename, message.author.id, message.guild.id, message.id)
         create_post(obj)
         if cooldown:
             new_user = get_random_user(message.guild.id)
