@@ -161,7 +161,7 @@ def get_random_user(guild_id):
     logger.debug("Getting random userid from guild: {0}".format(guild_id))
     data = execute_query(getRandId, [guild_id])
     logger.debug("received as response from getRandomUserId query: {0}".format(data))
-    if data[0] is None:
+    if not data:
         logger.debug("past week did not have anyone, checking this week")
         data = execute_query(getRandIdBackup, [guild_id])
     random.shuffle(data)
