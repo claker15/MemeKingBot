@@ -20,6 +20,8 @@ addPoints = "INSERT INTO points(user_id, guild_id, user_id_from, value, type, me
 
 getRandId = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW() - INTERVAL 1 WEEK) ORDER BY RAND()"
 
+getRandIdBackup = "select DISTINCT user_id from post where guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW()) ORDER BY RAND()"
+
 getCringeRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'CRINGE' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
 
 getRelaxRank = "SELECT user_id_from as user_id, COUNT(*) as count FROM points WHERE guild_id = '{}' AND type = 'RELAX' AND YEARWEEK(created) = YEARWEEK(NOW()) GROUP BY user_id_from ORDER BY COUNT(*) DESC LIMIT 5"
@@ -159,6 +161,9 @@ def get_random_user(guild_id):
     logger.debug("Getting random userid from guild: {0}".format(guild_id))
     data = execute_query(getRandId, [guild_id])
     logger.debug("received as response from getRandomUserId query: {0}".format(data))
+    if data is None:
+        logger.debug("past week did not have anyone, checking this week")
+        data = execute_query(getRandIdBackup, [guild_id])
     random.shuffle(data)
     return data[0][0]
 
