@@ -10,7 +10,7 @@ CREATE TABLE `user` (
     guild_id VARCHAR(50),
     crowns INT DEFAULT (0),
     wand VARCHAR(20) DEFAULT ('Wood'),
-    created TIMESTAMP DEFAULT (NOW()),
+    created TIMESTAMP DEFAULT (NOW())
 );
 
 DROP TABLE post;
