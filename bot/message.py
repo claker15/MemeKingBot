@@ -167,15 +167,19 @@ def get_urls(string):
 
 
 async def process_urls(bot, message):
-    logger.info("starting profcessing urls in message {0}".format(message.content))
+    logger.info("starting processing urls in message {0}".format(message.content))
     urls = get_urls(message.content)
-    url = urls[0]
+    url = str(urls[0])
     logger.info("start parsing url: {0}".format(urls[0]))
     res = url_check(urls[0], message.guild.id)
     if res != '1':
         return
     post = get_post_by_hash(url, message.guild.id)
     cooldown = cool_down(message.author.id, message.guild.id)
+    if url.startswith("https://www.reddit.com"):
+        post_url = url[22:]
+        new_url = ''.join(("http://www.vxreddit.com", post_url))
+        await message.reply(new_url)
     # save image if not there
     if post is None:
         obj = create_post_object(url, url, message.author.id, message.guild.id, message.id)

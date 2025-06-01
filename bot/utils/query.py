@@ -1,4 +1,7 @@
+from datetime import datetime
 from email import message
+from typing import Any
+
 import requests
 import logging
 import os
@@ -109,6 +112,21 @@ addBotBehaviors = "INSERT INTO ai_rules(rule, guild_id) VALUES ('{}', '{}')"
 removeBotBehaviors = "DELETE FROM ai_rules where guild_id='{}' and id='{}'"
 
 newUserQuery = "INSERT INTO user(user_id, guild_id) values ('{}', '{}')"
+
+nameRollCurrentQuery = "SELECT current_value from ROLL WHERE guild_id='{}';"
+
+nameRollNewServerInsertQuery = "INSERT INTO ROLL(guild_id) values ('{}')"
+
+nameRollIncrementQuery = "UPDATE ROLL set current_value = current_value + 1, updated=NOW() WHERE guild_id='{}'"
+
+nameRollHistoryInsert = "INSERT INTO ROLL_HIST(user_id, guild_id, won_roll) values('{}','{}','{}')"
+
+nameRollMostRecentWin = "SELECT updated from ROLL WHERE guild_id='{}';"
+
+nameRollUserCooldown = "SELECT created FROM ROLL_HIST WHERE user_id='{}' AND guild_id='{}';"
+
+nameRollResetQuery = "UPDATE ROLL set current_value = 0, updated=NOW() WHERE guild_id='{}'"
+
 
 
 def execute_query(query: str, args: list, named_tuple: bool = False):
@@ -474,3 +492,53 @@ def new_user(user_id: str, guild_id: str):
     data = execute_query(newUserQuery, [user_id, guild_id], True)
     logger.debug("received as response from newUser: {0}".format(data))
     return data
+
+
+def name_roll_current_value(guild_id: str) -> int:
+    logger.debug("checking name roll value")
+    data = execute_query(nameRollCurrentQuery, [guild_id], True)
+    if not data:
+        execute_query(nameRollNewServerInsertQuery, [guild_id])
+        return 0
+    logger.debug("received as response from nameRollNewServerInsertQuery: {0}".format(data))
+    return data[0][0]
+
+
+def increment_name_roll_value(guild_id: str):
+    logger.debug("incrementing name roll value")
+    data = execute_query(nameRollIncrementQuery, [guild_id], True)
+    logger.debug("received as response from nameRollIncrementQuery: {0}".format(data))
+    return data
+
+
+def add_roll_hist_row(user_id: str, guild_id: str, roll_won: bool):
+    logger.debug("adding name roll attempt")
+    data = execute_query(nameRollHistoryInsert, [user_id, guild_id, roll_won], True)
+    logger.debug("received as response from nameRollHistoryInsert: {0}".format(data))
+    return data
+
+
+def last_name_roll_win_glob(guild_id: str) -> datetime | None:
+    logger.debug("getting last name change time")
+    data = execute_query(nameRollMostRecentWin, [guild_id], True)
+    logger.debug("received as response from nameRollMostRecentWin: {0}".format(data))
+    if not data:
+        return None
+    return data[0][0]
+
+
+def last_name_roll_win_user(user_id: str, guild_id: str) -> datetime | None:
+    logger.debug("getting user's last name change time")
+    data = execute_query(nameRollUserCooldown, [user_id, guild_id], True)
+    logger.debug("received as response from nameRollUserCooldown: {0}".format(data))
+    if not data:
+        return None
+    return data[0][0]
+
+
+def reset_name_roll_value(guild_id: str):
+    logger.debug("resetting name roll value")
+    data = execute_query(nameRollResetQuery, [guild_id], True)
+    logger.debug("received as response from nameRollResetQuery: {0}".format(data))
+    return data
+

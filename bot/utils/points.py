@@ -162,6 +162,7 @@ def upgrade_points(message_id, user_id, guild_id):
     }
     add_points(obj)
 
+
 def starting_points(user_id, guild_id):
     obj = {
         "user_id": str(user_id),
@@ -172,6 +173,7 @@ def starting_points(user_id, guild_id):
         "message_id": "Starting pts"
     }
     add_points(obj)
+
 
 def music_points(user_id, guild_id, points, type):
     obj = {
@@ -184,6 +186,7 @@ def music_points(user_id, guild_id, points, type):
     }
     add_points(obj)
 
+
 def login_points(user_id, guild_id):
     obj = {
         "user_id": str(user_id),
@@ -191,6 +194,29 @@ def login_points(user_id, guild_id):
         "user_id_from": None,
         "value": 10,
         "type": "LOGIN",
+        "message_id": None
+    }
+    add_points(obj)
+
+
+def name_roll_fail_points(user_id, guild_id):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": -10,
+        "type": "NAME_ROLL_FAIL",
+        "message_id": None
+    }
+    add_points(obj)
+
+def name_roll_win_points(user_id, guild_id, points_won):
+    obj = {
+        "user_id": str(user_id),
+        "guild_id": str(guild_id),
+        "user_id_from": None,
+        "value": points_won ,
+        "type": "NAME_ROLL_WIN",
         "message_id": None
     }
     add_points(obj)

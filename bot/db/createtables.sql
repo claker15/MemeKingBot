@@ -110,3 +110,23 @@ CREATE TABLE login(
     guild_id VARCHAR(50),
     created TIMESTAMP DEFAULT (NOW())
 );
+
+DROP TABLE roll;
+
+CREATE TABLE roll(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    guild_id VARCHAR(50),
+    current_value INT DEFAULT 0,
+    updated TIMESTAMP DEFAULT(NOW())
+);
+
+DROP TABLE roll_hist;
+
+CREATE TABLE roll_hist(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    guild_id VARCHAR(50),
+    user_id VARCHAR(50),
+    won_roll BOOL,
+    created TIMESTAMP DEFAULT(NOW())
+);
+
