@@ -83,7 +83,7 @@ async def send_equip_message(message, points):
         await message.reply("{0} Your spell had the added effect of {1} points".format(res, points))
         return
     else:
-        await message.reply("You're lucky. Your spell had the added effect of {0} points".format(points))
+        await message.reply("Fuck you. {0} points".format(points))
         return
 
 

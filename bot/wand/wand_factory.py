@@ -5,7 +5,7 @@ order = ["Wood", "Bone", "Steel", "Ivory"]
 
 def create_wand(level):
     if level == "Wood":
-        return Wand(10, 0, 3)
+        return Wand(10, -2, 3)
     elif level == "Bone":
         return Wand(15, 1, 4)
     elif level == "Steel":

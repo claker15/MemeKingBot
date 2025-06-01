@@ -30,7 +30,7 @@ rankQuery = "SELECT user_id, SUM(value) as count FROM points WHERE guild_id = '{
 
 getAllUsersWhoPostedLastWeek = "SELECT user_id FROM post WHERE guild_id = '{}' AND YEARWEEK(created) = YEARWEEK(NOW())-1 GROUP BY user_id"
 
-crownsQuery = "select user_id, crowns as count from user where guild_id='{}' GROUP BY user_id ORDER BY count DESC limit 5"
+crownsQuery = "select user_id, COUNT(crowns) as count from user where guild_id='{}' GROUP BY user_id ORDER BY count DESC limit 5"
 
 urlCheck = "SELECT '1' FROM url where guild_id='{}' AND LOCATE(url, '{}') > 0"
 

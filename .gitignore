@@ -17,3 +17,4 @@ Cogs/__pycache__/*
 /bot/sounds
 .idea/
 venv
+bot.log
