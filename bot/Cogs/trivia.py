@@ -4,7 +4,7 @@ from disnake.ext import commands
 import requests
 import logging
 import random
-import datetime
+from datetime import datetime
 from utils.query import *
 from utils.points import *
 import html
@@ -46,7 +46,7 @@ class Trivia(commands.Cog):
         last_post_time = trivia_cooldown(author_id, guild_id)
         if last_post_time is None:
             return False
-        now = datetime.datetime.now()
+        now = datetime.now()
         diff_time = (now - last_post_time).seconds / 60.0
         logger.info("{0} minutes since last post from user: {1}".format(diff_time, author_id))
         if diff_time < 5.0:

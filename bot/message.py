@@ -3,7 +3,7 @@ import os
 import logging
 from dotenv import load_dotenv
 import requests
-import datetime
+from datetime import datetime
 from io import BytesIO
 import imagehash
 from PIL import Image
@@ -103,7 +103,7 @@ def cool_down(author_id, guild_id):
         # add user to database
         new_user(author_id, guild_id)
         return False
-    now = datetime.datetime.now(timezone)
+    now = datetime.now(timezone)
     logger.info("now: {}".format(now))
     diff_time = now - timezone.localize(last_post_time)
     logger.info("{0} minutes since last post from user: {1}".format(diff_time, author_id))

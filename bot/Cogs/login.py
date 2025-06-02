@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import disnake
 from disnake.ext import commands
@@ -22,7 +22,7 @@ class Login(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         if after.channel is not None and str(after.channel.id) == tracked_channel:
             timezone = pytz.timezone('America/New_York')
-            date = datetime.datetime.now(timezone).date()
+            date = datetime.now(timezone).date()
             if not login_check(member.id, after.channel.guild.id, date):
                 logger.info("Adding user: {} to guild: {} for date: {}".format(member.id, after.channel.guild.id, date))
                 login_add(member.id, after.channel.guild.id, date)

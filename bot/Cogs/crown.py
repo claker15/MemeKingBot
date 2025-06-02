@@ -2,8 +2,7 @@ import disnake
 from disnake.ext import tasks, commands
 import logging
 import os
-from datetime import datetime
-from datetime import time
+from datetime import datetime, time
 import pytz
 from dotenv import load_dotenv
 from utils.query import *
