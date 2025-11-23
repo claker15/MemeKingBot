@@ -72,6 +72,7 @@ class MusicSnob(commands.Cog):
         logger.debug("Spotify activity change. user: {} is listening to song: {}".format(after.id, after.activity.title))
         track_name = after.activity.title
         artist_name = after.activity.artists[0]
+        logger.debug(f"Checking if {track_name} by {artist_name} is valid")
         if track_exists(after.id, after.guild.id, track_name, artist_name):
             logger.debug("track already exists in database for user: {}".format(after.id))
             return

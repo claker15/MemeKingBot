@@ -44,6 +44,17 @@ def create_post_object(hash, path, user_id, guild_id, message_id):
     }
     return obj
 
+def chooseRelaxPicture() -> str:
+    dir = "/home/memes"
+    files = []
+    for file in os.listdir(dir):
+        file_path = os.path.join(dir, file)
+        if os.path.isfile(file_path):
+            files.append(file_path)
+    total = len(files)
+    randPhotoIndex = random.randint(0, total - 1)
+    logger.info("Got random int: {} so choosing file with path {}", randPhotoIndex, files[randPhotoIndex])
+    return files[randPhotoIndex]
 
 async def send_relax_message(author, channel, new_user):
     logger.info("{0} has not waited for cooldown period".format(author.id))
@@ -55,7 +66,7 @@ async def send_relax_message(author, channel, new_user):
         return
     else:
         await channel.send(content="{0}. {1}, enjoy the point".format(author.mention, member.mention),
-                           file=disnake.File(fp="/home/memes/Relax.png"))
+                           file=disnake.File(fp=chooseRelaxPicture()))
         return
 
 
